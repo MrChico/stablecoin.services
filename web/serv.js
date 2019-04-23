@@ -14,6 +14,6 @@ const PORT = 5000;
 app.listen(PORT, () => {
   console.log(`server running on port ${PORT}`)
 });
-
-app.get('/', (req, res) => res.sendFile(path.join(__dirname,'./token-wallet.html')))
+app.get('/', (req, res) => res.sendFile(path.join(__dirname,'./index.html')))
+app.get('/index.html', (req, res) => res.sendFile(path.join(__dirname,'./index.html')))
 app.get('/dai.js', (req, res) => res.sendFile(path.join(__dirname,'./dai.js')))

@@ -3,8 +3,8 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.2.3/milligram.min.css">
   </head>
   <body class="container" style="padding-top: 3%;">
-    <h2><a href="index.html">ethjs</a></h2>
-    <h4>Token Wallet</h4>
+    <h2><a href="index.html">Stablecoin.services</a></h2>
+    <h4>Dai at 0xaaeb56503ceb8852f802bdf050b8ff7d567716ed (Kovan)</h4>
 
     <hr />
 
@@ -32,6 +32,21 @@
 
     <div class="row">
       <div class="column">
+        <label>Check balance</label>
+        <input type="text" id="balanceAddress" placeholder="0xcc136826fbd5192c10bba496af42906a7e3b91f8" />
+      </div>
+      <div class="column">
+        <br />
+        <button id="balanceOf">Get Balance</button>
+      </div>
+    </div>
+
+    <div id="balanceResponse" style="padding: 20px; display: none; border: 1px solid #9b4dca">
+    </div>
+    <hr />
+
+    <div class="row">
+      <div class="column">
         <label>Transfer To</label>
         <input type="text" id="transferAddress" placeholder="0xcc136826fbd5192c10bba496af42906a7e3b91f8" />
       </div>
@@ -48,23 +63,21 @@
     <div id="transferResponse" style="padding: 20px; display: none; border: 1px solid #9b4dca">
     </div>
 
-    <hr />
 
+    <hr />
     <div class="row">
       <div class="column">
-        <label>Address</label>
-        <input type="text" id="balanceAddress" placeholder="0xcc136826fbd5192c10bba496af42906a7e3b91f8" />
+        <label>Permit</label>
+        <input type="text" id="permitAddress" placeholder="0xacab..." />
       </div>
       <div class="column">
         <br />
-        <button id="balanceOf">Get Balance</button>
+        <button id="permit">Permit Address</button>
       </div>
     </div>
 
-    <div id="balanceResponse" style="padding: 20px; display: none; border: 1px solid #9b4dca">
+    <div id="permitResponse" style="padding: 20px; display: none; border: 1px solid #9b4dca">
     </div>
-
-    <hr />
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ethjs@0.3.4/dist/ethjs.min.js"></script>
     <script type="text/javascript" src="dai.js"></script>
