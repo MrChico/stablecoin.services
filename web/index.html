@@ -1,0 +1,210 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.2.3/milligram.min.css">
+  </head>
+  <body class="container" style="padding-top: 3%;">
+    <h2><a href="index.html">ethjs</a></h2>
+    <h4>Token Wallet</h4>
+
+    <hr />
+
+    <div class="row">
+      <div class="column">
+        <label>Your Account<label>
+        <blockquote><p><em id="accountAddress">Loading..</em></p></blockquote>
+      </div>
+      <div class="column">
+        <label>Token Balance</label>
+        <blockquote><p><em id="tokenBalance">Loading..</em> (<span class="tokenSymbol"></span>)</p></blockquote>
+      </div>
+      <div class="column">
+        <label>Token Name</label>
+        <blockquote><p><em id="tokenName">Loading..</em></p></blockquote>
+      </div>
+      <div class="column">
+        <label>Total Supply</label>
+        <blockquote><p><em id="totalSupply">Loading..</em></p></blockquote>
+      </div>
+      
+    </div>
+
+    <hr />
+
+    <div class="row">
+      <div class="column">
+        <label>Transfer To</label>
+        <input type="text" id="transferAddress" placeholder="0xcc136826fbd5192c10bba496af42906a7e3b91f8" />
+      </div>
+      <div class="column">
+        <label>Token Amount</label>
+        <input type="number" id="transferAmount" placeholder="4700" />
+      </div>
+      <div class="column">
+        <br />
+        <button id="transferTokens">Transfer Tokens</button>
+      </div>
+    </div>
+
+    <div id="transferResponse" style="padding: 20px; display: none; border: 1px solid #9b4dca">
+    </div>
+
+    <hr />
+
+    <div class="row">
+      <div class="column">
+        <label>Address</label>
+        <input type="text" id="balanceAddress" placeholder="0xcc136826fbd5192c10bba496af42906a7e3b91f8" />
+      </div>
+      <div class="column">
+        <br />
+        <button id="balanceOf">Get Balance</button>
+      </div>
+    </div>
+
+    <div id="balanceResponse" style="padding: 20px; display: none; border: 1px solid #9b4dca">
+    </div>
+
+    <hr />
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ethjs@0.3.4/dist/ethjs.min.js"></script>
+    <script type="text/javascript" src="dai.js"></script>
+    <br /><br />
+
+    <label>MCD Dai contract</label>
+    <pre><code>
+// Copyright (C) 2017, 2018, 2019 dbrock, rain, mrchico
+
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+pragma solidity >=0.4.24;
+
+contract Dai {
+    // --- Auth ---
+    mapping (address => uint) public wards;
+    function rely(address guy) public auth { wards[guy] = 1; }
+    function deny(address guy) public auth { wards[guy] = 0; }
+    modifier auth { require(wards[msg.sender] == 1); _; }
+
+    // --- ERC20 Data ---
+    uint8   public decimals = 18;
+    string  public name;
+    string  public symbol;
+    string  public version;
+    uint256 public totalSupply;
+
+    mapping (address => uint)                      public balanceOf;
+    mapping (address => mapping (address => uint)) public allowance;
+    mapping (address => uint)                      public nonces;
+
+    event Approval(address indexed src, address indexed guy, uint wad);
+    event Transfer(address indexed src, address indexed dst, uint wad);
+
+    // --- Math ---
+    function add(uint x, uint y) internal pure returns (uint z) {
+        require((z = x + y) >= x, "math-add-overflow");
+    }
+    function sub(uint x, uint y) internal pure returns (uint z) {
+        require((z = x - y) <= x, "math-sub-underflow");
+    }
+
+    // --- EIP712 niceties ---
+    bytes32 public DOMAIN_SEPARATOR;
+    bytes32 public constant PERMIT_TYPEHASH = keccak256(
+        "Permit(address holder,address spender,uint256 nonce,uint256 expiry,bool allowed)"
+    );
+
+    constructor(string memory symbol_, string memory name_, string memory version_, uint256 chainId_) public {
+        wards[msg.sender] = 1;
+        symbol = symbol_;
+        name = name_;
+        DOMAIN_SEPARATOR = keccak256(abi.encode(
+            keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)"),
+            keccak256("Dai Semi-Automated Permit Office"),
+            keccak256(bytes(version_)),
+            chainId_,
+            address(this)
+        ));
+    }
+
+    // --- Token ---
+    function transfer(address dst, uint wad) public returns (bool) {
+        return transferFrom(msg.sender, dst, wad);
+    }
+    function transferFrom(address src, address dst, uint wad)
+        public returns (bool)
+    {
+        if (src != msg.sender && allowance[src][msg.sender] != uint(-1)) {
+            allowance[src][msg.sender] = sub(allowance[src][msg.sender], wad);
+        }
+        balanceOf[src] = sub(balanceOf[src], wad);
+        balanceOf[dst] = add(balanceOf[dst], wad);
+        emit Transfer(src, dst, wad);
+        return true;
+    }
+    function mint(address usr, uint wad) public auth {
+        balanceOf[usr] = add(balanceOf[usr], wad);
+        totalSupply    = add(totalSupply, wad);
+        emit Transfer(address(0), usr, wad);
+    }
+    function burn(address usr, uint wad) public {
+        if (usr != msg.sender && allowance[usr][msg.sender] != uint(-1)) {
+            allowance[usr][msg.sender] = sub(allowance[usr][msg.sender], wad);
+        }
+        balanceOf[usr] = sub(balanceOf[usr], wad);
+        totalSupply    = sub(totalSupply, wad);
+        emit Transfer(usr, address(0), wad);
+    }
+    function approve(address usr, uint wad) public returns (bool) {
+        allowance[msg.sender][usr] = wad;
+        emit Approval(msg.sender, usr, wad);
+        return true;
+    }
+
+    // --- Alias ---
+    function push(address usr, uint wad) public {
+        transferFrom(msg.sender, usr, wad);
+    }
+    function pull(address usr, uint wad) public {
+        transferFrom(usr, msg.sender, wad);
+    }
+    function move(address src, address dst, uint wad) public {
+        transferFrom(src, dst, wad);
+    }
+
+    // --- Approve by signature ---
+    function permit(address holder, address spender, uint256 nonce, uint256 expiry,
+                    bool allowed, uint8 v, bytes32 r, bytes32 s) public
+    {
+        bytes32 digest =
+            keccak256(abi.encodePacked(
+                "\x19\x01",
+                DOMAIN_SEPARATOR,
+                keccak256(abi.encode(PERMIT_TYPEHASH,
+                                     holder,
+                                     spender,
+                                     nonce,
+                                     expiry,
+                                     allowed))
+        ));
+        require(holder == ecrecover(digest, v, r, s), "invalid permit");
+        require(expiry == 0 || expiry < now, "permit expired");
+        require(nonce == nonces[holder]++, "invalid nonce");
+        uint wad = allowed ? uint(-1) : 0;
+        allowance[holder][spender] = wad;
+        emit Approval(holder, spender, wad);
+    }
+}
+    </code></pre>
+  </body>
+</html>
