@@ -1,0 +1,25 @@
+set -e
+
+
+export ETH_RPC_URL=https://kovan.infura.io
+export DAI=0xcbd296fc6009fe85e6f6f26a4833dcc1fefd9385
+#export ETH_FROM=0x6f4419b5a88e896f2549c6ba469c55dd53c3b4ab
+export FROM=$1
+export TO=$2
+export NONCE=$3
+export DEADLINE=$4
+export ALLOWED=$5
+export V=$6
+export R=$7
+export S=$8
+
+
+echo $(seth --to-ascii $(seth call "$DAI" "permit(address,address,uint256,uint256,bool,uint8,bytes32,bytes32)"\
+     "$FROM" \
+     "$TO" \
+     $(seth --to-uint256 "$NONCE") \
+     $(seth --to-uint256 "$DEADLINE") \
+     "$ALLOWED"\
+     "$V"\
+     $(seth --to-bytes32 "$R")\
+     $(seth --to-bytes32 "$S")))

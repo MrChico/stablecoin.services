@@ -3,10 +3,47 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.2.3/milligram.min.css">
   </head>
   <body class="container" style="padding-top: 3%;">
-    <h2><a href="index.html">Stablecoin.services</a></h2>
-    <h4>Dai at 0xaaeb56503ceb8852f802bdf050b8ff7d567716ed (Kovan)</h4>
+    <h2><a href="index.html">Welcome to Stablecoin.services</a></h2>
+    <h4>Interacting with Kovan Dai at 0xaaeb56503ceb8852f802bdf050b8ff7d567716ed</h4>
 
     <hr />
+    <p>
+      The new version of the Dai contract allows for transfers via signatures, allowing you to send Dai without holding any eth.
+    </p>
+    <div id="allowance"> Woop</div>
+    <p>To begin, you need to authorize the Dai Automated Clearing House by pressing the button below. Check the docs for more info.</p>
+    <div class="row">
+      <button id="authDach" style="
+                            width: 100%;
+                            margin: 0 auto;"
+              >Get Started</button>
+    </div>
+    <div id="permitResponse" style="padding: 20px; display: none; border: 1px solid #9b4dca">
+    </div>
+
+      
+    <h4>Issue cheque to</h4>
+    <div class="row">
+      <div class="column">
+        <label>To</label>
+        <input type="text" id="transferAddress" placeholder="0xcc136826fbd5192c10bba496af42906a7e3b91f8" />
+      </div>
+      <div class="column">
+        <label>Token Amount</label>
+        <input type="number" id="transferAmount" placeholder="4700" />
+      </div>
+      <div class="column">
+        <label>Clearing fee</label>
+        <input type="number" id="transferFee" placeholder="1" />
+      </div>
+
+      <div class="column">
+        <br />
+        <button id="transferTokens">Transfer Tokens</button>
+      </div>
+    </div>
+    <div id="transferResponse" style="padding: 20px; display: none; border: 1px solid #9b4dca">
+    </div>
 
     <div class="row">
       <div class="column">
@@ -45,25 +82,6 @@
     </div>
     <hr />
 
-    <div class="row">
-      <div class="column">
-        <label>Transfer To</label>
-        <input type="text" id="transferAddress" placeholder="0xcc136826fbd5192c10bba496af42906a7e3b91f8" />
-      </div>
-      <div class="column">
-        <label>Token Amount</label>
-        <input type="number" id="transferAmount" placeholder="4700" />
-      </div>
-      <div class="column">
-        <br />
-        <button id="transferTokens">Transfer Tokens</button>
-      </div>
-    </div>
-
-    <div id="transferResponse" style="padding: 20px; display: none; border: 1px solid #9b4dca">
-    </div>
-
-
     <hr />
     <div class="row">
       <div class="column">
@@ -76,10 +94,11 @@
       </div>
     </div>
 
-    <div id="permitResponse" style="padding: 20px; display: none; border: 1px solid #9b4dca">
-    </div>
-
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ethjs@0.3.4/dist/ethjs.min.js"></script>
+    <script
+			  src="https://code.jquery.com/jquery-3.4.0.min.js"
+			  integrity="sha256-BJeo0qm959uMBGb65z40ejJYGSgR7REI4+CW1fNKwOg="
+			  crossorigin="anonymous"></script>
     <script type="text/javascript" src="dai.js"></script>
     <br /><br />
 
