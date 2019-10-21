@@ -144,8 +144,8 @@ eth.accounts().then(function(accounts){
       var sender = accounts[0]
       var nonce = Number(accNonce[0]);
       var receiver = el('#transferAddress').value;
-      var amount = Eth.toWei(el('#transferAmount').value, 'ether');
-      var fee = Eth.toWei(el('#transferFee').value, 'ether');
+      var amount = el('#transferAmount').value;
+      var fee = el('#transferFee').value;
       var typedData = JSON.stringify({
         types: {
           EIP712Domain: [
