@@ -2,6 +2,7 @@ import React from 'react';
 import { createStore, withStore } from '@spyna/react-store'
 
 import NavContainer from './containers/NavContainer'
+import IssueCheckContainer from './containers/IssueCheckContainer'
 
 import theme from './theme/theme'
 import classNames from 'classnames'
@@ -65,7 +66,7 @@ const styles = () => ({
     minHeight: 52
   },
   contentContainer: {
-      boxShadow: '0px 0px 30px 0px rgba(0, 0, 0, 0.05)',
+      // boxShadow: '0px 0px 30px 0px rgba(0, 0, 0, 0.05)',
       borderRadius: theme.shape.borderRadius,
       padding: 0,
       marginBottom: theme.spacing(3)
@@ -99,13 +100,10 @@ class App extends React.Component {
                 <Container maxWidth="md">
                     <Grid container>
                         <Grid item xs={12}><br/></Grid>
-
                         <NavContainer />
-
                         <Grid item xs={12} className={classes.contentContainer}>
-
+                            <IssueCheckContainer />
                         </Grid>
-
                     </Grid>
                 </Container>
             </ThemeProvider>
