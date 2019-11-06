@@ -73,6 +73,10 @@ const styles = () => ({
 })
 
 const initialState = {
+    web3: null,
+    walletAddress: '',
+    walletConnecting: false,
+    walletType: ''
 }
 
 class App extends React.Component {
@@ -92,7 +96,7 @@ class App extends React.Component {
 
         return (
             <ThemeProvider theme={theme}>
-                <Container maxWidth="sm">
+                <Container maxWidth="md">
                     <Grid container>
                         <Grid item xs={12}><br/></Grid>
 

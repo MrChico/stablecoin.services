@@ -1,4 +1,5 @@
 import React from 'react';
+import Web3 from "web3";
 import { withStore } from '@spyna/react-store'
 import { withStyles } from '@material-ui/styles';
 import theme from '../theme/theme'
@@ -45,17 +46,54 @@ class NavContainer extends React.Component {
     async componentDidMount() {
     }
 
+    async initBrowserWallet() {
+        const store = this.props.store
+
+        store.set('walletLoading', true)
+
+        let web3Provider;
+
+        // Initialize web3 (https://medium.com/coinmonks/web3-js-ethereum-javascript-api-72f7b22e2f0a)
+        // Modern dApp browsers...
+        if (window.ethereum) {
+            web3Provider = window.ethereum;
+            try {
+                // Request account access
+                await window.ethereum.enable();
+            } catch (error) {
+                // User denied account access...
+                console.error("User denied account access")
+            }
+        }
+        // Legacy dApp browsers...
+        else if (window.web3) {
+            web3Provider = window.web3.currentProvider;
+        }
+        // If no injected web3 instance is detected, fall back to Ganache
+        else {
+            this.log("Please install MetaMask!");
+        }
+
+        const web3 = new Web3(web3Provider);
+        const walletType = 'browser'
+        const accounts = await web3.eth.getAccounts()
+
+        await window.ethereum.enable();
+
+        store.set('walletLoading', false)
+        store.set('walletAddress', accounts[0])
+        store.set('web3', web3)
+        store.set('walletType', walletType)
+    }
+
     render() {
         const {
             classes,
             store
         } = this.props
 
-        const localAddress = store.get('localAddress')
-        const localPrivateKey = store.get('localPrivateKey')
         const walletAddress = store.get('walletAddress')
-        const localId = store.get('localId')
-        const isSignedIn = localAddress && localPrivateKey
+        const isSignedIn = walletAddress && walletAddress.length
 
         console.log(this.props, this.state, this.props.store.getState())
 
@@ -63,19 +101,14 @@ class NavContainer extends React.Component {
             {<Grid className={classes.navContainer} container alignItems='center'>
               <Grid item xs={6}>
                   <Grid container alignItems='center'>
-                      <Typography variant='h6'> Starter</Typography>
+                      <Typography variant='h6'>Stablecoin.services</Typography>
                   </Grid>
               </Grid>
               <Grid item xs={6}>
                   <Grid container justify='flex-end'>
-                    {walletAddress ? <Button color='primary' onClick={() => {
-                        if (!localAddress) {
-                          store.set('showSignIn', true)
-                        }
-                      }} variant="outlined" className={classes.accountButton}>
-                      {localId || 'Sign in'}
-                      {/*(walletAddress.slice(0, 7) + '...' + walletAddress.slice(walletAddress.length - 7))*/}
-                    </Button> : <Button disabled variant="outlined" className={classes.accountButton}>Connecting...</Button>}
+                  <Button color='primary' onClick={this.initBrowserWallet.bind(this)} variant="outlined" className={classes.accountButton}>
+                    {walletAddress ? (walletAddress.slice(0,7) + '...' + walletAddress.slice(walletAddress.length - 5)) : 'Connect wallet'}
+                  </Button>
                   </Grid>
               </Grid>
             </Grid>}
