@@ -1,0 +1,29 @@
+set -e
+
+
+export ETH_RPC_URL=https://kovan.infura.io
+export DACH=0xc2433f48f1db3b5067dc412d403b57a3077a52c0
+export ETH_FROM=0xc3455912Cf4bF115835A655c70bCeFC9cF4568eB
+export FROM=$1
+export TO=$2
+export AMOUNT=$3
+export FEE=$4
+export NONCE=$5
+export EXPIRY=$6
+export V=$7
+export R=$8
+export S=$9
+export TAXMAN=$ETH_FROM
+
+
+seth --to-ascii $(seth call "$DACH" "clear(address,address,uint256,uint256,uint256,uint256,uint8,bytes32,bytes32,address)"\
+     "$FROM" \
+     "$TO" \
+     $(seth --to-uint256 "$AMOUNT") \
+     $(seth --to-uint256 "$FEE") \
+     $(seth --to-uint256 "$NONCE") \
+     $(seth --to-uint256 "$EXPIRY") \
+     "$V"\
+     $(seth --to-bytes32 "$R")\
+     $(seth --to-bytes32 "$S")\
+     "$TAXMAN")
