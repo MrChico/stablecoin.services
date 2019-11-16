@@ -77,7 +77,11 @@ const initialState = {
     web3: null,
     walletAddress: '',
     walletConnecting: false,
-    walletType: ''
+    walletType: '',
+    daiBalance: '',
+    dachApproved: false,
+    dachAllowance: '',
+    dachNonce: ''
 }
 
 class App extends React.Component {
