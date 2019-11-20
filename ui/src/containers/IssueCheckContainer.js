@@ -1,6 +1,7 @@
 import React from 'react';
 import Web3 from 'web3';
 import AddressValidator from 'wallet-address-validator';
+import * as Uniswap from '@uniswap/sdk';
 
 import {withStore} from '@spyna/react-store'
 import {withStyles} from '@material-ui/styles';
@@ -121,6 +122,8 @@ class IssueCheckContainer extends React.Component {
         window.resetDachPermit = () => {
             signDachTransferPermit.bind(this)(false)
         }
+
+        console.log('uniswap', Uniswap)
     }
 
     async watchDaiData() {
@@ -136,6 +139,26 @@ class IssueCheckContainer extends React.Component {
 
     swap() {
         swap.bind(this)()
+    }
+
+    async swapAmountChanged(amount) {
+        const { store } =  this.props
+        const web3 = store.get('web3')
+
+        store.set('swap.daiAmount', amount)
+
+        const reserves = await Uniswap.getTokenReserves('0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359', 1)
+        console.log('reserves', reserves)
+
+        const details = await Uniswap.getMarketDetails(reserves)
+        console.log('details', details)
+
+        const trade = await Uniswap.getTradeDetails(false, amount, details)
+        console.log('trade', trade)
+
+        const input = trade.inputAmount.amount.toString() / 10000
+        const output = trade.outputAmount.amount.toString()
+        console.log('trade output', input, output)
     }
 
     render() {
@@ -226,7 +249,7 @@ class IssueCheckContainer extends React.Component {
                                     <div>
                                         <Typography variant='subtitle2'>DAI Amount <span className={classes.swapDaiBalance}>{daiBalance ? `Balance: ${daiBalance} DAI` : '-'}</span></Typography>
                                         <TextField placeholder='Enter amount' className={classes.input} margin="normal" variant="outlined" onChange={(event) => {
-                                                store.set('swap.daiAmount', event.target.value)
+                                                this.swapAmountChanged(event.target.value)
                                             }} InputProps={{
                                                 endAdornment: <InputAdornment className={classes.endAdornment} position="end">DAI</InputAdornment>
                                             }} inputProps={{

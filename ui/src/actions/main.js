@@ -11,7 +11,7 @@ export const transfer = async function() {
                 // metamask race condition
                 setTimeout(async () => {
                     const signedCheque = await signCheque.bind(this)()
-                    
+
                     // POST /permit_and_transfer
                 }, 100)
             } catch(e) {

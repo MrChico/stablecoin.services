@@ -8,6 +8,7 @@
     "@material-ui/lab": "^4.0.0-alpha.31",
     "@material-ui/styles": "^4.6.0",
     "@spyna/react-store": "^1.5.0",
+    "@uniswap/sdk": "^1.0.0-beta.4",
     "classnames": "^2.2.6",
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
