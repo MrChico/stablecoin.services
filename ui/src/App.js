@@ -45,6 +45,7 @@ const initialState = {
     'cheque.toValid': false,
     'cheque.daiAmount': '',
     'cheque.fee': '',
+    'cheque.expiry': 0,
     // swap
     'swap.daiAmount': '',
     'swap.fee': ''
@@ -63,7 +64,7 @@ class App extends React.Component {
     render() {
         const classes = this.props.classes
 
-        console.log(this.state, this.props)
+        // console.log(this.state, this.props)
 
         return (
             <ThemeProvider theme={theme}>

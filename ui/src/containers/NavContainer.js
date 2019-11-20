@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/styles';
 import theme from '../theme/theme'
 import classNames from 'classnames'
 
-import { initBrowserWallet } from '../utils/walletUtils'
+import { initBrowserWallet } from '../utils/web3Utils'
 
 import AccountIcon from '@material-ui/icons/AccountCircle';
 import WifiIcon from '@material-ui/icons/Wifi';
@@ -56,7 +56,7 @@ class NavContainer extends React.Component {
         const walletAddress = store.get('walletAddress')
         const isSignedIn = walletAddress && walletAddress.length
 
-        console.log(this.props, this.state, this.props.store.getState())
+        // console.log(this.props, this.state, this.props.store.getState())
 
         return <Grid item xs={12}>
             {<Grid className={classes.navContainer} container alignItems='center'>

@@ -1,7 +1,7 @@
 import Web3 from "web3";
 import daiABI from '../utils/daiABI.json';
 import dachABI from '../utils/dachABI.json';
-import { chequeFee } from '../utils/apiUtils';
+import { chequeFee, permitAndChequeFee, swapFee, permitAndSwapFee } from '../utils/apiUtils';
 
 const daiAddress = "0xaaeb56503ceb8852f802bdf050b8ff7d567716ed";
 const dachAddress = '0xc2433f48f1db3b5067dc412d403b57a3077a52c0';
@@ -35,13 +35,18 @@ export const getDaiData = async function() {
 
 export const getFeeData = async function() {
     const { store } = this.props
-    const web3 = store.get('web3')
+    const needsPermit = store.get('dachApproved')
+    const chequeFeeData = needsPermit ? await permitAndChequeFee() : await chequeFee()
+    const swapFeeData =  needsPermit ? await permitAndSwapFee() : await swapFee()
 
-    const feeData = await chequeFee()
-    console.log('feeData', feeData)
-    if (feeData.message) {
-        const fee = web3.utils.fromWei(feeData.message)
-        store.set('chequeFee', fee)
+    if (chequeFeeData.message) {
+        const fee = Web3.utils.fromWei(String(chequeFeeData.message))
+        store.set('cheque.fee', fee)
+    }
+
+    if (swapFeeData.message) {
+        const fee = Web3.utils.fromWei(String(swapFeeData.message))
+        store.set('swap.fee', fee)
     }
 }
 
@@ -77,6 +82,14 @@ export const signDachTransferPermit = async function(allowed) {
     const daiNonce = store.get('daiNonce')
 
     const dai = new web3.eth.Contract(daiABI, daiAddress);
+
+    const message = {
+        holder: walletAddress,
+        spender: dachAddress,
+        nonce: daiNonce,
+        deadline: 0,
+        allowed: allowed
+    }
 
     const typedData = JSON.stringify({
         types: {
@@ -126,16 +139,11 @@ export const signDachTransferPermit = async function(allowed) {
             chainId: Number(web3.currentProvider.networkVersion),
             verifyingContract: daiAddress,
         },
-        message: {
-            holder: walletAddress,
-            spender: dachAddress,
-            nonce: daiNonce,
-            deadline: 0,
-            allowed: allowed
-        },
+        message: message
     });
 
-    return await signData(web3, walletAddress, typedData)
+    const sig = await signData(web3, walletAddress, typedData)
+    return Object.assign({}, sig, message)
 
     // const permit = await dai.methods.permit(
     //     walletAddress,
@@ -234,9 +242,21 @@ export const signCheque = async function() {
     const web3 = store.get('web3')
     const nonce = store.get('dachNonce')
     const to = store.get('cheque.to')
-    const amount = store.get('cheque.amount')
-    const fee = store.get('cheque.fee')
+    const amount = Web3.utils.toWei(store.get('cheque.amount'))
+    const fee = Web3.utils.toWei(store.get('cheque.fee'))
+    const expiry = store.get('cheque.expiry')
     const walletAddress = store.get('walletAddress')
+
+    const message = {
+        sender: walletAddress,
+        receiver: to,
+        amount: amount,
+        fee: fee,
+        nonce: nonce,
+        expiry: expiry
+    }
+
+    console.log('message', message)
 
     const typedData = JSON.stringify({
         types: {
@@ -290,17 +310,12 @@ export const signCheque = async function() {
             chainId: Number(web3.currentProvider.networkVersion),
             verifyingContract: dachAddress,
         },
-        message: {
-            sender: walletAddress,
-            receiver: to,
-            amount: amount,
-            fee: fee,
-            nonce: nonce,
-            expiry: 0
-        },
+        message: message,
     });
 
-    return await signData(web3, walletAddress, typedData)
+    const sig = await signData(web3, walletAddress, typedData)
+
+    return Object.assign({}, sig, message)
 }
 
 export const initBrowserWallet = async function() {

@@ -6,7 +6,7 @@ import * as Uniswap from '@uniswap/sdk';
 import {withStore} from '@spyna/react-store'
 import {withStyles} from '@material-ui/styles';
 import theme from '../theme/theme'
-import { signDachTransferPermit, getDaiData, getFeeData } from '../utils/walletUtils'
+import { signDachTransferPermit, getDaiData, getFeeData } from '../utils/web3Utils'
 import { transfer, swap } from '../actions/main'
 
 import Grid from '@material-ui/core/Grid';
@@ -176,12 +176,13 @@ class IssueCheckContainer extends React.Component {
         const chequeAmount = store.get('cheque.daiAmount')
         const chequeFee = store.get('cheque.fee')
         const swapAmount = store.get('swap.daiAmount');
+        const swapFee = store.get('swap.fee')
         const isSignedIn = walletAddress && walletAddress.length
 
         const canTransfer = chequeToValid && (Number(chequeAmount) <= Number(daiBalance))
         const canSwap = swapAmount && (Number(swapAmount) <= Number(daiBalance))
 
-        console.log('issue check render', this.props.store.getState())
+        // console.log('issue check render', this.props.store.getState())
 
         return <Grid item="item" xs={12}>
             {
@@ -285,7 +286,7 @@ class IssueCheckContainer extends React.Component {
                                                 </div>
                                                 <div className={classes.breakdownWrapper}>
                                                     <Typography variant='caption'>Swap Fee</Typography>
-                                                    <Typography className={classes.swapFee} variant='caption'>-</Typography>
+                                                    <Typography className={classes.swapFee} variant='caption'>{swapFee ? `${swapFee} DAI` : '-'}</Typography>
                                                 </div>
                                             </div>}
                                             className={classes.uniswapBreakdown}
