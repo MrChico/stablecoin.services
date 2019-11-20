@@ -1,6 +1,7 @@
 import Web3 from "web3";
 import daiABI from '../utils/daiABI.json';
 import dachABI from '../utils/dachABI.json';
+import { chequeFee } from '../utils/apiUtils';
 
 const daiAddress = "0xaaeb56503ceb8852f802bdf050b8ff7d567716ed";
 const dachAddress = '0xc2433f48f1db3b5067dc412d403b57a3077a52c0';
@@ -30,6 +31,18 @@ export const getDaiData = async function() {
     store.set('dachApproved', dachApproved)
     store.set('dachAllowance', dachAllowance)
     store.set('dachNonce', dachNonce)
+}
+
+export const getFeeData = async function() {
+    const { store } = this.props
+    const web3 = store.get('web3')
+
+    const feeData = await chequeFee()
+    console.log('feeData', feeData)
+    if (feeData.message) {
+        const fee = web3.utils.fromWei(feeData.message)
+        store.set('chequeFee', fee)
+    }
 }
 
 export const signData = async function(web3, fromAddress, data) {
