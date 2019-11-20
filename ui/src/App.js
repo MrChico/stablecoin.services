@@ -46,7 +46,8 @@ const initialState = {
     'cheque.daiAmount': '',
     'cheque.fee': '',
     // swap
-    'swap.daiAmount': ''
+    'swap.daiAmount': '',
+    'swap.fee': ''
 }
 
 class App extends React.Component {

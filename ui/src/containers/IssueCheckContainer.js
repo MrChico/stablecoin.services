@@ -6,7 +6,7 @@ import * as Uniswap from '@uniswap/sdk';
 import {withStore} from '@spyna/react-store'
 import {withStyles} from '@material-ui/styles';
 import theme from '../theme/theme'
-import { signDachTransferPermit, getDaiData } from '../utils/walletUtils'
+import { signDachTransferPermit, getDaiData, getFeeData } from '../utils/walletUtils'
 import { transfer, swap } from '../actions/main'
 
 import Grid from '@material-ui/core/Grid';
@@ -115,7 +115,7 @@ class IssueCheckContainer extends React.Component {
     }
 
     async componentDidMount() {
-        // update dai data periodically
+        // update data periodically
         this.watchDaiData()
 
         // for debugging
@@ -128,8 +128,10 @@ class IssueCheckContainer extends React.Component {
 
     async watchDaiData() {
         await getDaiData.bind(this)();
+        await getFeeData.bind(this)();
         setInterval(() => {
             getDaiData.bind(this)();
+            getFeeData.bind(this)();
         }, 10 * 1000);
     }
 
@@ -172,6 +174,7 @@ class IssueCheckContainer extends React.Component {
         const dachAllowance = store.get('dachAllowance');
         const chequeToValid = store.get('cheque.toValid');
         const chequeAmount = store.get('cheque.daiAmount')
+        const chequeFee = store.get('cheque.fee')
         const swapAmount = store.get('swap.daiAmount');
         const isSignedIn = walletAddress && walletAddress.length
 
@@ -224,7 +227,7 @@ class IssueCheckContainer extends React.Component {
                                         <Chip
                                             label={<div className={classes.breakdownWrapper}>
                                                     <Typography variant='caption'>Transfer Fee</Typography>
-                                                    <Typography className={classes.transferFee} variant='caption'>-</Typography>
+                                                    <Typography className={classes.transferFee} variant='caption'>{chequeFee ? `${chequeFee} DAI` : '-'}</Typography>
                                             </div>}
                                             className={classes.transferBreakdown}
                                           />
