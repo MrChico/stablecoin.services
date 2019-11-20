@@ -147,18 +147,18 @@ class IssueCheckContainer extends React.Component {
 
         store.set('swap.daiAmount', amount)
 
-        const reserves = await Uniswap.getTokenReserves('0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359', 1)
-        console.log('reserves', reserves)
-
-        const details = await Uniswap.getMarketDetails(reserves)
-        console.log('details', details)
-
-        const trade = await Uniswap.getTradeDetails(false, amount, details)
-        console.log('trade', trade)
-
-        const input = trade.inputAmount.amount.toString() / 10000
-        const output = trade.outputAmount.amount.toString()
-        console.log('trade output', input, output)
+        // const reserves = await Uniswap.getTokenReserves('0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359', 1)
+        // console.log('reserves', reserves)
+        //
+        // const details = await Uniswap.getMarketDetails(reserves)
+        // console.log('details', details)
+        //
+        // const trade = await Uniswap.getTradeDetails(false, amount, details)
+        // console.log('trade', trade)
+        //
+        // const input = trade.inputAmount.amount.toString() / 10000
+        // const output = trade.outputAmount.amount.toString()
+        // console.log('trade output', input, output)
     }
 
     render() {
