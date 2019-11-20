@@ -62,7 +62,7 @@ class NavContainer extends React.Component {
             {<Grid className={classes.navContainer} container alignItems='center'>
               <Grid item xs={6}>
                   <Grid container alignItems='center'>
-                      <Typography variant='h6'>Stablecoin.services</Typography>
+                        <Typography variant='h6'>Stablecoin.services<br /><Typography variant='subtitle1'>Transfer or swap DAI without holding&nbsp;ETH</Typography></Typography>
                   </Grid>
               </Grid>
               <Grid item xs={6}>
