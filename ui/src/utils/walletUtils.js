@@ -32,7 +32,32 @@ export const getDaiData = async function() {
     store.set('dachNonce', dachNonce)
 }
 
-export const permitDach = async function(allowed) {
+export const signData = async function(web3, fromAddress, data) {
+    return new Promise(function(resolve, reject) {
+        web3.currentProvider.sendAsync({
+                method: "eth_signTypedData_v3",
+                params: [fromAddress, data],
+                from: fromAddress
+            },
+            function(err, result) {
+                if (err) {
+
+                } else {
+                    const r = result.result.slice(0,66)
+                    const s = '0x' + result.result.slice(66,130)
+                    const v = Number('0x' + result.result.slice(130,132))
+                    resolve({
+                        v,
+                        r,
+                        s
+                    })
+                }
+            }
+        );
+    });
+}
+
+export const signDachTransferPermit = async function(allowed) {
     const { store } = this.props
     const web3 = store.get('web3')
     const walletAddress = store.get('walletAddress')
@@ -97,83 +122,99 @@ export const permitDach = async function(allowed) {
         },
     });
 
-    web3.currentProvider.sendAsync({
-            method: "eth_signTypedData_v3",
-            params: [walletAddress, typedData],
-            from: walletAddress
-        },
-        async function(err, result) {
-            if (err) {
+    return await signData(web3, walletAddress, typedData)
 
-            } else {
-                const r = result.result.slice(0,66)
-                const s = '0x' + result.result.slice(66,130)
-                const v = Number('0x' + result.result.slice(130,132))
+    // const permit = await dai.methods.permit(
+    //     walletAddress,
+    //     dachAddress,
+    //     daiNonce,
+    //     0,
+    //     allowed,
+    //     v,
+    //     r,
+    //     s
+    // ).send({
+    //     from: walletAddress
+    // })
 
-                // TODO: Replace this with a request to the API
-                const permit = await dai.methods.permit(
-                    walletAddress,
-                    dachAddress,
-                    daiNonce,
-                    0,
-                    allowed,
-                    v,
-                    r,
-                    s
-                ).send({
-                    from: walletAddress
-                })
-
-                console.log('permit dach', result, permit)
-            }
-        }
-    );
+    // console.log('permit dach', result, permit)
 }
 
-export const initBrowserWallet = async function() {
+export const signSwap = async function() {
     const store = this.props.store
+    const web3 = store.get('web3')
+    const nonce = store.get('dachNonce')
 
-    store.set('walletLoading', true)
+    const amount = store.get('swap.amount')
+    const fee = store.get('swap.fee')
+    const minEth = store.get('swap.minEth')
 
-    let web3Provider;
+    const walletAddress = store.get('walletAddress')
 
-    // Initialize web3 (https://medium.com/coinmonks/web3-js-ethereum-javascript-api-72f7b22e2f0a)
-    // Modern dApp browsers...
-    if (window.ethereum) {
-        web3Provider = window.ethereum;
-        try {
-            // Request account access
-            await window.ethereum.enable();
-        } catch (error) {
-            // User denied account access...
-            console.error("User denied account access")
-        }
-    }
-    // Legacy dApp browsers...
-    else if (window.web3) {
-        web3Provider = window.web3.currentProvider;
-    }
-    // If no injected web3 instance is detected, display err
-    else {
-        this.log("Please install MetaMask!");
-    }
+    const typedData = JSON.stringify({
+        types: {
+            EIP712Domain: [{
+                    name: 'name',
+                    type: 'string'
+                },
+                {
+                    name: 'version',
+                    type: 'string'
+                },
+                {
+                    name: 'chainId',
+                    type: 'uint256'
+                },
+                {
+                    name: 'verifyingContract',
+                    type: 'address'
+                },
+            ],
+            Cheque: [{
+                    name: 'sender',
+                    type: 'address'
+                },
+                {
+                    name: 'amount',
+                    type: 'uint256'
+                },
+                {
+                    name: 'min_eth',
+                    type: 'uint256'
+                },
+                {
+                    name: 'fee',
+                    type: 'uint256'
+                },
+                {
+                    name: 'nonce',
+                    type: 'uint256'
+                },
+                {
+                    name: 'expiry',
+                    type: 'uint256'
+                }
+            ],
+        },
+        primaryType: 'Cheque',
+        domain: {
+            name: 'Dai Automated Clearing House',
+            version: '1',
+            chainId: Number(web3.currentProvider.networkVersion),
+            verifyingContract: dachAddress,
+        },
+        message: {
+            sender: walletAddress,
+            amount: amount,
+            min_eth: minEth,
+            fee: fee,
+            nonce: nonce,
+            expiry: 0
+        },
+    });
 
-    const web3 = new Web3(web3Provider);
-    const walletType = 'browser'
-    const accounts = await web3.eth.getAccounts()
-
-    // await window.ethereum.enable();
-    const BN = web3.utils.BN;
-
-    store.set('walletLoading', false)
-    store.set('walletAddress', accounts[0])
-    store.set('web3', web3)
-    store.set('walletType', walletType)
-
-    getDaiData.bind(this)()
+    return await signData(web3, walletAddress, typedData)
 }
-
-
 
 export const signCheque = async function() {
     const store = this.props.store
@@ -246,19 +287,54 @@ export const signCheque = async function() {
         },
     });
 
-    console.log('issue check', typedData)
+    return await signData(web3, walletAddress, typedData)
+}
 
-    //TODO: WHY DOESN"T THIS WORK
-    web3.currentProvider.sendAsync({
-            method: "eth_signTypedData_v3",
-            params: [walletAddress, typedData],
-            from: walletAddress
-        },
-        function(err, result) {
-            store.set(err, 'err')
-            store.set(result, 'result')
+export const initBrowserWallet = async function() {
+    const store = this.props.store
+
+    store.set('walletLoading', true)
+
+    let web3Provider;
+
+    // Initialize web3 (https://medium.com/coinmonks/web3-js-ethereum-javascript-api-72f7b22e2f0a)
+    // Modern dApp browsers...
+    if (window.ethereum) {
+        web3Provider = window.ethereum;
+        try {
+            // Request account access
+            await window.ethereum.enable();
+        } catch (error) {
+            // User denied account access...
+            console.error("User denied account access")
         }
-    );
+
+        window.ethereum.on('accountsChanged', (accounts) => {
+            initBrowserWallet.bind(this)()
+        })
+    }
+    // Legacy dApp browsers...
+    else if (window.web3) {
+        web3Provider = window.web3.currentProvider;
+    }
+    // If no injected web3 instance is detected, display err
+    else {
+        this.log("Please install MetaMask!");
+    }
+
+    const web3 = new Web3(web3Provider);
+    const walletType = 'browser'
+    const accounts = await web3.eth.getAccounts()
+
+    // await window.ethereum.enable();
+    const BN = web3.utils.BN;
+
+    store.set('walletLoading', false)
+    store.set('walletAddress', accounts[0])
+    store.set('web3', web3)
+    store.set('walletType', walletType)
+
+    getDaiData.bind(this)()
 }
 
 export default {

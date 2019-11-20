@@ -12,6 +12,7 @@
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-scripts": "3.2.0",
+    "wallet-address-validator": "^0.2.4",
     "web3": "^1.2.2"
   },
   "scripts": {
