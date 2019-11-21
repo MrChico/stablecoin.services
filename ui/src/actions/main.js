@@ -1,4 +1,3 @@
-import Web3 from "web3";
 import { signDachTransferPermit, signCheque, signSwap } from '../utils/web3Utils';
 import { cheque, permitAndCheque } from '../utils/apiUtils';
 

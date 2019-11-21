@@ -355,8 +355,6 @@ export const initBrowserWallet = async function() {
     const accounts = await web3.eth.getAccounts()
 
     // await window.ethereum.enable();
-    const BN = web3.utils.BN;
-
     store.set('walletLoading', false)
     store.set('walletAddress', accounts[0])
     store.set('web3', web3)
