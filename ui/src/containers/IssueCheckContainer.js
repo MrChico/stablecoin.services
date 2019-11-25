@@ -173,14 +173,15 @@ class IssueCheckContainer extends React.Component {
         const dachApproved = store.get('dachApproved')
         const dachAllowance = store.get('dachAllowance');
         const chequeToValid = store.get('cheque.toValid');
-        const chequeAmount = store.get('cheque.daiAmount')
+        const chequeAmount = store.get('cheque.amount')
         const chequeFee = store.get('cheque.fee')
         const swapAmount = store.get('swap.daiAmount');
         const swapFee = store.get('swap.fee')
-        const isSignedIn = walletAddress && walletAddress.length
-
-        const canTransfer = chequeToValid && (Number(chequeAmount) + Number(chequeFee) <= Number(daiBalance))
-        const canSwap = swapAmount && (Number(swapAmount) + Number(swapFee) <= Number(daiBalance))
+        const isSignedIn = walletAddress && walletAddress.length;
+        const insufficientTransferBalance = Number(chequeAmount) + Number(chequeFee) > Number(daiBalance);
+        const canTransfer = chequeToValid && !insufficientTransferBalance;
+        const insufficientSwapBalance = (Number(swapAmount) + Number(swapFee) > Number(daiBalance))
+        const canSwap = swapAmount && !insufficientSwapBalance
 
         // console.log('issue check render', this.props.store.getState())
 
@@ -244,6 +245,12 @@ class IssueCheckContainer extends React.Component {
                                             Transfer
                                         </Button>
                                     </div>
+                                    { insufficientTransferBalance && isSignedIn 
+                                       ? <div>
+                                            <Typography color='error'>Insufficient balance </Typography>
+                                         </div>
+                                         : null
+                                    }
                                 </div>
                             </Grid>
                             <Grid item="item" xs={12} sm={12} md={6}>
@@ -303,6 +310,12 @@ class IssueCheckContainer extends React.Component {
                                             Swap
                                         </Button>
                                     </div>
+                                    { insufficientSwapBalance && isSignedIn 
+                                       ? <div>
+                                            <Typography color='error'>Insufficient balance</Typography>
+                                         </div>
+                                         : null
+                                    }
                                 </div>
                             </Grid>
                         </Grid>
