@@ -7,6 +7,7 @@ import {withStore} from '@spyna/react-store'
 import {withStyles} from '@material-ui/styles';
 import theme from '../theme/theme'
 import { signDachTransferPermit, getDaiData, getFeeData } from '../utils/web3Utils'
+import { getSwapOutput } from '../utils/uniswapUtils'
 import { transfer, swap } from '../actions/main'
 
 import Grid from '@material-ui/core/Grid';
@@ -149,18 +150,20 @@ class IssueCheckContainer extends React.Component {
 
         store.set('swap.daiAmount', amount)
 
-        const reserves = await Uniswap.getTokenReserves('0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359', 1)
-        console.log('reserves', reserves)
+        // TO-DO: run logic on the same network as the app
+        if (!web3 || web3.currentProvider.networkVersion !== '1') return
 
-        const details = await Uniswap.getMarketDetails(reserves)
-        console.log('details', details)
+        const ethOutput = await getSwapOutput(web3, amount, 'DAI', 'ETH')
+        store.set('swap.ethAmount', ethOutput.toFixed(8))
 
-        const trade = await Uniswap.getTradeDetails(false, amount, details)
-        console.log('trade', trade)
+        if (ethOutput) {
+            const exchangeRate = (Number(amount) / Number(ethOutput)).toFixed(8)
+            store.set('swap.exchangeRate', exchangeRate)
+        } else {
+            store.set('swap.exchangeRate', '')
+        }
 
-        const input = trade.inputAmount.amount.toString() / 10000
-        const output = trade.outputAmount.amount.toString()
-        console.log('trade output', input, output)
+        console.log('swap.ethOutput', ethOutput)
     }
 
     render() {
@@ -169,18 +172,20 @@ class IssueCheckContainer extends React.Component {
         const walletAddress = store.get('walletAddress')
         const daiBalance = store.get('daiBalance')
         // const daiBalance = '1000'
-        const daiSupply = store.get('daiSupply')
-        const dachApproved = store.get('dachApproved')
-        const dachAllowance = store.get('dachAllowance');
+        // const daiSupply = store.get('daiSupply')
+        // const dachApproved = store.get('dachApproved')
+        // const dachAllowance = store.get('dachAllowance');
         const chequeToValid = store.get('cheque.toValid');
         const chequeAmount = store.get('cheque.daiAmount')
         const chequeFee = store.get('cheque.fee')
-        const swapAmount = store.get('swap.daiAmount');
+        const swapDaiAmount = store.get('swap.daiAmount');
+        const swapEthAmount = store.get('swap.ethAmount');
+        const swapExchangeRate = store.get('swap.exchangeRate');
         const swapFee = store.get('swap.fee')
         const isSignedIn = walletAddress && walletAddress.length
 
         const canTransfer = chequeToValid && (Number(chequeAmount) + Number(chequeFee) <= Number(daiBalance))
-        const canSwap = swapAmount && (Number(swapAmount) + Number(swapFee) <= Number(daiBalance))
+        const canSwap = swapDaiAmount && (Number(swapDaiAmount) + Number(swapFee) <= Number(daiBalance))
 
         // console.log('issue check render', this.props.store.getState())
 
@@ -262,12 +267,12 @@ class IssueCheckContainer extends React.Component {
                                     </div>
                                     <div>
                                         <Typography variant='subtitle2'>ETH Amount</Typography>
-                                        <TextField placeholder='Enter amount'
+                                        <TextField placeholder='0'
                                             className={classes.input}
                                             margin="normal"
                                             disabled={true}
                                             variant="outlined"
-                                            value={'0'}
+                                            value={swapEthAmount}
                                             onChange={(event) => {
                                                 store.set('swap.ethAmount', event.target.value)
                                             }} InputProps={{
@@ -282,7 +287,7 @@ class IssueCheckContainer extends React.Component {
                                             label={<div>
                                                 <div className={classes.breakdownWrapper}>
                                                     <Typography variant='caption'>Exchange Rate</Typography>
-                                                    <Typography className={classes.exchangeRate} variant='caption'>-</Typography>
+                                                    <Typography className={classes.exchangeRate} variant='caption'>{swapExchangeRate ? `${swapExchangeRate} DAI/ETH` : '-'}</Typography>
                                                 </div>
                                                 <div className={classes.breakdownWrapper}>
                                                     <Typography variant='caption'>Swap Fee</Typography>

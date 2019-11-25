@@ -48,6 +48,8 @@ const initialState = {
     'cheque.expiry': 0,
     // swap
     'swap.daiAmount': '',
+    'swap.ethAmount': '',
+    'swap.exchangeRate': '',
     'swap.fee': ''
 }
 
