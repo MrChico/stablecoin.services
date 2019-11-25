@@ -179,8 +179,8 @@ class IssueCheckContainer extends React.Component {
         const swapFee = store.get('swap.fee')
         const isSignedIn = walletAddress && walletAddress.length
 
-        const canTransfer = chequeToValid && (Number(chequeAmount) <= Number(daiBalance))
-        const canSwap = swapAmount && (Number(swapAmount) <= Number(daiBalance))
+        const canTransfer = chequeToValid && (Number(chequeAmount) + Number(chequeFee) <= Number(daiBalance))
+        const canSwap = swapAmount && (Number(swapAmount) + Number(swapFee) <= Number(daiBalance))
 
         // console.log('issue check render', this.props.store.getState())
 

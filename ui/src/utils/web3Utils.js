@@ -1,10 +1,11 @@
 import Web3 from "web3";
 import daiABI from '../utils/daiABI.json';
 import dachABI from '../utils/dachABI.json';
+import config from '../config.json';
 import { chequeFee, permitAndChequeFee, swapFee, permitAndSwapFee } from '../utils/apiUtils';
 
-const daiAddress = "0xaaeb56503ceb8852f802bdf050b8ff7d567716ed";
-const dachAddress = '0xc2433f48f1db3b5067dc412d403b57a3077a52c0';
+const daiAddress = config.MCD_DAI;
+const dachAddress = config.DACH;
 
 export const getDaiData = async function() {
     const { store } = this.props

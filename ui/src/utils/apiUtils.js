@@ -1,5 +1,6 @@
-const API_URL = 'http://andrew-mac.local:8000'
-// const API_URL = 'http://localhost:8000'
+//const API_URL = 'http://andrew-mac.local:8000'
+import config from '../config.json';
+const API_URL = config.API_URL;
 
 export const chequeFee = async function() {
     const request = await fetch(`${API_URL}/v1/cheque/fee`)
