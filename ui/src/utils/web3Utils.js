@@ -82,8 +82,6 @@ export const signDachTransferPermit = async function(allowed) {
     const walletAddress = store.get('walletAddress')
     const daiNonce = store.get('daiNonce')
 
-    const dai = new web3.eth.Contract(daiABI, daiAddress);
-
     const message = {
         holder: walletAddress,
         spender: dachAddress,

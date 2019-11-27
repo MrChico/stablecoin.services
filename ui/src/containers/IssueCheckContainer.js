@@ -1,5 +1,4 @@
 import React from 'react';
-import Web3 from 'web3';
 import AddressValidator from 'wallet-address-validator';
 import * as Uniswap from '@uniswap/sdk';
 
@@ -110,10 +109,6 @@ const styles = () => ({
 })
 
 class IssueCheckContainer extends React.Component {
-
-    constructor(props) {
-        super(props);
-    }
 
     async componentDidMount() {
         // update data periodically
