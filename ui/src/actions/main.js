@@ -1,11 +1,10 @@
-import { signDachTransferPermit, signCheque, signSwap } from '../utils/web3Utils';
-import { cheque, permitAndCheque } from '../utils/apiUtils';
+import { signDachTransferPermit, signDaiCheque, signSwap } from '../utils/web3Utils';
+import { daiCheque, daiPermitAndCheque } from '../utils/apiUtils';
 
-export const transfer = async function() {
+export const daitransfer = async function() {
     const { store } = this.props
     const dachApproved = store.get('dachApproved')
 
-    console.log('transfer', dachApproved)
 
     if (!dachApproved) {
         try {
@@ -13,14 +12,13 @@ export const transfer = async function() {
             try {
                 // metamask race condition
                 setTimeout(async () => {
-                    const signedCheque = await signCheque.bind(this)()
-
+                    const signedCheque = await signDaiCheque.bind(this)()
                     // POST /permit_and_transfer
-                    const result = await permitAndCheque({
+                    const result = await daiPermitAndCheque({
                         permit: signedPermit,
                         cheque: signedCheque
                     })
-                    console.log('permitAndCheque', result)
+                    console.log('daiPermitAndCheque', result)
                 }, 100)
             } catch(e) {
                 console.log(e)
@@ -30,11 +28,9 @@ export const transfer = async function() {
         }
     } else {
         try {
-            const signedCheque = await signCheque.bind(this)()
-
+            const signedCheque = await signDaiCheque.bind(this)()
             // POST /transfer
-            const result = await cheque({ cheque: signedCheque })
-            console.log('cheque', result)
+            const result = await daiCheque({ cheque: signedCheque })
         } catch(e) {
             console.log(e)
         }
@@ -73,6 +69,6 @@ export const swap = async function() {
 }
 
 export default {
-    transfer,
+    daitransfer,
     swap
 }

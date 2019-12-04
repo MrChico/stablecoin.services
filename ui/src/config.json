@@ -1,7 +1,10 @@
 {
-  "MCD_DAI": "0xaaeb56503ceb8852f802bdf050b8ff7d567716ed",
-  "MCD_POT": "0xea190dbdc7adf265260ec4da6e9675fd4f5a78bb",
-  "DACH": "0xc2433f48f1db3b5067dc412d403b57a3077a52c0",
-  "CHAI": "TBD",
-  "API_URL": "http://localhost:8000"
+  "DAI": "0x4f96fe3b7a6cf9725f59d353f723c1bdb64ca6aa",
+  "DACH": "0x2ef865ca017912c872826e25736a7a11f94235af",
+  "CHAI": "0xb641957b6c29310926110848db2d464c8c3c3f38",
+  "DAI_UNISWAP": "0x613639e23e91fd54d50eafd6925af2ed6701a46b",
+  "CHAI_UNISWAP": "0xc06b3b334bd6a37e4cfac49cadc84d8f40bde236",
+  "RELAYER": "0xc3455912Cf4bF115835A655c70bCeFC9cF4568eB",
+  "API_URL": "http://localhost:8000",
+  "CHAIN_ID": 42
 }

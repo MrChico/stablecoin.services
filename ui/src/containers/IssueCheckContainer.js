@@ -7,7 +7,7 @@ import {withStyles} from '@material-ui/styles';
 import theme from '../theme/theme'
 import { signDachTransferPermit, getDaiData, getFeeData } from '../utils/web3Utils'
 import { getSwapOutput } from '../utils/uniswapUtils'
-import { transfer, swap } from '../actions/main'
+import { daitransfer, swap } from '../actions/main'
 
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -118,8 +118,6 @@ class IssueCheckContainer extends React.Component {
         window.resetDachPermit = () => {
             signDachTransferPermit.bind(this)(false)
         }
-
-        console.log('uniswap', Uniswap)
     }
 
     async watchDaiData() {
@@ -131,8 +129,8 @@ class IssueCheckContainer extends React.Component {
         }, 10 * 1000);
     }
 
-    transfer() {
-        transfer.bind(this)()
+    daitransfer() {
+        daitransfer.bind(this)()
     }
 
     swap() {
@@ -170,16 +168,16 @@ class IssueCheckContainer extends React.Component {
         // const daiSupply = store.get('daiSupply')
         // const dachApproved = store.get('dachApproved')
         // const dachAllowance = store.get('dachAllowance');
-        const chequeToValid = store.get('cheque.toValid');
-        const chequeAmount = store.get('cheque.amount')
-        const chequeFee = store.get('cheque.fee')
+        const daichequeToValid = store.get('daicheque.toValid');
+        const daichequeAmount = store.get('daicheque.amount')
+        const daichequeFee = store.get('daicheque.fee')
         const swapDaiAmount = store.get('swap.daiAmount');
         const swapEthAmount = store.get('swap.ethAmount');
         const swapExchangeRate = store.get('swap.exchangeRate');
         const swapFee = store.get('swap.fee')
         const isSignedIn = walletAddress && walletAddress.length;
-        const insufficientTransferBalance = Number(chequeAmount) + Number(chequeFee) > Number(daiBalance);
-        const canTransfer = chequeToValid && !insufficientTransferBalance;
+        const insufficientDaiTransferBalance = Number(daichequeAmount) + Number(daichequeFee) > Number(daiBalance);
+        const canDaiTransfer = daichequeToValid && !insufficientDaiTransferBalance;
         const insufficientSwapBalance = (Number(swapDaiAmount) + Number(swapFee) > Number(daiBalance))
         const canSwap = swapDaiAmount && !insufficientSwapBalance
 
@@ -201,14 +199,14 @@ class IssueCheckContainer extends React.Component {
                                     <div>
                                         <Typography variant='subtitle2'>Send to Address</Typography>
                                         <TextField placeholder='Enter address' className={classes.input} margin="normal" variant="outlined" onChange={(event) => {
-                                                store.set('cheque.to', event.target.value)
-                                                store.set('cheque.toValid', AddressValidator.validate(event.target.value, 'ETH'))
+                                                store.set('daicheque.to', event.target.value)
+                                                store.set('daicheque.toValid', AddressValidator.validate(event.target.value, 'ETH'))
                                             }}/>
                                     </div>
                                     <div>
                                         <Typography variant='subtitle2'>DAI Amount <span className={classes.transferDaiBalance}>{daiBalance ? `Balance: ${daiBalance} DAI` : '-'}</span></Typography>
                                         <TextField placeholder='0' className={classes.input} margin="normal" variant="outlined" onChange={(event) => {
-                                                store.set('cheque.amount', event.target.value)
+                                                store.set('daicheque.amount', event.target.value)
                                             }} InputProps={{
                                                 endAdornment: <InputAdornment className={classes.endAdornment} position="end">DAI</InputAdornment>
                                             }} inputProps={{
@@ -229,7 +227,7 @@ class IssueCheckContainer extends React.Component {
                                         <Chip
                                             label={<div className={classes.breakdownWrapper}>
                                                     <Typography variant='caption'>Transfer Fee</Typography>
-                                                    <Typography className={classes.transferFee} variant='caption'>{chequeFee ? `${chequeFee} DAI` : '-'}</Typography>
+                                                    <Typography className={classes.transferFee} variant='caption'>{daichequeFee ? `${daichequeFee} DAI` : '-'}</Typography>
                                             </div>}
                                             className={classes.transferBreakdown}
                                           />
@@ -239,13 +237,13 @@ class IssueCheckContainer extends React.Component {
                                             size='large'
                                             disabled={!canSwap}
                                             onClick={() => {
-                                                // signCheque.bind(this)()
-                                                this.transfer()
-                                            }} variant="contained" disabled={!isSignedIn || !canTransfer} className={classes.actionButton}>
+                                                // signDaicheque.bind(this)()
+                                                this.daitransfer()
+                                            }} variant="contained" disabled={!isSignedIn || !canDaiTransfer} className={classes.actionButton}>
                                             Transfer
                                         </Button>
                                     </div>
-                                    { insufficientTransferBalance && isSignedIn
+                                    { insufficientDaiTransferBalance && isSignedIn
                                        ? <div>
                                             <Typography color='error'>Insufficient balance </Typography>
                                          </div>
@@ -304,7 +302,7 @@ class IssueCheckContainer extends React.Component {
                                         <Button color='primary'
                                             size='large'
                                             onClick={() => {
-                                                // signCheque.bind(this)()
+                                              // signDaichequexsxg.bind(this)()
                                                 this.swap()
                                             }} variant="contained" disabled={!isSignedIn || !canSwap} className={classes.actionButton}>
                                             Swap

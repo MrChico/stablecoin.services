@@ -1,29 +1,28 @@
-//const API_URL = 'http://andrew-mac.local:8000'
 import config from '../config.json';
 const API_URL = config.API_URL;
 
-export const chequeFee = async function() {
-    const request = await fetch(`${API_URL}/v1/cheque/fee`)
+export const daiChequeFee = async function() {
+    const request = await fetch(`${API_URL}/v1/daiCheque/fee`)
     return request.json()
 }
 
-export const permitAndChequeFee = async function() {
-    const request = await fetch(`${API_URL}/v1/permitAndCheque/fee`)
+export const daiPermitAndChequeFee = async function() {
+    const request = await fetch(`${API_URL}/v1/daiPermitAndCheque/fee`)
     return request.json()
 }
 
 export const swapFee = async function() {
-    const request = await fetch(`${API_URL}/v1/cheque/fee`)
+    const request = await fetch(`${API_URL}/v1/daiSwap/fee`)
     return request.json()
 }
 
-export const permitAndSwapFee = async function() {
-    const request = await fetch(`${API_URL}/v1/permitAndCheque/fee`)
+export const daiPermitAndSwapFee = async function() {
+    const request = await fetch(`${API_URL}/v1/daiPermitAndCheque/fee`)
     return request.json()
 }
 
-export const cheque = async function(data) {
-    const request = await fetch(`${API_URL}/v1/cheque`, {
+export const daiCheque = async function(data) {
+    const request = await fetch(`${API_URL}/v1/daiCheque`, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         // mode: 'cors', // no-cors, *cors, same-origin
         // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -39,8 +38,8 @@ export const cheque = async function(data) {
     return request.json()
 }
 
-export const permitAndCheque = async function(data) {
-    const request = await fetch(`${API_URL}/v1/permitAndCheque`, {
+export const daiPermitAndCheque = async function(data) {
+    const request = await fetch(`${API_URL}/v1/daiPermitAndCheque`, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         // mode: 'cors', // no-cors, *cors, same-origin
         // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -57,6 +56,6 @@ export const permitAndCheque = async function(data) {
 }
 
 export default {
-    chequeFee,
+    daiChequeFee,
     swapFee
 }
