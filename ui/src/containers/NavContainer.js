@@ -2,28 +2,19 @@ import React from 'react';
 import { withStore } from '@spyna/react-store'
 import { withStyles } from '@material-ui/styles';
 import theme from '../theme/theme'
-import classNames from 'classnames'
 
-import { initBrowserWallet } from '../utils/walletUtils'
-
-import AccountIcon from '@material-ui/icons/AccountCircle';
-import WifiIcon from '@material-ui/icons/Wifi';
-
+import { initBrowserWallet } from '../utils/web3Utils'
 
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import Input from '@material-ui/core/Input';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
-
 
 const styles = () => ({
     navContainer: {
         paddingTop: theme.spacing(1),
         paddingBottom: theme.spacing(3),
+        paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
         minHeight: 52
     },
     logo: {
@@ -40,10 +31,6 @@ const styles = () => ({
 
 class NavContainer extends React.Component {
 
-    constructor(props) {
-        super(props);
-    }
-
     async componentDidMount() {
     }
 
@@ -54,10 +41,6 @@ class NavContainer extends React.Component {
         } = this.props
 
         const walletAddress = store.get('walletAddress')
-        const isSignedIn = walletAddress && walletAddress.length
-
-        console.log(this.props, this.state, this.props.store.getState())
-
         return <Grid item xs={12}>
             {<Grid className={classes.navContainer} container alignItems='center'>
               <Grid item xs={6}>

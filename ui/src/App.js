@@ -35,19 +35,38 @@ const initialState = {
     walletAddress: '',
     walletConnecting: false,
     walletType: '',
+    selectedActionTab: 0,
+    // wallet balances and nonces
     daiBalance: '',
-    dachApproved: false,
-    dachAllowance: '',
-    dachNonce: '',
-    dachSwapApproved: false,
+    chaiBalance: '',
+    daiNonce: '',
+    chaiNonce: '',
+    // dach
+    'dach.daiApproved': false,
+    'dach.daiAllowance': '',
+    'dach.daiNonce': '',
+    'dach.daiSwapApproved': false,
+    'dach.chaiApproved': false,
+    'dach.chaiAllowance': '',
+    'dach.chaiNonce': '',
+    'dach.chaiSwapApproved': false,
     // transfer
     'cheque.to': '',
     'cheque.toValid': false,
-    'cheque.daiAmount': '',
+    'cheque.amount': '',
     'cheque.fee': '',
+    'cheque.expiry': 0,
+    'cheque.selectedCurrency': 'dai',
     // swap
-    'swap.daiAmount': '',
-    'swap.fee': ''
+    'swap.inputAmount': '',
+    'swap.outputAmount': '',
+    'swap.exchangeRate': '',
+    'swap.fee': '',
+    'swap.selectedCurrency': 'dai',
+    // convert
+    'convert.amount': '',
+    'convert.fee': '',
+    'convert.selectedCurrency': 'dai'
 }
 
 class App extends React.Component {
@@ -63,14 +82,14 @@ class App extends React.Component {
     render() {
         const classes = this.props.classes
 
-        console.log(this.state, this.props)
+        // console.log(this.state, this.props)
 
         return (
             <ThemeProvider theme={theme}>
+                <NavContainer />
                 <Container maxWidth="md">
                     <Grid container>
                         <Grid item xs={12}><br/></Grid>
-                        <NavContainer />
                         <Grid item xs={12} className={classes.contentContainer}>
                             <IssueCheckContainer />
                         </Grid>
