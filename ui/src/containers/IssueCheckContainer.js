@@ -1,9 +1,16 @@
 import React from 'react';
 import AddressValidator from 'wallet-address-validator';
-import * as Uniswap from '@uniswap/sdk';
+// import * as Uniswap from '@uniswap/sdk';
+
+import {
+  Web3ReactProvider,
+  useWeb3React,
+  UnsupportedChainIdError
+} from "@web3-react/core";
 
 import {withStore} from '@spyna/react-store'
 import {withStyles} from '@material-ui/styles';
+import { amber, blue, green } from '@material-ui/core/colors';
 import theme from '../theme/theme'
 import { signDachTransferPermit, getDaiData, getChaiData, getFeeData } from '../utils/web3Utils'
 import { getSwapOutput } from '../utils/uniswapUtils'
@@ -27,6 +34,8 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import LoopIcon from '@material-ui/icons/Loop';
 import SwapIcon from '@material-ui/icons/SwapHoriz';
 import ArrowRightIcon from '@material-ui/icons/ArrowRightAlt';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 const styles = () => ({
     container: {
@@ -62,7 +71,9 @@ const styles = () => ({
     },
     actionButton: {
         marginTop: theme.spacing(2),
-        margin: '0px auto'
+        margin: '0px auto',
+        minHeight: 42,
+        minWidth: 140
         // [theme.breakpoints.down('sm')]: {
         //     marginTop: theme.spacing(1)
         // },
@@ -131,6 +142,20 @@ const styles = () => ({
     error: {
       marginTop: theme.spacing(4),
       // backgroundColor: theme.palette.error.dark
+    },
+    errorApi: {
+      marginTop: theme.spacing(4),
+      backgroundColor: amber[700],
+    },
+    success: {
+      marginTop: theme.spacing(4),
+      backgroundColor: blue[600],
+      '& a': {
+        color: '#fff'
+      }
+    },
+    spinner: {
+      color: 'inherit'
     }
 })
 
@@ -154,6 +179,7 @@ class IssueCheckContainer extends React.Component {
             getDaiData.bind(this)();
             getChaiData.bind(this)();
             getFeeData.bind(this)();
+            console.log(this.props.store.getState())
         }, 10 * 1000);
     }
 
@@ -197,19 +223,27 @@ class IssueCheckContainer extends React.Component {
         const { store } = this.props
         if (!newValue) return
         store.set('cheque.selectedCurrency', newValue)
+        store.set('cheque.result', null)
+        // store.set('cheque.requesting', false)
     }
 
     switchSwapTab(event, newValue) {
         const { store } = this.props
         if (!newValue) return
         store.set('swap.selectedCurrency', newValue)
+        store.set('swap.result', null)
+        // store.set('swap.requesting', false)
     }
 
     switchConvertTab(event, newValue) {
         const { store } = this.props
         if (!newValue) return
         store.set('convert.selectedCurrency', newValue)
+        store.set('convert.result', null)
+        // store.set('convert.requesting', false)
     }
+
+
 
     async swapAmountChanged(amount) {
         const { store } =  this.props
@@ -217,6 +251,7 @@ class IssueCheckContainer extends React.Component {
         const selectedCurrency = store.get('swap.selectedCurrency')
 
         store.set('swap.inputAmount', amount)
+        store.set('swap.result', null)
 
         // TO-DO: run logic on the same network as the app
         if (!web3 || web3.currentProvider.networkVersion !== '1') return
@@ -248,6 +283,8 @@ class IssueCheckContainer extends React.Component {
         const chequeFee = store.get('cheque.fee')
         const chequeCurrency = store.get('cheque.selectedCurrency')
         const chequeCurrencyFormatted = chequeCurrency.toUpperCase()
+        const chequeResult = store.get('cheque.result')
+        const chequeRequesting = store.get('cheque.requesting');
 
         const swapInputAmount = store.get('swap.inputAmount');
         const swapOutputAmount = store.get('swap.outputAmount');
@@ -255,17 +292,25 @@ class IssueCheckContainer extends React.Component {
         const swapFee = store.get('swap.fee')
         const swapCurrency = store.get('swap.selectedCurrency')
         const swapCurrencyFormatted = swapCurrency.toUpperCase()
+        const swapRequesting = store.get('swap.requesting');
 
         const convertAmount = store.get('convert.amount')
         const convertCurrency = store.get('convert.selectedCurrency')
         const convertCurrencyFormatted = convertCurrency.toUpperCase()
+        const convertRequesting = store.get('convert.requesting');
 
-        const isSignedIn = walletAddress && walletAddress.length;
+        const walletLoading = store.get('walletLoading')
+        const balancesLoaded = daiBalance.length && chaiBalance.length
+        const isSignedIn = walletAddress && walletAddress.length && !walletLoading && balancesLoaded;
         const insufficientTransferBalance = (Number(chequeAmount) + Number(chequeFee)) > Number(chequeCurrency === 'dai' ? daiBalance : chaiBalance);
         const insufficientConvertBalance = (Number(convertAmount) + Number(chequeFee)) > Number(convertCurrency === 'dai' ? daiBalance : chaiBalance);
         const insufficientSwapBalance = ((Number(swapInputAmount) + Number(swapFee)) > Number(swapCurrency === 'dai' ? daiBalance : chaiBalance))
 
-        const canDaiTransfer = chequeToValid && !insufficientTransferBalance;
+        const showChequeSuccess = chequeResult && chequeResult.success === 'true'
+        const showChequeError = chequeResult && chequeResult.success === 'false'
+        const showChequeValidationError = chequeAmount && insufficientTransferBalance && isSignedIn
+
+        const canDaiTransfer = chequeAmount && chequeToValid && !insufficientTransferBalance;
 
         const canSwap = swapInputAmount && !insufficientSwapBalance
 
@@ -307,12 +352,16 @@ class IssueCheckContainer extends React.Component {
                                                 <TextField placeholder='Enter address' className={classes.input} margin="normal" variant="outlined" onChange={(event) => {
                                                         store.set('cheque.to', event.target.value)
                                                         store.set('cheque.toValid', AddressValidator.validate(event.target.value, 'ETH'))
+                                                        store.set('cheque.result', null)
+                                                        // store.set('cheque.requesting', false)
                                                     }}/>
                                             </div>
                                             <div>
                                                 <Typography variant='subtitle2'>{chequeCurrencyFormatted} Amount <span className={classes.transferDaiBalance}>{isSignedIn ? `Balance: ${chequeCurrency === 'dai' ? daiBalance : chaiBalance} ${chequeCurrencyFormatted}` : '-'}</span></Typography>
-                                                <TextField placeholder='0' className={classes.input} margin="normal" variant="outlined" onChange={(event) => {
+                                                <TextField placeholder='0' className={classes.input} margin="normal" type='number' variant="outlined" onChange={(event) => {
                                                       store.set('cheque.amount', event.target.value)
+                                                      store.set('cheque.result', null)
+                                                      // store.set('cheque.requesting', false)
                                                     }} InputProps={{
                                                         endAdornment: <InputAdornment className={classes.endAdornment} position="end">{chequeCurrencyFormatted}</InputAdornment>
                                                     }} inputProps={{
@@ -331,12 +380,27 @@ class IssueCheckContainer extends React.Component {
                                             <div className={classes.actionButtonContainer}>
                                                 <Button color='primary'
                                                     size='large'
-                                                    disabled={!canSwap}
-                                                    onClick={this.transfer} variant="contained" disabled={!isSignedIn || !canDaiTransfer} className={classes.actionButton}>
-                                                    Transfer
+                                                    disabled={!isSignedIn || !canDaiTransfer || showChequeError || showChequeValidationError || chequeRequesting}
+                                                    onClick={this.transfer.bind(this)} variant="contained" className={classes.actionButton}>
+                                                    {chequeRequesting ? <CircularProgress size={14} className={classes.spinner} /> : 'Transfer'}
                                                 </Button>
                                             </div>
-                                            {chequeAmount && insufficientTransferBalance && isSignedIn && <SnackbarContent
+
+                                            {showChequeSuccess && <SnackbarContent
+                                              className={classes.success}
+                                              message={<Grid item xs={12}>
+                                                <span>Transfer started. <a href={`https://kovan.etherscan.io/tx/${chequeResult.message.chequeHash}`} target='_blank'>View transaction</a></span>
+                                              </Grid>}
+                                            />}
+
+                                            {showChequeError && <SnackbarContent
+                                              className={classes.errorApi}
+                                              message={<Grid item xs={12}>
+                                                <span>{chequeResult.message}</span>
+                                              </Grid>}
+                                            />}
+
+                                            {showChequeValidationError && <SnackbarContent
                                               className={classes.error}
                                               message={<Grid item xs={12}>
                                                 <span>Insufficient {chequeCurrencyFormatted} balance</span>
@@ -420,6 +484,8 @@ class IssueCheckContainer extends React.Component {
                                                 <Typography variant='subtitle2'>{convertCurrencyFormatted} Amount <span className={classes.transferDaiBalance}>{isSignedIn ? `Balance: ${convertCurrency === 'dai' ? daiBalance : chaiBalance} ${convertCurrencyFormatted}` : '-'}</span></Typography>
                                                 <TextField placeholder='0' className={classes.input} margin="normal" variant="outlined" onChange={(event) => {
                                                         store.set('convert.amount', event.target.value)
+                                                        store.set('convert.result', null)
+                                                        // store.set('convert.requesting', false)
                                                     }} InputProps={{
                                                         endAdornment: <InputAdornment className={classes.endAdornment} position="end">{convertCurrencyFormatted}</InputAdornment>
                                                     }} inputProps={{
@@ -444,14 +510,13 @@ class IssueCheckContainer extends React.Component {
                                                 </Button>
                                             </div>
 
-
-
                                             {convertAmount && insufficientConvertBalance && isSignedIn && <SnackbarContent
                                               className={classes.error}
                                               message={<Grid item xs={12}>
                                                 <span>Insufficient {convertCurrencyFormatted} balance </span>
                                               </Grid>}
                                             />}
+
                                         </div>
                                     </Grid>}
                                 </Grid>
@@ -462,5 +527,13 @@ class IssueCheckContainer extends React.Component {
         </Grid>
     }
 }
+
+// const IssueCheckContainerComponent = withStyles(styles)(withStore(IssueCheckContainer))
+//
+// function ContainerWrapper() {
+//     const context = useWeb3React();
+//     console.log(context)
+//     return <IssueCheckContainerComponent />
+// }
 
 export default withStyles(styles)(withStore(IssueCheckContainer))

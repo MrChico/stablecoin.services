@@ -3,7 +3,10 @@ import { withStore } from '@spyna/react-store'
 import { withStyles } from '@material-ui/styles';
 import theme from '../theme/theme'
 import classNames from 'classnames'
-
+import {
+  useWeb3React
+} from "@web3-react/core";
+import { initBrowserWallet, initInjected, injectedConnector, portisConnector, walletConnectConnector } from '../utils/web3Utils'
 
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -13,6 +16,8 @@ import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
 import Fade from '@material-ui/core/Fade';
+import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@material-ui/core/MenuItem';
 
 
 const styles = () => ({
@@ -36,7 +41,7 @@ class SignInContainer extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = props.store.getState()
+        console.log(this)
     }
 
     render() {
@@ -45,13 +50,9 @@ class SignInContainer extends React.Component {
             store
         } = this.props
 
-        const localAddress = store.get('localAddress')
-        const localPrivateKey = store.get('localPrivateKey')
         const showSignIn = store.get('showSignIn')
 
-        const isSignedIn = localAddress && localPrivateKey
-
-        console.log(this.props, this.state)
+        // console.log(this.props, this.state)
 
         return <Modal
           aria-labelledby="transition-modal-title"
@@ -59,9 +60,7 @@ class SignInContainer extends React.Component {
           className={classes.modal}
           open={showSignIn}
           onClose={() => {
-            this.setState({
-              showSignIn: false
-            })
+            store.set('showSignIn', false)
           }}
           closeAfterTransition
           BackdropComponent={Backdrop}
@@ -71,44 +70,38 @@ class SignInContainer extends React.Component {
         >
           <Fade in={showSignIn}>
             <Grid container className={classes.modalContent}>
-              <TextField
-                  placeholder='Username'
-                  className={classes.signInInput}
-                  margin="normal"
-                  variant="outlined"
-                  onChange={(event) => {
-                      this.setState({
-                          username: event.target.value
-                      })
-                  }}
-              />
-              <TextField
-                  type='password'
-                  placeholder='Password'
-                  className={classes.signInInput}
-                  margin="normal"
-                  variant="outlined"
-                  onChange={(event) => {
-                      this.setState({
-                          password: event.target.value
-                      })
-                  }}
-              />
-              <Button
-                  fullWidth
-                  variant="contained"
-                  size="large"
-                  color="primary"
-                  aria-label="add"
-                  className={''}
-                  onClick={() => {}}
-                  >
-                  Sign In
-              </Button>
+                <MenuList>
+                    <MenuItem><div onClick={this.props.connectInjected}>Metamask</div></MenuItem>
+                    <MenuItem><div onClick={this.props.connectWalletConnect}>Wallet Connect</div></MenuItem>
+                    <MenuItem><div onClick={this.props.connectPortis}>Portis</div></MenuItem>
+                </MenuList>
             </Grid>
           </Fade>
         </Modal>
     }
 }
 
-export default withStyles(styles)(withStore(SignInContainer))
+const SignInContainerWithStore = withStyles(styles)(withStore(SignInContainer))
+
+function SignInContainerComponent(props) {
+    const { store } = props
+    const context = useWeb3React();
+    // console.log('context', context, props, this)
+    return <SignInContainerWithStore
+        connectInjected={() => {
+            store.set('showSignIn', false)
+            // context.activate(injectedConnector)
+            initBrowserWallet.bind({ props })()
+        }}
+        connectPortis={() => {
+            store.set('showSignIn', false)
+            context.activate(portisConnector)
+            console.log(context)
+        }}
+        connectWalletConnect={() => {
+            store.set('showSignIn', false)
+            context.activate(walletConnectConnector)
+        }}/>
+}
+
+export default withStore(SignInContainerComponent)

@@ -1,4 +1,8 @@
 import Web3 from "web3";
+import { InjectedConnector } from "@web3-react/injected-connector";
+import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
+import { PortisConnector } from "@web3-react/portis-connector";
+
 import daiABI from '../utils/daiABI.json';
 import chaiABI from '../utils/chaiABI.json';
 import dachABI from '../utils/dachABI.json';
@@ -9,6 +13,28 @@ const daiAddress = config.DAI;
 const chaiAddress = config.CHAI;
 const dachAddress = config.DACH;
 const relayer = config.RELAYER;
+
+const POLLING_INTERVAL = 8000;
+const RPC_URLS = {
+  1: "https://mainnet.infura.io/v3/84842078b09946638c03157f83405213",
+  4: "https://rinkeby.infura.io/v3/84842078b09946638c03157f83405213"
+};
+
+export const injectedConnector = new InjectedConnector({
+  supportedChainIds: [1, 3, 4, 5, 42]
+})
+
+export const walletConnectConnector = new WalletConnectConnector({
+  rpc: { 1: RPC_URLS[1] },
+  bridge: "https://bridge.walletconnect.org",
+  qrcode: true,
+  pollingInterval: POLLING_INTERVAL
+})
+
+export const portisConnector = new PortisConnector({
+  dAppId: "211b48db-e8cc-4b68-82ad-bf781727ea9e",
+  networks: [1, 100]
+});
 
 export const getDaiData = async function() {
     const { store } = this.props
@@ -33,7 +59,7 @@ export const getDaiData = async function() {
 
     store.set('dach.daiApproved', dachApproved)
     store.set('dach.daiAllowance', dachAllowance)
-    store.set('dach.daiNonce', dachNonce)
+    store.set('dach.nonce', dachNonce)
 }
 
 export const getChaiData = async function() {
@@ -59,7 +85,11 @@ export const getChaiData = async function() {
 
     store.set('dach.chaiApproved', dachApproved)
     store.set('dach.chaiAllowance', dachAllowance)
-    store.set('dach.chaiNonce', dachNonce)
+    store.set('dach.nonce', dachNonce)
+
+    if (store.get('balancesLoading')) {
+        store.set('balancesLoading', false)
+    }
 }
 
 export const getFeeData = async function() {
@@ -70,7 +100,7 @@ export const getFeeData = async function() {
 
     if (daichequeFeeData.message) {
         const fee = Web3.utils.fromWei(String(daichequeFeeData.message))
-        store.set('daicheque.fee', fee)
+        store.set('cheque.fee', fee)
     }
 
     if (swapFeeData.message) {
@@ -79,41 +109,103 @@ export const getFeeData = async function() {
     }
 }
 
-export const signData = async function(web3, fromAddress, data) {
-    return new Promise(function(resolve, reject) {
-        web3.currentProvider.sendAsync({
-                method: "eth_signTypedData_v3",
-                params: [fromAddress, data],
-                from: fromAddress
-            },
-            function(err, result) {
-                if (err) {
-                  reject(err) //TODO
-                } else {
-                    const r = result.result.slice(0,66)
-                    const s = '0x' + result.result.slice(66,130)
-                    const v = Number('0x' + result.result.slice(130,132))
-                    resolve({
-                        v,
-                        r,
-                        s
-                    })
-                }
-            }
-        );
+export const createChequeMessageData = function() {
+    const store = this.props.store
+    const web3 = store.get('web3')
+    const nonce = Number(store.get('dach.nonce')) + 1
+    const to = store.get('cheque.to')
+    const amount = Web3.utils.toWei(store.get('cheque.amount'))
+    const fee = Web3.utils.toWei(store.get('cheque.fee'))
+    const expiry = store.get('cheque.expiry') || 0;
+    const walletAddress = store.get('walletAddress')
+
+    const message = {
+        sender: walletAddress,
+        receiver: to,
+        amount: amount,
+        fee: fee,
+        nonce: nonce,
+        expiry: expiry,
+        relayer: relayer
+    }
+
+    console.log('message', message)
+
+    const typedData = JSON.stringify({
+        types: {
+            EIP712Domain: [{
+                    name: 'name',
+                    type: 'string'
+                },
+                {
+                    name: 'version',
+                    type: 'string'
+                },
+                {
+                    name: 'chainId',
+                    type: 'uint256'
+                },
+                {
+                    name: 'verifyingContract',
+                    type: 'address'
+                },
+            ],
+            DaiCheque: [{
+                    name: 'sender',
+                    type: 'address'
+                },
+                {
+                    name: 'receiver',
+                    type: 'address'
+                },
+                {
+                    name: 'amount',
+                    type: 'uint256'
+                },
+                {
+                    name: 'fee',
+                    type: 'uint256'
+                },
+                {
+                    name: 'nonce',
+                    type: 'uint256'
+                },
+                {
+                    name: 'expiry',
+                    type: 'uint256'
+                },
+                {
+                    name: 'relayer',
+                    type: 'address'
+                },
+            ],
+        },
+        primaryType: 'DaiCheque',
+        domain: {
+            name: 'Dai Automated Clearing House',
+            version: '1',
+            chainId: Number(web3.currentProvider.networkVersion),
+            verifyingContract: dachAddress,
+        },
+        message: message,
     });
+
+    return {
+        typedData,
+        message
+    }
 }
 
-export const signDachTransferPermit = async function(allowed) {
+export const createPermitMessageData = function(allowed) {
     const { store } = this.props
     const web3 = store.get('web3')
     const walletAddress = store.get('walletAddress')
-    const daiNonce = store.get('daiNonce')
+    const nonce = Number(store.get('dach.nonce')) + 1
 
     const message = {
         holder: walletAddress,
         spender: dachAddress,
-        nonce: daiNonce,
+        nonce: nonce,
         expiry: 0,
         allowed: allowed
     }
@@ -169,23 +261,57 @@ export const signDachTransferPermit = async function(allowed) {
         message: message
     });
 
-    const sig = await signData(web3, walletAddress, typedData)
-    return Object.assign({}, sig, message)
+    return {
+        typedData,
+        message
+    }
+}
 
-    // const permit = await dai.methods.permit(
-    //     walletAddress,
-    //     dachAddress,
-    //     daiNonce,
-    //     0,
-    //     allowed,
-    //     v,
-    //     r,
-    //     s
-    // ).send({
-    //     from: walletAddress
-    // })
+export const signData = async function(web3, fromAddress, data) {
+    return new Promise(function(resolve, reject) {
+        web3.currentProvider.sendAsync({
+                method: "eth_signTypedData_v3",
+                params: [fromAddress, data],
+                from: fromAddress
+            },
+            function(err, result) {
+                if (err) {
+                  reject(err) //TODO
+                } else {
+                    const r = result.result.slice(0,66)
+                    const s = '0x' + result.result.slice(66,130)
+                    const v = Number('0x' + result.result.slice(130,132))
+                    resolve({
+                        v,
+                        r,
+                        s
+                    })
+                }
+            }
+        );
+    });
+}
 
-    // console.log('permit dach', result, permit)
+export const batchSignData = async function(batch, web3, fromAddress, data) {
+    batch.add(web3.currentProvider.sendAsync({
+        method: "eth_signTypedData_v3",
+        params: [fromAddress, data],
+        from: fromAddress
+    }))
+}
+
+
+export const signDachTransferPermit = async function(allowed) {
+    const { store } = this.props
+    const web3 = store.get('web3')
+    const walletAddress = store.get('walletAddress')
+
+    const messageData = createPermitMessageData.bind(this)(allowed)
+
+    console.log(messageData)
+
+    const sig = await signData(web3, walletAddress, messageData.typedData)
+    return Object.assign({}, sig, messageData.message)
 }
 
 export const signSwap = async function() {
@@ -273,93 +399,28 @@ export const signSwap = async function() {
 export const signDaiCheque = async function() {
     const store = this.props.store
     const web3 = store.get('web3')
-    const nonce = store.get('dachNonce')
-    const to = store.get('daicheque.to')
-    const amount = Web3.utils.toWei(store.get('daicheque.amount'))
-    const fee = Web3.utils.toWei(store.get('daicheque.fee'))
-    const expiry = store.get('daicheque.expiry') || 0;
     const walletAddress = store.get('walletAddress')
 
-    const message = {
-        sender: walletAddress,
-        receiver: to,
-        amount: amount,
-        fee: fee,
-        nonce: nonce,
-        expiry: expiry,
-        relayer: relayer
-    }
+    const messageData = createChequeMessageData.bind(this)()
 
-    console.log('message', message)
+    const sig = await signData(web3, walletAddress, messageData.typedData)
 
-    const typedData = JSON.stringify({
-        types: {
-            EIP712Domain: [{
-                    name: 'name',
-                    type: 'string'
-                },
-                {
-                    name: 'version',
-                    type: 'string'
-                },
-                {
-                    name: 'chainId',
-                    type: 'uint256'
-                },
-                {
-                    name: 'verifyingContract',
-                    type: 'address'
-                },
-            ],
-            DaiCheque: [{
-                    name: 'sender',
-                    type: 'address'
-                },
-                {
-                    name: 'receiver',
-                    type: 'address'
-                },
-                {
-                    name: 'amount',
-                    type: 'uint256'
-                },
-                {
-                    name: 'fee',
-                    type: 'uint256'
-                },
-                {
-                    name: 'nonce',
-                    type: 'uint256'
-                },
-                {
-                    name: 'expiry',
-                    type: 'uint256'
-                },
-                {
-                    name: 'relayer',
-                    type: 'address'
-                },
-            ],
-        },
-        primaryType: 'DaiCheque',
-        domain: {
-            name: 'Dai Automated Clearing House',
-            version: '1',
-            chainId: Number(web3.currentProvider.networkVersion),
-            verifyingContract: dachAddress,
-        },
-        message: message,
-    });
-
-    const sig = await signData(web3, walletAddress, typedData)
-
-    return Object.assign({}, sig, message)
+    return Object.assign({}, sig, messageData.message)
 }
+
+export const initInjected = async function() {
+    const { store } = this.props
+    const { activate } = store.get('web3Context')
+
+    activate(injectedConnector)
+}
+
 
 export const initBrowserWallet = async function() {
     const store = this.props.store
 
     store.set('walletLoading', true)
+    store.set('balancesLoading', true)
 
     let web3Provider;
 
@@ -399,9 +460,12 @@ export const initBrowserWallet = async function() {
     store.set('walletType', walletType)
 
     getDaiData.bind(this)()
+    getChaiData.bind(this)()
+    getFeeData.bind(this)()
 }
 
 export default {
     initBrowserWallet,
-    signDaiCheque
+    signDaiCheque,
+    batchSignData
 }
