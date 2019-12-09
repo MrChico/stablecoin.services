@@ -3,8 +3,8 @@ import { daiCheque, daiPermitAndCheque } from '../utils/apiUtils';
 
 export const daiTransfer = async function() {
     const { store } = this.props
-    const dachApproved = false
-    // const dachApproved = store.get('dach.daiApproved')
+    // const dachApproved = false
+    const dachApproved = store.get('dach.daiApproved')
     const web3 = store.get('web3')
     const walletAddress = store.get('walletAddress')
 
@@ -73,7 +73,7 @@ export const daiTransfer = async function() {
             store.set('cheque.result', result)
             store.set('cheque.requesting', false)
         } catch(e) {
-            console.log(e)
+            console.log('cheque error', e)
             store.set('cheque.requesting', false)
         }
     }

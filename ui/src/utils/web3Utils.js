@@ -112,7 +112,7 @@ export const getFeeData = async function() {
 export const createChequeMessageData = function() {
     const store = this.props.store
     const web3 = store.get('web3')
-    const nonce = Number(store.get('dach.nonce')) + 1
+    const nonce = Number(store.get('dach.nonce'))
     const to = store.get('cheque.to')
     const amount = Web3.utils.toWei(store.get('cheque.amount'))
     const fee = Web3.utils.toWei(store.get('cheque.fee'))
@@ -200,7 +200,7 @@ export const createPermitMessageData = function(allowed) {
     const { store } = this.props
     const web3 = store.get('web3')
     const walletAddress = store.get('walletAddress')
-    const nonce = Number(store.get('dach.nonce')) + 1
+    const nonce = Number(store.get('daiNonce'))
 
     const message = {
         holder: walletAddress,
