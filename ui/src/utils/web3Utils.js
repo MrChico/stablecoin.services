@@ -21,7 +21,8 @@ const relayer = config.RELAYER;
 const POLLING_INTERVAL = 8000;
 const RPC_URLS = {
   1: "https://mainnet.infura.io/v3/84842078b09946638c03157f83405213",
-  4: "https://rinkeby.infura.io/v3/84842078b09946638c03157f83405213"
+  4: "https://rinkeby.infura.io/v3/84842078b09946638c03157f83405213",
+  42: "https://kovan.infura.io/v3/84842078b09946638c03157f83405213"
 };
 
 export const injectedConnector = new InjectedConnector({
@@ -29,7 +30,8 @@ export const injectedConnector = new InjectedConnector({
 })
 
 export const walletConnectConnector = new WalletConnectConnector({
-  rpc: { 1: RPC_URLS[1] },
+  supportedChainIds: [42],
+  rpc: { 42: RPC_URLS[42] },
   bridge: "https://bridge.walletconnect.org",
   qrcode: true,
   pollingInterval: POLLING_INTERVAL
@@ -37,13 +39,15 @@ export const walletConnectConnector = new WalletConnectConnector({
 
 export const portisConnector = new PortisConnector({
   dAppId: "211b48db-e8cc-4b68-82ad-bf781727ea9e",
-  networks: [1, 100]
+  networks: [42]
 });
 
 export const getDaiData = async function() {
     const { store } = this.props
     const web3 = store.get('web3')
     const walletAddress = store.get('walletAddress')
+
+    // console.log('get dai data', store.getState())
 
     if (!web3 || !walletAddress) return
 
@@ -188,7 +192,7 @@ export const createChequeMessageData = function() {
         domain: {
             name: 'Dai Automated Clearing House',
             version: '1',
-            chainId: Number(web3.currentProvider.networkVersion),
+            chainId: 42,
             verifyingContract: dachAddress,
         },
         message: message,
@@ -259,7 +263,7 @@ export const createPermitMessageData = function(allowed) {
         domain: {
             name: 'Dai Stablecoin',
             version: '1',
-            chainId: Number(web3.currentProvider.networkVersion),
+            chainId: 42,
             verifyingContract: daiAddress,
         },
         message: message
@@ -271,29 +275,35 @@ export const createPermitMessageData = function(allowed) {
     }
 }
 
-export const signData = async function(web3, fromAddress, data) {
-    return new Promise(function(resolve, reject) {
-        web3.currentProvider.sendAsync({
-                method: "eth_signTypedData_v3",
-                params: [fromAddress, data],
-                from: fromAddress
-            },
-            function(err, result) {
-                if (err) {
-                  reject(err) //TODO
-                } else {
-                    const r = result.result.slice(0,66)
-                    const s = '0x' + result.result.slice(66,130)
-                    const v = Number('0x' + result.result.slice(130,132))
-                    resolve({
-                        v,
-                        r,
-                        s
-                    })
+export const signData = async function(web3, fromAddress, data, walletType) {
+    if (walletType === 'injected' || walletType === 'portis') {
+        return new Promise(function(resolve, reject) {
+            web3.currentProvider.sendAsync({
+                    id: 1,
+                    method: "eth_signTypedData_v3",
+                    params: [fromAddress, data],
+                    from: fromAddress
+                },
+                function(err, result) {
+                    if (err) {
+                      reject(err) //TODO
+                    } else {
+                        const r = result.result.slice(0,66)
+                        const s = '0x' + result.result.slice(66,130)
+                        const v = Number('0x' + result.result.slice(130,132))
+                        resolve({
+                            v,
+                            r,
+                            s
+                        })
+                    }
                 }
-            }
-        );
-    });
+            );
+        });
+
+    } else if (walletType === 'wallet-connect') {
+
+    }
 }
 
 export const batchSignData = async function(batch, web3, fromAddress, data) {
@@ -309,12 +319,13 @@ export const signDachTransferPermit = async function(allowed) {
     const { store } = this.props
     const web3 = store.get('web3')
     const walletAddress = store.get('walletAddress')
+    const walletType = store.get('walletType')
 
     const messageData = createPermitMessageData.bind(this)(allowed)
 
     console.log(messageData)
 
-    const sig = await signData(web3, walletAddress, messageData.typedData)
+    const sig = await signData(web3, walletAddress, messageData.typedData, walletType)
     return Object.assign({}, sig, messageData.message)
 }
 
@@ -404,10 +415,11 @@ export const signDaiCheque = async function() {
     const store = this.props.store
     const web3 = store.get('web3')
     const walletAddress = store.get('walletAddress')
+    const walletType = store.get('walletType')
 
     const messageData = createChequeMessageData.bind(this)()
 
-    const sig = await signData(web3, walletAddress, messageData.typedData)
+    const sig = await signData(web3, walletAddress, messageData.typedData, walletType)
 
     return Object.assign({}, sig, messageData.message)
 }
@@ -416,21 +428,38 @@ export const initInjected = async function() {
     const { store } = this.props
     const { activate } = store.get('web3Context')
 
+    store.set('walletConnecting', true)
     activate(injectedConnector)
+    store.set('walletConnecting', false)
+    store.set('walletType', 'injected')
 }
 
 export const initPortis = async function() {
     const { store } = this.props
     const { activate } = store.get('web3Context')
 
-    activate(portisConnector)
+    store.set('walletConnecting', true)
+    await activate(portisConnector)
+    store.set('walletConnecting', false)
+    store.set('walletType', 'portis')
+
+    getDaiData.bind(this)()
+    getChaiData.bind(this)()
+    getFeeData.bind(this)()
 }
 
 export const initWalletConnect = async function() {
     const { store } = this.props
     const { activate } = store.get('web3Context')
 
-    activate(walletConnectConnector)
+    store.set('walletConnecting', true)
+    await activate(walletConnectConnector)
+    store.set('walletConnecting', false)
+    store.set('walletType', 'wallet-connect')
+
+    getDaiData.bind(this)()
+    getChaiData.bind(this)()
+    getFeeData.bind(this)()
 }
 
 
@@ -468,7 +497,7 @@ export const initBrowserWallet = async function() {
     }
 
     const web3 = new Web3(web3Provider);
-    const walletType = 'browser'
+    const walletType = 'injected'
     const accounts = await web3.eth.getAccounts()
 
     // await window.ethereum.enable();

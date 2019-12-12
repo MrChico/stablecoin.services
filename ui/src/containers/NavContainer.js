@@ -23,7 +23,7 @@ const styles = () => ({
         marginRight: theme.spacing(1)
     },
     accountButton: {
-      minWidth: 120,
+      minWidth: 140,
       '& svg': {
         marginRight: theme.spacing(1)
       }
@@ -46,6 +46,7 @@ class NavContainer extends React.Component {
 
         const walletAddress = store.get('walletAddress')
         const balancesLoading = store.get('balancesLoading')
+        const walletConnecting = store.get('walletConnecting')
 
         return <Grid item xs={12}>
             {<Grid className={classes.navContainer} container alignItems='center'>
@@ -56,12 +57,12 @@ class NavContainer extends React.Component {
               </Grid>
               <Grid item xs={6}>
                   <Grid container justify='flex-end'>
-                  <Button color='primary' onClick={() => {
+                  {walletConnecting ? <Button color='primary' disabled className={classes.accountButton} variant='contained'>Connecting...</Button> : <Button color='primary' onClick={() => {
                         store.set('showSignIn', true)
                         // this.props.connectPortis()
                     }} variant={walletAddress ? 'text' : "contained"} className={classes.accountButton}>
                     {walletAddress ? (walletAddress.slice(0,7) + '...' + walletAddress.slice(walletAddress.length - 5)) : 'Connect wallet'}
-                  </Button>
+                  </Button>}
                   </Grid>
               </Grid>
             </Grid>}

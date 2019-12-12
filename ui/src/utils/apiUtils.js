@@ -17,12 +17,12 @@ export const swapFee = async function() {
 }
 
 export const daiPermitAndSwapFee = async function() {
-    const request = await fetch(`${API_URL}/v1/daiPermitAndCheque/fee`)
+    const request = await fetch(`${API_URL}/v1/daiSwap/fee`)
     return request.json()
 }
 
 export const daiCheque = async function(data) {
-    console.log('daiCheque', data)
+    // console.log('daiCheque', data)
     const request = await fetch(`${API_URL}/v1/daiCheque`, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         // mode: 'cors', // no-cors, *cors, same-origin

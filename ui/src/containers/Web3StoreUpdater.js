@@ -42,45 +42,50 @@ class Web3StoreUpdater extends React.Component {
     }
 
     shouldComponentUpdate(nextProps) {
-        console.log('web3Context should update', nextProps, store.getState())
+        // console.log('web3Context should update', nextProps, store.getState())
         const newContext = nextProps.web3Context
         const currentContext = store.get('web3Context')
 
         if (!currentContext) {
-            store.set('web3Context', newContext)
-            if (newContext.library) {
-                store.set('web3', new Web3(newContext.library.provider))
-            }
+            this.updateStore(newContext)
             return true
         } else if (newContext) {
           const current = {
               account: currentContext.account,
               active: currentContext.active,
-              chainId: currentContext.chainId
+              chainId: currentContext.chainId,
+              connector: newContext.connector
           }
 
           const newer = {
               account: newContext.account,
               active: newContext.active,
-              chainId: newContext.chainId
+              chainId: newContext.chainId,
+              connector: newContext.connector
           }
 
-          console.log('web3Context should update', current, newer)
+          // console.log('web3Context should update', current, newer)
 
           const diff = current.account !== newer.account
             || current.active !== newer.active
             || current.chainId !== newer.chainId
+            // || current.connector !== newer.connector
 
           if (diff) {
-              store.set('web3Context', newContext)
-              if (newContext.library) {
-                  store.set('web3', new Web3(newContext.library.provider))
-              }
+              this.updateStore(newContext)
               return true
           }
           return false
         }
         return false
+    }
+
+    updateStore(context){
+        store.set('web3Context', context)
+        if (context.library) {
+            store.set('walletAddress', context.account)
+            store.set('web3', new Web3(context.library.provider))
+        }
     }
 
     render() {

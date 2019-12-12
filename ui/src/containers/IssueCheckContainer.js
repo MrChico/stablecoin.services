@@ -308,7 +308,7 @@ class IssueCheckContainer extends React.Component {
 
         const showChequeSuccess = chequeResult && chequeResult.success === 'true'
         const showChequeError = chequeResult && chequeResult.success === 'false'
-        const showChequeValidationError = chequeAmount && insufficientTransferBalance && isSignedIn
+        const showChequeValidationError = !showChequeSuccess && chequeAmount && insufficientTransferBalance && isSignedIn
 
         const canDaiTransfer = chequeAmount && chequeToValid && !insufficientTransferBalance;
 
