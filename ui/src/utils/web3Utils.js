@@ -3,6 +3,10 @@ import { InjectedConnector } from "@web3-react/injected-connector";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import { PortisConnector } from "@web3-react/portis-connector";
 
+import {
+  useWeb3React
+} from "@web3-react/core";
+
 import daiABI from '../utils/daiABI.json';
 import chaiABI from '../utils/chaiABI.json';
 import dachABI from '../utils/dachABI.json';
@@ -21,7 +25,7 @@ const RPC_URLS = {
 };
 
 export const injectedConnector = new InjectedConnector({
-  supportedChainIds: [1, 3, 4, 5, 42]
+  supportedChainIds: [42]
 })
 
 export const walletConnectConnector = new WalletConnectConnector({
@@ -413,6 +417,20 @@ export const initInjected = async function() {
     const { activate } = store.get('web3Context')
 
     activate(injectedConnector)
+}
+
+export const initPortis = async function() {
+    const { store } = this.props
+    const { activate } = store.get('web3Context')
+
+    activate(portisConnector)
+}
+
+export const initWalletConnect = async function() {
+    const { store } = this.props
+    const { activate } = store.get('web3Context')
+
+    activate(walletConnectConnector)
 }
 
 

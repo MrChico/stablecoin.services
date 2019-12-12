@@ -6,7 +6,12 @@ import classNames from 'classnames'
 import {
   useWeb3React
 } from "@web3-react/core";
-import { initBrowserWallet, initInjected, injectedConnector, portisConnector, walletConnectConnector } from '../utils/web3Utils'
+import {
+  initBrowserWallet,
+  initInjected,
+  initPortis,
+  initWalletConnect
+} from '../utils/web3Utils'
 
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -44,6 +49,24 @@ class SignInContainer extends React.Component {
         console.log(this)
     }
 
+    injected(){
+        const { store } = this.props
+        store.set('showSignIn', false)
+        initBrowserWallet.bind(this)()
+    }
+
+    portis() {
+        const { store } = this.props
+        store.set('showSignIn', false)
+        initPortis.bind(this)()
+    }
+
+    walletConnect() {
+        const { store } = this.props
+        store.set('showSignIn', false)
+        initWalletConnect.bind(this)()
+    }
+
     render() {
         const {
             classes,
@@ -71,9 +94,9 @@ class SignInContainer extends React.Component {
           <Fade in={showSignIn}>
             <Grid container className={classes.modalContent}>
                 <MenuList>
-                    <MenuItem><div onClick={this.props.connectInjected}>Metamask</div></MenuItem>
-                    <MenuItem><div onClick={this.props.connectWalletConnect}>Wallet Connect</div></MenuItem>
-                    <MenuItem><div onClick={this.props.connectPortis}>Portis</div></MenuItem>
+                    <MenuItem><div onClick={this.injected.bind(this)}>Metamask</div></MenuItem>
+                    <MenuItem><div onClick={this.walletConnect.bind(this)}>Wallet Connect</div></MenuItem>
+                    <MenuItem><div onClick={this.portis.bind(this)}>Portis</div></MenuItem>
                 </MenuList>
             </Grid>
           </Fade>
@@ -81,27 +104,28 @@ class SignInContainer extends React.Component {
     }
 }
 
-const SignInContainerWithStore = withStyles(styles)(withStore(SignInContainer))
+// const SignInContainerWithStore =
 
-function SignInContainerComponent(props) {
-    const { store } = props
-    const context = useWeb3React();
-    // console.log('context', context, props, this)
-    return <SignInContainerWithStore
-        connectInjected={() => {
-            store.set('showSignIn', false)
-            // context.activate(injectedConnector)
-            initBrowserWallet.bind({ props })()
-        }}
-        connectPortis={() => {
-            store.set('showSignIn', false)
-            context.activate(portisConnector)
-            console.log(context)
-        }}
-        connectWalletConnect={() => {
-            store.set('showSignIn', false)
-            context.activate(walletConnectConnector)
-        }}/>
-}
+// function SignInContainerComponent(props) {
+//     const { store } = props
+//     const context = useWeb3React();
+//     // console.log('context', context, props, this)
+//     return <SignInContainerWithStore
+//         connectInjected={() => {
+//             store.set('showSignIn', false)
+//             context.activate(injectedConnector)
+//             // initBrowserWallet.bind({ props })()
+//         }}
+//         connectPortis={() => {
+//             // initPortis.bind({ props })()
+//             store.set('showSignIn', false)
+//             // context.activate(portisConnector)
+//             initPortis.bind({ props })()
+//         }}
+//         connectWalletConnect={() => {
+//             store.set('showSignIn', false)
+//             context.activate(walletConnectConnector)
+//         }}/>
+// }
 
-export default withStore(SignInContainerComponent)
+export default withStore(withStyles(styles)(SignInContainer))

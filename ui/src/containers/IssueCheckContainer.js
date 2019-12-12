@@ -314,7 +314,7 @@ class IssueCheckContainer extends React.Component {
 
         const canSwap = swapInputAmount && !insufficientSwapBalance
 
-        // console.log('issue check render', this.props.store.getState())
+        console.log('issue check render', this.props.store.getState())
 
         return <Grid item xs={12}>
             {

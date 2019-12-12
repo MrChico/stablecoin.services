@@ -1,5 +1,6 @@
 import React from 'react';
-import { withStore } from '@spyna/react-store'
+import Web3 from 'web3';
+import { withStore, store } from '@spyna/react-store'
 import { withStyles } from '@material-ui/styles';
 import theme from '../theme/theme'
 import classNames from 'classnames'
@@ -40,11 +41,46 @@ class Web3StoreUpdater extends React.Component {
         super(props);
     }
 
-    componentDidMount() {
-        const { store } = this.props
-        setInterval(() => {
-          store.set('web3Context', this.props.web3Context)
-        }, 10)
+    shouldComponentUpdate(nextProps) {
+        console.log('web3Context should update', nextProps, store.getState())
+        const newContext = nextProps.web3Context
+        const currentContext = store.get('web3Context')
+
+        if (!currentContext) {
+            store.set('web3Context', newContext)
+            if (newContext.library) {
+                store.set('web3', new Web3(newContext.library.provider))
+            }
+            return true
+        } else if (newContext) {
+          const current = {
+              account: currentContext.account,
+              active: currentContext.active,
+              chainId: currentContext.chainId
+          }
+
+          const newer = {
+              account: newContext.account,
+              active: newContext.active,
+              chainId: newContext.chainId
+          }
+
+          console.log('web3Context should update', current, newer)
+
+          const diff = current.account !== newer.account
+            || current.active !== newer.active
+            || current.chainId !== newer.chainId
+
+          if (diff) {
+              store.set('web3Context', newContext)
+              if (newContext.library) {
+                  store.set('web3', new Web3(newContext.library.provider))
+              }
+              return true
+          }
+          return false
+        }
+        return false
     }
 
     render() {
@@ -59,4 +95,4 @@ function Web3StoreUpdaterComponent(props) {
     return <Web3StoreUpdaterWithStore web3Context={context} />
 }
 
-export default withStore(Web3StoreUpdaterComponent)
+export default Web3StoreUpdaterComponent
