@@ -13,7 +13,8 @@ import {
   daiPermitAndCheque,
   chaiCheque,
   chaiPermitAndCheque,
-  daiSwap
+  daiSwap,
+  chaiSwap
 } from '../utils/apiUtils';
 
 export const newDaiTransfer = async function() {
@@ -128,7 +129,18 @@ export const newDaiSwap = async function() {
 }
 
 export const newChaiSwap = async function() {
-
+    const { store } = this.props
+    store.set('swap.requesting', true)
+    try {
+        const signedSwap = await signSwap.bind(this)()
+        console.log('signedSwap', signedSwap)
+        const result = await chaiSwap({ swap: signedSwap })
+        store.set('swap.result', result)
+        store.set('swap.requesting', false)
+    } catch(e) {
+        console.log('swap error', e)
+        store.set('swap.requesting', false)
+    }
 }
 
 export const newDaiConvert = async function() {

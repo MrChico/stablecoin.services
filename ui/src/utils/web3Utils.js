@@ -55,6 +55,7 @@ export const portisConnector = new PortisConnector({
   networks: [42]
 });
 
+// netork data
 export const getDaiData = async function() {
     const { store } = this.props
     const web3 = store.get('web3')
@@ -153,6 +154,7 @@ export const getFeeData = async function() {
     }
 }
 
+// message signing
 export const createChequeMessageData = function() {
     const store = this.props.store
     const web3 = store.get('web3')
@@ -465,20 +467,6 @@ export const signDachTransferPermit = async function(allowed, currency) {
     return Object.assign({}, sig, messageData.message)
 }
 
-export const signSwap = async function() {
-    const { store } = this.props
-    const web3 = store.get('web3')
-    const walletAddress = store.get('walletAddress')
-    const walletType = store.get('walletType')
-
-    const messageData = createSwapMessageData.bind(this)()
-
-    console.log(messageData)
-
-    const sig = await signData(web3, walletAddress, messageData.typedData, walletType)
-    return Object.assign({}, sig, messageData.message)
-}
-
 export const signDaiCheque = async function() {
     const store = this.props.store
     const web3 = store.get('web3')
@@ -505,6 +493,21 @@ export const signChaiCheque = async function() {
     return Object.assign({}, sig, messageData.message)
 }
 
+export const signSwap = async function() {
+    const { store } = this.props
+    const web3 = store.get('web3')
+    const walletAddress = store.get('walletAddress')
+    const walletType = store.get('walletType')
+
+    const messageData = createSwapMessageData.bind(this)()
+
+    console.log(messageData)
+
+    const sig = await signData(web3, walletAddress, messageData.typedData, walletType)
+    return Object.assign({}, sig, messageData.message)
+}
+
+// wallets
 export const initInjected = async function() {
     const { store } = this.props
     const { activate } = store.get('web3Context')
