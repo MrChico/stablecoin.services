@@ -11,7 +11,20 @@ import daiABI from '../utils/daiABI.json';
 import chaiABI from '../utils/chaiABI.json';
 import dachABI from '../utils/dachABI.json';
 import config from '../config.json';
-import { daiChequeFee, daiPermitAndChequeFee, swapFee, daiPermitAndSwapFee } from '../utils/apiUtils';
+import {
+  daiChequeFee,
+  daiPermitAndChequeFee,
+  chaiChequeFee,
+  chaiPermitAndChequeFee,
+  daiSwapFee,
+  daiPermitAndSwapFee,
+  chaiSwapFee,
+  chaiPermitAndSwapFee,
+  daiConvertFee,
+  daiPermitAndConvertFee,
+  chaiConvertFee,
+  chaiPermitAndConvertFee
+} from '../utils/apiUtils';
 
 const daiAddress = config.DAI;
 const chaiAddress = config.CHAI;
@@ -102,18 +115,41 @@ export const getChaiData = async function() {
 
 export const getFeeData = async function() {
     const { store } = this.props
-    const permitted = store.get('dachApproved')
-    const daichequeFeeData = permitted ? await daiChequeFee() : await daiPermitAndChequeFee()
-    const swapFeeData =  permitted ? await swapFee() : await daiPermitAndSwapFee()
+    const daiPermitted = store.get('dach.daiApproved')
+    const chaiPermitted = store.get('dach.chaiApproved')
+    const chequeCurrency = store.get('cheque.currency')
+    const swapCurrency = store.get('swap.currency')
+    const convertCurrency = store.get('convert.currency')
 
-    if (daichequeFeeData.message) {
-        const fee = Web3.utils.fromWei(String(daichequeFeeData.message))
+    const daiChequeFeeData = daiPermitted ? await daiChequeFee() : await daiPermitAndChequeFee()
+    const chaiChequeFeeData = chaiPermitted ? await chaiChequeFee() : await chaiPermitAndChequeFee()
+    const daiSwapFeeData =  daiPermitted ? await daiSwapFee() : await daiPermitAndSwapFee()
+    const chaiSwapFeeData =  chaiPermitted ? await chaiSwapFee() : await chaiPermitAndSwapFee()
+    const daiConvertFeeData =  daiPermitted ? await daiConvertFee() : await daiPermitAndConvertFee()
+    const chaiConvertFeeData =  chaiPermitted ? await chaiConvertFee() : await chaiPermitAndConvertFee()
+
+    if (chequeCurrency === 'dai') {
+        const fee = daiChequeFeeData.message ? Web3.utils.fromWei(String(daiChequeFeeData.message)) : ''
+        store.set('cheque.fee', fee)
+    } else {
+        const fee = chaiChequeFeeData.message ? Web3.utils.fromWei(String(chaiChequeFeeData.message)) : ''
         store.set('cheque.fee', fee)
     }
 
-    if (swapFeeData.message) {
-        const fee = Web3.utils.fromWei(String(swapFeeData.message))
+    if (swapCurrency === 'dai') {
+        const fee = daiSwapFeeData.message ? Web3.utils.fromWei(String(daiSwapFeeData.message)) : ''
         store.set('swap.fee', fee)
+    } else {
+        const fee = chaiSwapFeeData.message ? Web3.utils.fromWei(String(chaiSwapFeeData.message)) : ''
+        store.set('swap.fee', fee)
+    }
+
+    if (convertCurrency === 'dai') {
+        const fee = daiConvertFeeData.message ? Web3.utils.fromWei(String(daiConvertFeeData.message)) : ''
+        store.set('convert.fee', fee)
+    } else {
+        const fee = chaiConvertFeeData.message ? Web3.utils.fromWei(String(chaiConvertFeeData.message)) : ''
+        store.set('convert.fee', fee)
     }
 }
 
@@ -204,11 +240,13 @@ export const createChequeMessageData = function() {
     }
 }
 
-export const createPermitMessageData = function(allowed) {
+export const createPermitMessageData = function(allowed, currency) {
     const { store } = this.props
     const web3 = store.get('web3')
     const walletAddress = store.get('walletAddress')
-    const nonce = Number(store.get('daiNonce'))
+    const nonce = Number(currency === 'dai' ? store.get('daiNonce') : store.get('chaiNonce'))
+
+    console.log('createPermitMessageData', allowed, currency)
 
     const message = {
         holder: walletAddress,
@@ -261,10 +299,11 @@ export const createPermitMessageData = function(allowed) {
         },
         primaryType: 'Permit',
         domain: {
+            // name: currency === 'dai' ? 'Dai Stablecoin' : 'Interest Earning DAI (CHAI)',
             name: 'Dai Stablecoin',
             version: '1',
             chainId: 42,
-            verifyingContract: daiAddress,
+            verifyingContract: currency === 'dai' ? daiAddress : chaiAddress,
         },
         message: message
     });
@@ -315,13 +354,13 @@ export const batchSignData = async function(batch, web3, fromAddress, data) {
 }
 
 
-export const signDachTransferPermit = async function(allowed) {
+export const signDachTransferPermit = async function(allowed, currency) {
     const { store } = this.props
     const web3 = store.get('web3')
     const walletAddress = store.get('walletAddress')
     const walletType = store.get('walletType')
 
-    const messageData = createPermitMessageData.bind(this)(allowed)
+    const messageData = createPermitMessageData.bind(this)(allowed, currency)
 
     console.log(messageData)
 
@@ -412,6 +451,19 @@ export const signSwap = async function() {
 }
 
 export const signDaiCheque = async function() {
+    const store = this.props.store
+    const web3 = store.get('web3')
+    const walletAddress = store.get('walletAddress')
+    const walletType = store.get('walletType')
+
+    const messageData = createChequeMessageData.bind(this)()
+
+    const sig = await signData(web3, walletAddress, messageData.typedData, walletType)
+
+    return Object.assign({}, sig, messageData.message)
+}
+
+export const signChaiCheque = async function() {
     const store = this.props.store
     const web3 = store.get('web3')
     const walletAddress = store.get('walletAddress')

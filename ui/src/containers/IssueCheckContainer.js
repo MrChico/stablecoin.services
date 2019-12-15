@@ -179,7 +179,7 @@ class IssueCheckContainer extends React.Component {
             getDaiData.bind(this)();
             getChaiData.bind(this)();
             getFeeData.bind(this)();
-            console.log(this.props.store.getState())
+            // console.log(this.props.store.getState())
         }, 10 * 1000);
     }
 
@@ -224,6 +224,7 @@ class IssueCheckContainer extends React.Component {
         if (!newValue) return
         store.set('cheque.selectedCurrency', newValue)
         store.set('cheque.result', null)
+        getFeeData.bind(this)();
         // store.set('cheque.requesting', false)
     }
 
@@ -232,6 +233,7 @@ class IssueCheckContainer extends React.Component {
         if (!newValue) return
         store.set('swap.selectedCurrency', newValue)
         store.set('swap.result', null)
+        getFeeData.bind(this)();
         // store.set('swap.requesting', false)
     }
 
@@ -240,6 +242,7 @@ class IssueCheckContainer extends React.Component {
         if (!newValue) return
         store.set('convert.selectedCurrency', newValue)
         store.set('convert.result', null)
+        getFeeData.bind(this)();
         // store.set('convert.requesting', false)
     }
 
@@ -254,7 +257,7 @@ class IssueCheckContainer extends React.Component {
         store.set('swap.result', null)
 
         // TO-DO: run logic on the same network as the app
-        if (!web3 || web3.currentProvider.networkVersion !== '1') return
+        if (!web3) return
 
         const ethOutput = await getSwapOutput(web3, amount, selectedCurrency.toUpperCase(), 'ETH')
         store.set('swap.outputAmount', ethOutput.toFixed(8))
@@ -298,6 +301,7 @@ class IssueCheckContainer extends React.Component {
         const convertCurrency = store.get('convert.selectedCurrency')
         const convertCurrencyFormatted = convertCurrency.toUpperCase()
         const convertRequesting = store.get('convert.requesting');
+        const convertFee = store.get('convert.fee')
 
         const walletLoading = store.get('walletLoading')
         const balancesLoaded = daiBalance.length && chaiBalance.length
@@ -496,7 +500,7 @@ class IssueCheckContainer extends React.Component {
                                                 <Chip
                                                     label={<div className={classes.breakdownWrapper}>
                                                             <Typography variant='caption'>Convert Fee</Typography>
-                                                            <Typography className={classes.transferFee} variant='caption'>{chequeFee ? `${chequeFee} ${convertCurrencyFormatted}` : '-'}</Typography>
+                                                            <Typography className={classes.transferFee} variant='caption'>{convertFee ? `${convertFee} ${convertCurrencyFormatted}` : '-'}</Typography>
                                                     </div>}
                                                     className={classes.transferBreakdown}
                                                   />
