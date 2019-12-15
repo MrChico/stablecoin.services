@@ -14,7 +14,7 @@ import { amber, blue, green } from '@material-ui/core/colors';
 import theme from '../theme/theme'
 import { signDachTransferPermit, getDaiData, getChaiData, getFeeData } from '../utils/web3Utils'
 import { getSwapOutput } from '../utils/uniswapUtils'
-import { daiTransfer, daiSwap, daiConvert, chaiTransfer, chaiSwap, chaiConvert } from '../actions/main'
+import { newDaiTransfer, newDaiSwap, newDaiConvert, newChaiTransfer, newChaiSwap, newChaiConvert } from '../actions/main'
 
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
@@ -187,9 +187,9 @@ class IssueCheckContainer extends React.Component {
         const { store } = this.props
         const selectedCurrency = store.get('cheque.selectedCurrency')
         if (selectedCurrency === 'dai') {
-            daiTransfer.bind(this)()
+            newDaiTransfer.bind(this)()
         } else {
-            chaiTransfer.bind(this)()
+            newChaiTransfer.bind(this)()
         }
     }
 
@@ -197,9 +197,9 @@ class IssueCheckContainer extends React.Component {
         const { store } = this.props
         const selectedCurrency = store.get('swap.selectedCurrency')
         if (selectedCurrency === 'dai') {
-            daiSwap.bind(this)()
+            newDaiSwap.bind(this)()
         } else {
-            chaiSwap.bind(this)()
+            newChaiSwap.bind(this)()
         }
 
     }
@@ -208,9 +208,9 @@ class IssueCheckContainer extends React.Component {
         const { store } = this.props
         const selectedCurrency = store.get('convert.selectedCurrency')
         if (selectedCurrency === 'dai') {
-            daiConvert.bind(this)()
+            newDaiConvert.bind(this)()
         } else {
-            chaiConvert.bind(this)()
+            newChaiConvert.bind(this)()
         }
     }
 
@@ -296,6 +296,7 @@ class IssueCheckContainer extends React.Component {
         const swapCurrency = store.get('swap.selectedCurrency')
         const swapCurrencyFormatted = swapCurrency.toUpperCase()
         const swapRequesting = store.get('swap.requesting');
+        const swapResult = store.get('swap.result');
 
         const convertAmount = store.get('convert.amount')
         const convertCurrency = store.get('convert.selectedCurrency')
@@ -313,6 +314,10 @@ class IssueCheckContainer extends React.Component {
         const showChequeSuccess = chequeResult && chequeResult.success === 'true'
         const showChequeError = chequeResult && chequeResult.success === 'false'
         const showChequeValidationError = !showChequeSuccess && chequeAmount && insufficientTransferBalance && isSignedIn
+
+        const showSwapSuccess = swapResult && swapResult.success === 'true'
+        const showSwapError = swapResult && swapResult.success === 'false'
+        const showSwapValidationError = !showSwapSuccess && swapInputAmount && insufficientSwapBalance && isSignedIn
 
         const canDaiTransfer = chequeAmount && chequeToValid && !insufficientTransferBalance;
 
@@ -465,16 +470,32 @@ class IssueCheckContainer extends React.Component {
                                             <div className={classes.actionButtonContainer}>
                                                 <Button color='primary'
                                                     size='large'
-                                                    onClick={this.swap} variant="contained" disabled={!isSignedIn || !canSwap} className={classes.actionButton}>
-                                                    Swap
+                                                    onClick={this.swap.bind(this)} variant="contained" disabled={!isSignedIn || !canSwap || showSwapError || showSwapValidationError || swapRequesting} className={classes.actionButton}>
+                                                    {swapRequesting ? <CircularProgress size={14} className={classes.spinner} /> : 'Swap'}
                                                 </Button>
                                             </div>
-                                             {swapInputAmount && insufficientSwapBalance && isSignedIn && <SnackbarContent
-                                               className={classes.error}
-                                               message={<Grid item xs={12}>
-                                                 <span>Insufficient {swapCurrencyFormatted} balance</span>
-                                               </Grid>}
-                                             />}
+
+                                            {showSwapSuccess && <SnackbarContent
+                                              className={classes.success}
+                                              message={<Grid item xs={12}>
+                                                <span>Swap started. <a href={`https://kovan.etherscan.io/tx/${swapResult.message.swapHash}`} target='_blank'>View transaction</a></span>
+                                              </Grid>}
+                                            />}
+
+                                            {showSwapError && <SnackbarContent
+                                              className={classes.errorApi}
+                                              message={<Grid item xs={12}>
+                                                <span>{swapResult.message}</span>
+                                              </Grid>}
+                                            />}
+
+                                            {showSwapValidationError && <SnackbarContent
+                                              className={classes.error}
+                                              message={<Grid item xs={12}>
+                                                <span>Insufficient {swapCurrencyFormatted} balance</span>
+                                              </Grid>}
+                                            />}
+
                                         </div>
                                     </Grid>}
 

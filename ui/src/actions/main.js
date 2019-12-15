@@ -12,10 +12,11 @@ import {
   daiCheque,
   daiPermitAndCheque,
   chaiCheque,
-  chaiPermitAndCheque
+  chaiPermitAndCheque,
+  daiSwap
 } from '../utils/apiUtils';
 
-export const daiTransfer = async function() {
+export const newDaiTransfer = async function() {
     const { store } = this.props
     // const dachApproved = false
     const dachApproved = store.get('dach.daiApproved')
@@ -63,7 +64,7 @@ export const daiTransfer = async function() {
     }
 }
 
-export const chaiTransfer = async function() {
+export const newChaiTransfer = async function() {
     const { store } = this.props
     // const dachApproved = false
     const dachApproved = store.get('dach.chaiApproved')
@@ -111,54 +112,32 @@ export const chaiTransfer = async function() {
     }
 }
 
-export const daiSwap = async function() {
+export const newDaiSwap = async function() {
     const { store } = this.props
-    const dachApproved = store.get('dachApproved')
-
-    if (!dachApproved) {
-        try {
-            const signedPermit = await signDachTransferPermit.bind(this)(true)
-            try {
-                // metamask race condition
-                setTimeout(async () => {
-                    const signedSwap = await signSwap.bind(this)()
-
-                    // POST /permit_and_swap
-                }, 100)
-            } catch(e) {
-                console.log(e)
-            }
-        } catch(e) {
-            console.log(e)
-        }
-    } else {
-        try {
-            const signedSwap = await signSwap.bind(this)()
-
-            // POST /swap
-        } catch(e) {
-            console.log(e)
-        }
+    store.set('swap.requesting', true)
+    try {
+        const signedSwap = await signSwap.bind(this)()
+        console.log('signedSwap', signedSwap)
+        const result = await daiSwap({ swap: signedSwap })
+        store.set('swap.result', result)
+        store.set('swap.requesting', false)
+    } catch(e) {
+        console.log('swap error', e)
+        store.set('swap.requesting', false)
     }
 }
 
-export const chaiSwap = async function() {
+export const newChaiSwap = async function() {
 
 }
 
-export const daiConvert = async function() {
+export const newDaiConvert = async function() {
 
 }
 
-export const chaiConvert = async function() {
+export const newChaiConvert = async function() {
 
 }
 
 export default {
-    daiTransfer,
-    chaiTransfer,
-    daiSwap,
-    chaiSwap,
-    daiConvert,
-    chaiConvert
 }

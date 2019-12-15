@@ -53,6 +53,7 @@ class SignInContainer extends React.Component {
         const { store } = this.props
         store.set('showSignIn', false)
         initBrowserWallet.bind(this)()
+        // initInjected.bind(this)()
     }
 
     portis() {

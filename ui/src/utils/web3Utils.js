@@ -39,7 +39,7 @@ const RPC_URLS = {
 };
 
 export const injectedConnector = new InjectedConnector({
-  supportedChainIds: [42]
+  supportedChainIds: [1]
 })
 
 export const walletConnectConnector = new WalletConnectConnector({
@@ -162,6 +162,7 @@ export const createChequeMessageData = function() {
     const fee = Web3.utils.toWei(store.get('cheque.fee'))
     const expiry = store.get('cheque.expiry') || 0;
     const walletAddress = store.get('walletAddress')
+    const currency = store.get('cheque.selectedCurrency')
 
     const message = {
         sender: walletAddress,
@@ -175,7 +176,8 @@ export const createChequeMessageData = function() {
 
     console.log('message', message)
 
-    const typedData = JSON.stringify({
+    const type = currency === 'dai' ? 'DaiCheque' : 'ChaiCheque'
+    let messageData = {
         types: {
             EIP712Domain: [{
                     name: 'name',
@@ -193,38 +195,9 @@ export const createChequeMessageData = function() {
                     name: 'verifyingContract',
                     type: 'address'
                 },
-            ],
-            DaiCheque: [{
-                    name: 'sender',
-                    type: 'address'
-                },
-                {
-                    name: 'receiver',
-                    type: 'address'
-                },
-                {
-                    name: 'amount',
-                    type: 'uint256'
-                },
-                {
-                    name: 'fee',
-                    type: 'uint256'
-                },
-                {
-                    name: 'nonce',
-                    type: 'uint256'
-                },
-                {
-                    name: 'expiry',
-                    type: 'uint256'
-                },
-                {
-                    name: 'relayer',
-                    type: 'address'
-                },
-            ],
+            ]
         },
-        primaryType: 'DaiCheque',
+        primaryType: type,
         domain: {
             name: 'Dai Automated Clearing House',
             version: '1',
@@ -232,7 +205,40 @@ export const createChequeMessageData = function() {
             verifyingContract: dachAddress,
         },
         message: message,
-    });
+    }
+    messageData.types[type] = [{
+            name: 'sender',
+            type: 'address'
+        },
+        {
+            name: 'receiver',
+            type: 'address'
+        },
+        {
+            name: 'amount',
+            type: 'uint256'
+        },
+        {
+            name: 'fee',
+            type: 'uint256'
+        },
+        {
+            name: 'nonce',
+            type: 'uint256'
+        },
+        {
+            name: 'expiry',
+            type: 'uint256'
+        },
+        {
+            name: 'relayer',
+            type: 'address'
+        },
+    ]
+
+    console.log(messageData)
+
+    const typedData = JSON.stringify(messageData);
 
     return {
         typedData,
@@ -314,6 +320,98 @@ export const createPermitMessageData = function(allowed, currency) {
     }
 }
 
+export const createSwapMessageData = function() {
+    const store = this.props.store
+    const web3 = store.get('web3')
+    const nonce = Number(store.get('dach.nonce'))
+    const input = Web3.utils.toWei(store.get('swap.inputAmount'))
+    const fee = Web3.utils.toWei(store.get('swap.fee'))
+    const expiry = store.get('swap.expiry') || 0;
+    const walletAddress = store.get('walletAddress')
+    const currency = store.get('swap.selectedCurrency')
+
+    const message = {
+        sender: walletAddress,
+        amount: input,
+        min_eth: 0,
+        fee: fee,
+        nonce: nonce,
+        expiry: expiry,
+        relayer: relayer
+    }
+
+    console.log('message', message)
+
+    const type = currency === 'dai' ? 'DaiSwap' : 'ChaiSwap'
+    let messageData = {
+        types: {
+            EIP712Domain: [{
+                    name: 'name',
+                    type: 'string'
+                },
+                {
+                    name: 'version',
+                    type: 'string'
+                },
+                {
+                    name: 'chainId',
+                    type: 'uint256'
+                },
+                {
+                    name: 'verifyingContract',
+                    type: 'address'
+                },
+            ]
+        },
+        primaryType: type,
+        domain: {
+            name: 'Dai Automated Clearing House',
+            version: '1',
+            chainId: 42,
+            verifyingContract: dachAddress,
+        },
+        message: message,
+    }
+    messageData.types[type] = [{
+            name: 'sender',
+            type: 'address'
+        },
+        {
+            name: 'amount',
+            type: 'uint256'
+        },
+        {
+            name: 'min_eth',
+            type: 'uint256'
+        },
+        {
+            name: 'fee',
+            type: 'uint256'
+        },
+        {
+            name: 'nonce',
+            type: 'uint256'
+        },
+        {
+            name: 'expiry',
+            type: 'uint256'
+        },
+        {
+            name: 'relayer',
+            type: 'address'
+        },
+    ]
+
+    console.log(messageData)
+
+    const typedData = JSON.stringify(messageData);
+
+    return {
+        typedData,
+        message
+    }
+}
+
 export const signData = async function(web3, fromAddress, data, walletType) {
     if (walletType === 'injected' || walletType === 'portis') {
         return new Promise(function(resolve, reject) {
@@ -353,7 +451,6 @@ export const batchSignData = async function(batch, web3, fromAddress, data) {
     }))
 }
 
-
 export const signDachTransferPermit = async function(allowed, currency) {
     const { store } = this.props
     const web3 = store.get('web3')
@@ -369,85 +466,17 @@ export const signDachTransferPermit = async function(allowed, currency) {
 }
 
 export const signSwap = async function() {
-    const store = this.props.store
+    const { store } = this.props
     const web3 = store.get('web3')
-    const nonce = store.get('dachNonce')
-
-    const amount = store.get('swap.amount')
-    const fee = store.get('swap.fee')
-    const minEth = store.get('swap.minEth')
-
     const walletAddress = store.get('walletAddress')
+    const walletType = store.get('walletType')
 
-    const typedData = JSON.stringify({
-        types: {
-            EIP712Domain: [{
-                    name: 'name',
-                    type: 'string'
-                },
-                {
-                    name: 'version',
-                    type: 'string'
-                },
-                {
-                    name: 'chainId',
-                    type: 'uint256'
-                },
-                {
-                    name: 'verifyingContract',
-                    type: 'address'
-                },
-            ],
-            DaiCheque: [{
-                    name: 'sender',
-                    type: 'address'
-                },
-                {
-                    name: 'amount',
-                    type: 'uint256'
-                },
-                {
-                    name: 'min_eth',
-                    type: 'uint256'
-                },
-                {
-                    name: 'fee',
-                    type: 'uint256'
-                },
-                {
-                    name: 'nonce',
-                    type: 'uint256'
-                },
-                {
-                    name: 'expiry',
-                    type: 'uint256'
-                },
-                {
-                    name: 'relayer',
-                    type: 'address'
-                }
+    const messageData = createSwapMessageData.bind(this)()
 
-            ],
-        },
-        primaryType: 'DaiCheque',
-        domain: {
-            name: 'Dai Automated Clearing House',
-            version: '1',
-            chainId: Number(web3.currentProvider.networkVersion),
-            verifyingContract: dachAddress,
-        },
-        message: {
-            sender: walletAddress,
-            amount: amount,
-            min_eth: minEth,
-            fee: fee,
-            nonce: nonce,
-            expiry: 0,
-            relayer: relayer
-        },
-    });
+    console.log(messageData)
 
-    return await signData(web3, walletAddress, typedData)
+    const sig = await signData(web3, walletAddress, messageData.typedData, walletType)
+    return Object.assign({}, sig, messageData.message)
 }
 
 export const signDaiCheque = async function() {
