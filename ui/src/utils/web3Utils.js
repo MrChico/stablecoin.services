@@ -238,7 +238,7 @@ export const createChequeMessageData = function() {
         },
     ]
 
-    console.log(messageData)
+    console.log('createChequeMessageData', messageData)
 
     const typedData = JSON.stringify(messageData);
 
@@ -254,7 +254,7 @@ export const createPermitMessageData = function(allowed, currency) {
     const walletAddress = store.get('walletAddress')
     const nonce = Number(currency === 'dai' ? store.get('daiNonce') : store.get('chaiNonce'))
 
-    console.log('createPermitMessageData', allowed, currency)
+    // console.log('createPermitMessageData', allowed, currency)
 
     const message = {
         holder: walletAddress,
@@ -307,14 +307,16 @@ export const createPermitMessageData = function(allowed, currency) {
         },
         primaryType: 'Permit',
         domain: {
-            // name: currency === 'dai' ? 'Dai Stablecoin' : 'Interest Earning DAI (CHAI)',
-            name: 'Dai Stablecoin',
+            name: currency === 'dai' ? 'Dai Stablecoin' : 'Chai',
+            // name: 'Dai Stablecoin',
             version: '1',
             chainId: 42,
             verifyingContract: currency === 'dai' ? daiAddress : chaiAddress,
         },
         message: message
     });
+
+    console.log('createPermitMessageData', JSON.parse(typedData))
 
     return {
         typedData,
@@ -327,6 +329,7 @@ export const createSwapMessageData = function() {
     const web3 = store.get('web3')
     const nonce = Number(store.get('dach.nonce'))
     const input = Web3.utils.toWei(store.get('swap.inputAmount'))
+    const output = Web3.utils.toWei(store.get('swap.outputAmount'))
     const fee = Web3.utils.toWei(store.get('swap.fee'))
     const expiry = store.get('swap.expiry') || 0;
     const walletAddress = store.get('walletAddress')
@@ -335,7 +338,7 @@ export const createSwapMessageData = function() {
     const message = {
         sender: walletAddress,
         amount: input,
-        min_eth: 0,
+        min_eth: output * 0.99,
         fee: fee,
         nonce: nonce,
         expiry: expiry,
@@ -404,7 +407,7 @@ export const createSwapMessageData = function() {
         },
     ]
 
-    console.log(messageData)
+    console.log('createSwapMessageData', messageData)
 
     const typedData = JSON.stringify(messageData);
 

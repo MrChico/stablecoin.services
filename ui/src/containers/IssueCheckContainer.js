@@ -46,6 +46,11 @@ const styles = () => ({
     actionsContainer: {
         // marginTop: theme.spacing(3)
     },
+    contentContainer: {
+        border: '1px solid #eee',
+        borderRadius: theme.spacing(1),
+        boxShadow: '0px 0px 30px 0px rgba(0, 0, 0, 0.05)'
+    },
     accountButton: {
         '& svg': {
             marginRight: theme.spacing(1)
@@ -59,8 +64,10 @@ const styles = () => ({
     account: {},
     panel: {
         padding: theme.spacing(3),
-        border: '1px solid #eee',
-        borderRadius: theme.spacing(1),
+        paddingTop: theme.spacing(4),
+        paddingBottom: theme.spacing(4),
+        // border: '1px solid #eee',
+        // borderRadius: theme.spacing(1),
         minHeight: '100%'
     },
     accountItem: {
@@ -130,7 +137,16 @@ const styles = () => ({
         width: '100%'
     },
     tabs: {
-      margin: '0px auto'
+      backgroundColor: '#fafafa',
+      margin: '0px auto',
+      borderTopRightRadius: 8,
+      borderTopLeftRadius: 8,
+      '& .MuiTab-labelIcon': {
+        minHeight: 100
+      },
+      '& button': {
+        borderBottom: '1px solid #eee'
+      }
     },
     toggleHeader: {
       width: '100%',
@@ -179,7 +195,7 @@ class IssueCheckContainer extends React.Component {
             getDaiData.bind(this)();
             getChaiData.bind(this)();
             getFeeData.bind(this)();
-            // console.log(this.props.store.getState())
+            console.log(this.props.store.getState())
         }, 10 * 1000);
     }
 
@@ -234,7 +250,7 @@ class IssueCheckContainer extends React.Component {
         store.set('swap.selectedCurrency', newValue)
         store.set('swap.result', null)
         getFeeData.bind(this)();
-        // store.set('swap.requesting', false)
+        this.swapAmountChanged.bind(this)(store.get('swap.inputAmount'))
     }
 
     switchConvertTab(event, newValue) {
@@ -323,7 +339,7 @@ class IssueCheckContainer extends React.Component {
 
         const canSwap = swapInputAmount && !insufficientSwapBalance
 
-        console.log('issue check render', this.props.store.getState())
+        // console.log('issue check render', this.props.store.getState())
 
         return <Grid item xs={12}>
             {
@@ -331,26 +347,22 @@ class IssueCheckContainer extends React.Component {
                         {/*<Typography variant='h6'>Welcome to Stablecoin.services<br /><Typography variant='subtitle1'>Transfer or swap DAI without holding any ETH</Typography></Typography>*/}
                         {/*<Typography variant='subtitle1'>The new version of the Dai contract allows for transfers via signatures, allowing you to send Dai without holding any eth.</Typography>*/}
 
-                        <Grid className={classes.actionsContainer} spacing={4} container="container">
-                            <Grid item xs={12}>
-                                <Grid container>
-                                    <Grid item xs={12} sm={12} md={7} className={classes.tabs}>
-                                      <Tabs
-                                        orientation="horizontal"
-                                        variant="fullWidth"
-                                        value={selectedActionTab}
-                                        onChange={this.switchActionTab.bind(this)}
-                                      >
-                                        <Tab label="Send" icon={<ArrowRightIcon />} />
-                                        <Tab label="Swap" icon={<SwapIcon />} />
-                                        <Tab label="Convert" icon={<LoopIcon />} />
-                                      </Tabs>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                            <Grid item xs={12}>
+                        <Grid className={classes.actionsContainer} container="container" justify='center'>
+                            <Grid item xs={12} sm={12} md={7} className={classes.contentContainer}>
                                 <Grid container justify='center'>
-                                    {selectedActionTab === 0 && <Grid item xs={12} sm={12} md={7}>
+                                    <Grid item xs={12} className={classes.tabs}>
+                                        <Tabs
+                                          orientation="horizontal"
+                                          variant="fullWidth"
+                                          value={selectedActionTab}
+                                          onChange={this.switchActionTab.bind(this)}
+                                        >
+                                          <Tab label="Send" icon={<ArrowRightIcon />} />
+                                          <Tab label="Swap" icon={<SwapIcon />} />
+                                          <Tab label="Convert" icon={<LoopIcon />} />
+                                        </Tabs>
+                                    </Grid>
+                                    {selectedActionTab === 0 && <Grid item xs={12} sm={12} md={12}>
                                         <div className={classes.panel}>
                                             <ToggleButtonGroup className={classes.toggleHeader} size="large" value={chequeCurrency} exclusive onChange={this.switchSendTab.bind(this)}>
                                                 <ToggleButton value={'dai'}>Send DAI</ToggleButton>
@@ -418,7 +430,7 @@ class IssueCheckContainer extends React.Component {
                                         </div>
                                     </Grid>}
 
-                                    {selectedActionTab === 1 && <Grid item xs={12} sm={12} md={7}>
+                                    {selectedActionTab === 1 && <Grid item xs={12} sm={12} md={12}>
                                         <div className={classes.panel}>
                                             <ToggleButtonGroup className={classes.toggleHeader} size="large" value={swapCurrency} exclusive onChange={this.switchSwapTab.bind(this)}>
                                                 <ToggleButton value={'dai'}>DAI <ArrowRightIcon /> ETH</ToggleButton>
@@ -499,7 +511,7 @@ class IssueCheckContainer extends React.Component {
                                         </div>
                                     </Grid>}
 
-                                    {selectedActionTab === 2 && <Grid item xs={12} sm={12} md={7}>
+                                    {selectedActionTab === 2 && <Grid item xs={12} sm={12} md={12}>
                                         <div className={classes.panel}>
                                             <ToggleButtonGroup className={classes.toggleHeader} size="large" value={convertCurrency} exclusive onChange={this.switchConvertTab.bind(this)}>
                                                 <ToggleButton value={'dai'}>DAI <ArrowRightIcon /> CHAI</ToggleButton>

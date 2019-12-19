@@ -11,7 +11,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 
 const styles = () => ({
     navContainer: {
-        paddingTop: theme.spacing(1),
+        paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(3),
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(2),
@@ -52,12 +52,12 @@ class NavContainer extends React.Component {
             {<Grid className={classes.navContainer} container alignItems='center'>
               <Grid item xs={6}>
                   <Grid container alignItems='center'>
-                        <Typography variant='h6'>Stablecoin.services<br /><Typography variant='subtitle1'>Transfer or swap DAI without holding&nbsp;ETH</Typography></Typography>
+                        <Typography variant='h6'>Stablecoin.services{/*<br /><Typography variant='subtitle1'>Transfer or swap DAI without holding&nbsp;ETH</Typography>*/}</Typography>
                   </Grid>
               </Grid>
               <Grid item xs={6}>
                   <Grid container justify='flex-end'>
-                  {walletConnecting ? <Button color='primary' disabled className={classes.accountButton} variant='contained'>Connecting...</Button> : <Button color='primary' onClick={() => {
+                  {walletConnecting ? <Button color='primary' size='large' disabled className={classes.accountButton} variant='contained'>Connecting...</Button> : <Button color='primary' size='large' onClick={() => {
                         store.set('showSignIn', true)
                         // this.props.connectPortis()
                     }} variant={walletAddress ? 'text' : "contained"} className={classes.accountButton}>
