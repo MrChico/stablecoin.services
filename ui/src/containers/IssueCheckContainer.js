@@ -319,12 +319,13 @@ class IssueCheckContainer extends React.Component {
         const convertCurrencyFormatted = convertCurrency.toUpperCase()
         const convertRequesting = store.get('convert.requesting');
         const convertFee = store.get('convert.fee')
+        const convertResult = store.get('convert.result')
 
         const walletLoading = store.get('walletLoading')
         const balancesLoaded = daiBalance.length && chaiBalance.length
         const isSignedIn = walletAddress && walletAddress.length && !walletLoading && balancesLoaded;
         const insufficientTransferBalance = (Number(chequeAmount) + Number(chequeFee)) > Number(chequeCurrency === 'dai' ? daiBalance : chaiBalance);
-        const insufficientConvertBalance = (Number(convertAmount) + Number(chequeFee)) > Number(convertCurrency === 'dai' ? daiBalance : chaiBalance);
+        const insufficientConvertBalance = (Number(convertAmount) + Number(convertFee)) > Number(convertCurrency === 'dai' ? daiBalance : chaiBalance);
         const insufficientSwapBalance = ((Number(swapInputAmount) + Number(swapFee)) > Number(swapCurrency === 'dai' ? daiBalance : chaiBalance))
 
         const showChequeSuccess = chequeResult && chequeResult.success === 'true'
@@ -335,9 +336,13 @@ class IssueCheckContainer extends React.Component {
         const showSwapError = swapResult && swapResult.success === 'false'
         const showSwapValidationError = !showSwapSuccess && swapInputAmount && insufficientSwapBalance && isSignedIn
 
-        const canDaiTransfer = chequeAmount && chequeToValid && !insufficientTransferBalance;
+        const showConvertSuccess = convertResult && convertResult.success === 'true'
+        const showConvertError = convertResult && convertResult.success === 'false'
+        const showConvertValidationError = !showConvertSuccess && convertAmount && insufficientTransferBalance && isSignedIn
 
+        const canDaiTransfer = chequeAmount && chequeToValid && !insufficientTransferBalance;
         const canSwap = swapInputAmount && !insufficientSwapBalance
+        const canConvert = convertAmount && !insufficientConvertBalance;
 
         // console.log('issue check render', this.props.store.getState())
 
@@ -538,19 +543,33 @@ class IssueCheckContainer extends React.Component {
                                                     className={classes.transferBreakdown}
                                                   />
                                             </div>
+
                                             <div className={classes.actionButtonContainer}>
                                                 <Button color='primary'
                                                     size='large'
-                                                    disabled={!canSwap}
-                                                    onClick={this.convert} variant="contained" disabled={!isSignedIn || !canDaiTransfer} className={classes.actionButton}>
-                                                    Convert
+                                                    onClick={this.convert.bind(this)} variant="contained" disabled={!isSignedIn || !canConvert || showConvertError || showConvertValidationError || convertRequesting} className={classes.actionButton}>
+                                                    {convertRequesting ? <CircularProgress size={14} className={classes.spinner} /> : 'Convert'}
                                                 </Button>
                                             </div>
 
-                                            {convertAmount && insufficientConvertBalance && isSignedIn && <SnackbarContent
+                                            {showConvertSuccess && <SnackbarContent
+                                              className={classes.success}
+                                              message={<Grid item xs={12}>
+                                                <span>Convert started. <a href={`https://kovan.etherscan.io/tx/${convertResult.message.joinHash}`} target='_blank'>View transaction</a></span>
+                                              </Grid>}
+                                            />}
+
+                                            {showConvertError && <SnackbarContent
+                                              className={classes.errorApi}
+                                              message={<Grid item xs={12}>
+                                                <span>{convertResult.message}</span>
+                                              </Grid>}
+                                            />}
+
+                                            {showConvertValidationError && <SnackbarContent
                                               className={classes.error}
                                               message={<Grid item xs={12}>
-                                                <span>Insufficient {convertCurrencyFormatted} balance </span>
+                                                <span>Insufficient {convertCurrencyFormatted} balance</span>
                                               </Grid>}
                                             />}
 

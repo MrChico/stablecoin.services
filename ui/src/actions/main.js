@@ -3,6 +3,8 @@ import {
   signDaiCheque,
   signChaiCheque,
   signSwap,
+  signDaiConvert,
+  signChaiConvert,
   batchSignData,
   createChequeMessageData,
   createPermitMessageData
@@ -14,7 +16,11 @@ import {
   chaiCheque,
   chaiPermitAndCheque,
   daiSwap,
-  chaiSwap
+  chaiSwap,
+  daiConvert,
+  daiPermitAndConvert,
+  chaiConvert,
+  chaiPermitAndConvert
 } from '../utils/apiUtils';
 
 export const newDaiTransfer = async function() {
@@ -144,11 +150,97 @@ export const newChaiSwap = async function() {
 }
 
 export const newDaiConvert = async function() {
+    const { store } = this.props
 
+    const dachApproved = store.get('dach.daiApproved')
+    const web3 = store.get('web3')
+    const walletAddress = store.get('walletAddress')
+
+    store.set('convert.requesting', true)
+
+    if (!dachApproved) {
+        try {
+            const signedPermit = await signDachTransferPermit.bind(this)(true, 'dai')
+            try {
+                // metamask race condition
+                setTimeout(async () => {
+                    const signedConvert = await signDaiConvert.bind(this)()
+                    // POST /permit_and_transfer
+                    const result = await daiPermitAndConvert({
+                        permit: signedPermit,
+                        join: signedConvert
+                    })
+                    store.set('convert.result', result)
+                    store.set('convert.requesting', false)
+                }, 10)
+            } catch(e) {
+                console.log(e)
+                store.set('convert.requesting', false)
+            }
+        } catch(e) {
+            console.log(e)
+            store.set('convert.requesting', false)
+        }
+    } else {
+        try {
+            const signedConvert = await signDaiConvert.bind(this)()
+
+            // POST /transfer
+            const result = await daiConvert({ join: signedConvert })
+            store.set('convert.result', result)
+            store.set('convert.requesting', false)
+        } catch(e) {
+            console.log('cheque error', e)
+            store.set('convert.requesting', false)
+        }
+    }
 }
 
 export const newChaiConvert = async function() {
+    const { store } = this.props
 
+    const dachApproved = store.get('dach.daiApproved')
+    const web3 = store.get('web3')
+    const walletAddress = store.get('walletAddress')
+
+    store.set('convert.requesting', true)
+
+    if (!dachApproved) {
+        try {
+            const signedPermit = await signDachTransferPermit.bind(this)(true, 'chai')
+            try {
+                // metamask race condition
+                setTimeout(async () => {
+                    const signedConvert = await signChaiConvert.bind(this)()
+                    // POST /permit_and_transfer
+                    const result = await chaiPermitAndConvert({
+                        permit: signedPermit,
+                        join: signedConvert
+                    })
+                    store.set('convert.result', result)
+                    store.set('convert.requesting', false)
+                }, 10)
+            } catch(e) {
+                console.log(e)
+                store.set('convert.requesting', false)
+            }
+        } catch(e) {
+            console.log(e)
+            store.set('convert.requesting', false)
+        }
+    } else {
+        try {
+            const signedConvert = await signChaiConvert.bind(this)()
+
+            // POST /transfer
+            const result = await chaiConvert({ join: signedConvert })
+            store.set('convert.result', result)
+            store.set('convert.requesting', false)
+        } catch(e) {
+            console.log('cheque error', e)
+            store.set('convert.requesting', false)
+        }
+    }
 }
 
 export default {

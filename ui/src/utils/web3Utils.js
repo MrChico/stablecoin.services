@@ -417,6 +417,98 @@ export const createSwapMessageData = function() {
     }
 }
 
+export const createConvertMessageData = function() {
+    const store = this.props.store
+    const web3 = store.get('web3')
+    const nonce = Number(store.get('dach.nonce'))
+    const amount = Web3.utils.toWei(store.get('convert.amount'))
+    const fee = Web3.utils.toWei(store.get('convert.fee'))
+    const expiry = store.get('convert.expiry') || 0;
+    const walletAddress = store.get('walletAddress')
+    const currency = store.get('convert.selectedCurrency')
+
+    const message = {
+        sender: walletAddress,
+        receiver: walletAddress,
+        amount: amount,
+        fee: fee,
+        nonce: nonce,
+        expiry: expiry,
+        relayer: relayer
+    }
+
+    console.log('message', message)
+
+    const type = currency === 'dai' ? 'ChaiJoin' : 'ChaiExit'
+    let messageData = {
+        types: {
+            EIP712Domain: [{
+                    name: 'name',
+                    type: 'string'
+                },
+                {
+                    name: 'version',
+                    type: 'string'
+                },
+                {
+                    name: 'chainId',
+                    type: 'uint256'
+                },
+                {
+                    name: 'verifyingContract',
+                    type: 'address'
+                },
+            ]
+        },
+        primaryType: type,
+        domain: {
+            name: 'Dai Automated Clearing House',
+            version: '1',
+            chainId: 42,
+            verifyingContract: dachAddress,
+        },
+        message: message,
+    }
+    messageData.types[type] = [{
+            name: 'sender',
+            type: 'address'
+        },
+        {
+            name: 'receiver',
+            type: 'address'
+        },
+        {
+            name: 'amount',
+            type: 'uint256'
+        },
+        {
+            name: 'fee',
+            type: 'uint256'
+        },
+        {
+            name: 'nonce',
+            type: 'uint256'
+        },
+        {
+            name: 'expiry',
+            type: 'uint256'
+        },
+        {
+            name: 'relayer',
+            type: 'address'
+        },
+    ]
+
+    console.log('createConvertMessageData', messageData)
+
+    const typedData = JSON.stringify(messageData);
+
+    return {
+        typedData,
+        message
+    }
+}
+
 export const signData = async function(web3, fromAddress, data, walletType) {
     if (walletType === 'injected' || walletType === 'portis') {
         return new Promise(function(resolve, reject) {
@@ -507,6 +599,32 @@ export const signSwap = async function() {
     console.log(messageData)
 
     const sig = await signData(web3, walletAddress, messageData.typedData, walletType)
+    return Object.assign({}, sig, messageData.message)
+}
+
+export const signDaiConvert = async function() {
+    const store = this.props.store
+    const web3 = store.get('web3')
+    const walletAddress = store.get('walletAddress')
+    const walletType = store.get('walletType')
+
+    const messageData = createConvertMessageData.bind(this)()
+
+    const sig = await signData(web3, walletAddress, messageData.typedData, walletType)
+
+    return Object.assign({}, sig, messageData.message)
+}
+
+export const signChaiConvert = async function() {
+    const store = this.props.store
+    const web3 = store.get('web3')
+    const walletAddress = store.get('walletAddress')
+    const walletType = store.get('walletType')
+
+    const messageData = createConvertMessageData.bind(this)()
+
+    const sig = await signData(web3, walletAddress, messageData.typedData, walletType)
+
     return Object.assign({}, sig, messageData.message)
 }
 

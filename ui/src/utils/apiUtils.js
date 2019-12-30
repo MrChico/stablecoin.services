@@ -46,22 +46,22 @@ export const chaiPermitAndSwapFee = async function() {
 
 // convert
 export const daiConvertFee = async function() {
-    const request = await fetch(`${API_URL}/v1/daiCheque/fee`)
+    const request = await fetch(`${API_URL}/v1/chaiJoin/fee`)
     return request.json()
 }
 
 export const chaiConvertFee = async function() {
-    const request = await fetch(`${API_URL}/v1/chaiCheque/fee`)
+    const request = await fetch(`${API_URL}/v1/chaiExit/fee`)
     return request.json()
 }
 
 export const daiPermitAndConvertFee = async function() {
-    const request = await fetch(`${API_URL}/v1/daiCheque/fee`)
+    const request = await fetch(`${API_URL}/v1/chaiJoin/fee`)
     return request.json()
 }
 
 export const chaiPermitAndConvertFee = async function() {
-    const request = await fetch(`${API_URL}/v1/chaiCheque/fee`)
+    const request = await fetch(`${API_URL}/v1/chaiExit/fee`)
     return request.json()
 }
 
@@ -173,7 +173,51 @@ export const chaiSwap = async function(data) {
     })
     return request.json()
 }
+
 // convert
+export const daiConvert = async function(data) {
+    const request = await fetch(`${API_URL}/v1/chaiJoin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    return request.json()
+}
+
+export const daiPermitAndConvert = async function(data) {
+    const request = await fetch(`${API_URL}/v1/chaiPermitAndJoin`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    return request.json()
+}
+
+export const chaiConvert = async function(data) {
+    const request = await fetch(`${API_URL}/v1/chaiExit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    return request.json()
+}
+
+export const chaiPermitAndConvert = async function(data) {
+    const request = await fetch(`${API_URL}/v1/chaiPermitAndExit`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+    return request.json()
+}
 
 export default {
     daiChequeFee
