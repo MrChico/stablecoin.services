@@ -196,7 +196,7 @@ class IssueCheckContainer extends React.Component {
             getChaiData.bind(this)();
             getFeeData.bind(this)();
             console.log(this.props.store.getState())
-        }, 10 * 1000);
+        }, 20 * 1000);
     }
 
     transfer() {
@@ -340,9 +340,9 @@ class IssueCheckContainer extends React.Component {
         const showConvertError = convertResult && convertResult.success === 'false'
         const showConvertValidationError = !showConvertSuccess && convertAmount && insufficientTransferBalance && isSignedIn
 
-        const canDaiTransfer = chequeAmount && chequeToValid && !insufficientTransferBalance;
-        const canSwap = swapInputAmount && !insufficientSwapBalance
-        const canConvert = convertAmount && !insufficientConvertBalance;
+        const canDaiTransfer = chequeFee && chequeAmount && chequeToValid && !insufficientTransferBalance;
+        const canSwap = swapFee && swapInputAmount && !insufficientSwapBalance
+        const canConvert = convertFee && convertAmount && !insufficientConvertBalance;
 
         // console.log('issue check render', this.props.store.getState())
 
