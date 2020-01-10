@@ -199,7 +199,7 @@ export const newDaiConvert = async function() {
 export const newChaiConvert = async function() {
     const { store } = this.props
 
-    const dachApproved = store.get('dach.daiApproved')
+    const dachApproved = store.get('dach.chaiApproved')
     const web3 = store.get('web3')
     const walletAddress = store.get('walletAddress')
 
@@ -215,7 +215,7 @@ export const newChaiConvert = async function() {
                     // POST /permit_and_transfer
                     const result = await chaiPermitAndConvert({
                         permit: signedPermit,
-                        join: signedConvert
+                        exit: signedConvert
                     })
                     store.set('convert.result', result)
                     store.set('convert.requesting', false)
@@ -233,7 +233,7 @@ export const newChaiConvert = async function() {
             const signedConvert = await signChaiConvert.bind(this)()
 
             // POST /transfer
-            const result = await chaiConvert({ join: signedConvert })
+            const result = await chaiConvert({ exit: signedConvert })
             store.set('convert.result', result)
             store.set('convert.requesting', false)
         } catch(e) {

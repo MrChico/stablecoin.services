@@ -56,12 +56,12 @@ export const chaiConvertFee = async function() {
 }
 
 export const daiPermitAndConvertFee = async function() {
-    const request = await fetch(`${API_URL}/v1/chaiJoin/fee`)
+    const request = await fetch(`${API_URL}/v1/chaiJoinAndPermit/fee`)
     return request.json()
 }
 
 export const chaiPermitAndConvertFee = async function() {
-    const request = await fetch(`${API_URL}/v1/chaiExit/fee`)
+    const request = await fetch(`${API_URL}/v1/chaiExitAndPermit/fee`)
     return request.json()
 }
 

@@ -555,7 +555,7 @@ class IssueCheckContainer extends React.Component {
                                             {showConvertSuccess && <SnackbarContent
                                               className={classes.success}
                                               message={<Grid item xs={12}>
-                                                <span>Convert started. <a href={`https://kovan.etherscan.io/tx/${convertResult.message.joinHash}`} target='_blank'>View transaction</a></span>
+                                                <span>Conversion started. <a href={`https://kovan.etherscan.io/tx/${convertResult.message.joinHash}`} target='_blank'>View transaction</a></span>
                                               </Grid>}
                                             />}
 
