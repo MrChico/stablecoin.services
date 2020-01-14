@@ -16,7 +16,9 @@ import {
   chaiCheque,
   chaiPermitAndCheque,
   daiSwap,
+  daiPermitAndSwap,
   chaiSwap,
+  chaiPermitAndSwap,
   daiConvert,
   daiPermitAndConvert,
   chaiConvert,
@@ -121,31 +123,83 @@ export const newChaiTransfer = async function() {
 
 export const newDaiSwap = async function() {
     const { store } = this.props
+    const dachApproved = store.get('dach.daiApproved')
     store.set('swap.requesting', true)
-    try {
-        const signedSwap = await signSwap.bind(this)()
-        console.log('signedSwap', signedSwap)
-        const result = await daiSwap({ swap: signedSwap })
-        store.set('swap.result', result)
-        store.set('swap.requesting', false)
-    } catch(e) {
-        console.log('swap error', e)
-        store.set('swap.requesting', false)
+
+    if (!dachApproved) {
+        try {
+            const signedPermit = await signDachTransferPermit.bind(this)(true, 'dai')
+            try {
+                // metamask race condition
+                setTimeout(async () => {
+                  const signedSwap = await signSwap.bind(this)()
+                  const result = await daiPermitAndSwap({
+                      permit: signedPermit,
+                      swap: signedSwap
+                  })
+                  store.set('swap.result', result)
+                  store.set('swap.requesting', false)
+              }, 10)
+            } catch(e) {
+                console.log(e)
+                store.set('swap.requesting', false)
+            }
+        } catch(e) {
+            console.log(e)
+            store.set('swap.requesting', false)
+        }
+    } else {
+        try {
+            const signedSwap = await signSwap.bind(this)()
+            console.log('signedSwap', signedSwap)
+            const result = await daiSwap({ swap: signedSwap })
+            store.set('swap.result', result)
+            store.set('swap.requesting', false)
+        } catch(e) {
+            console.log('swap error', e)
+            store.set('swap.requesting', false)
+        }
     }
 }
 
 export const newChaiSwap = async function() {
     const { store } = this.props
+    const dachApproved = store.get('dach.chaiApproved')
     store.set('swap.requesting', true)
-    try {
-        const signedSwap = await signSwap.bind(this)()
-        console.log('signedSwap', signedSwap)
-        const result = await chaiSwap({ swap: signedSwap })
-        store.set('swap.result', result)
-        store.set('swap.requesting', false)
-    } catch(e) {
-        console.log('swap error', e)
-        store.set('swap.requesting', false)
+
+    if (!dachApproved) {
+        try {
+            const signedPermit = await signDachTransferPermit.bind(this)(true, 'chai')
+            try {
+                // metamask race condition
+                setTimeout(async () => {
+                  const signedSwap = await signSwap.bind(this)()
+                  const result = await chaiPermitAndSwap({
+                      permit: signedPermit,
+                      swap: signedSwap
+                  })
+                  store.set('swap.result', result)
+                  store.set('swap.requesting', false)
+              }, 10)
+            } catch(e) {
+                console.log(e)
+                store.set('swap.requesting', false)
+            }
+        } catch(e) {
+            console.log(e)
+            store.set('swap.requesting', false)
+        }
+    } else {
+        try {
+            const signedSwap = await signSwap.bind(this)()
+            console.log('signedSwap', signedSwap)
+            const result = await chaiSwap({ swap: signedSwap })
+            store.set('swap.result', result)
+            store.set('swap.requesting', false)
+        } catch(e) {
+            console.log('swap error', e)
+            store.set('swap.requesting', false)
+        }
     }
 }
 

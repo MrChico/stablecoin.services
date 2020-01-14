@@ -16,6 +16,10 @@ import { signDachTransferPermit, getDaiData, getChaiData, getFeeData } from '../
 import { getSwapOutput } from '../utils/uniswapUtils'
 import { newDaiTransfer, newDaiSwap, newDaiConvert, newChaiTransfer, newChaiSwap, newChaiConvert } from '../actions/main'
 
+import ButlerLoading from '../assets/walking_start_resized.gif'
+
+import ButlerLoader from '../components/ButlerLoader'
+
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
@@ -404,34 +408,34 @@ class IssueCheckContainer extends React.Component {
                                                   />
                                             </div>
                                             <div className={classes.actionButtonContainer}>
-                                                <Button color='primary'
+                                                {chequeRequesting || showChequeSuccess ? <ButlerLoader success={showChequeSuccess} /> : <Button color='primary'
                                                     size='large'
                                                     disabled={!isSignedIn || !canDaiTransfer || showChequeError || showChequeValidationError || chequeRequesting}
                                                     onClick={this.transfer.bind(this)} variant="contained" className={classes.actionButton}>
-                                                    {chequeRequesting ? <CircularProgress size={14} className={classes.spinner} /> : 'Transfer'}
-                                                </Button>
+                                                    Transfer
+                                                </Button>}
                                             </div>
 
-                                            {showChequeSuccess && <SnackbarContent
+                                            {showChequeSuccess ? <SnackbarContent
                                               className={classes.success}
                                               message={<Grid item xs={12}>
                                                 <span>Transfer started. <a href={`https://kovan.etherscan.io/tx/${chequeResult.message.chequeHash}`} target='_blank'>View transaction</a></span>
                                               </Grid>}
-                                            />}
+                                            /> : null}
 
-                                            {showChequeError && <SnackbarContent
+                                            {showChequeError ? <SnackbarContent
                                               className={classes.errorApi}
                                               message={<Grid item xs={12}>
                                                 <span>{chequeResult.message}</span>
                                               </Grid>}
-                                            />}
+                                            /> : null}
 
-                                            {showChequeValidationError && <SnackbarContent
+                                            {showChequeValidationError ? <SnackbarContent
                                               className={classes.error}
                                               message={<Grid item xs={12}>
                                                 <span>Insufficient {chequeCurrencyFormatted} balance</span>
                                               </Grid>}
-                                            />}
+                                            /> : null}
                                         </div>
                                     </Grid>}
 
@@ -485,33 +489,33 @@ class IssueCheckContainer extends React.Component {
                                             </div>
 
                                             <div className={classes.actionButtonContainer}>
-                                                <Button color='primary'
+                                                {swapRequesting || showSwapSuccess ? <ButlerLoader success={showSwapSuccess} /> : <Button color='primary'
                                                     size='large'
                                                     onClick={this.swap.bind(this)} variant="contained" disabled={!isSignedIn || !canSwap || showSwapError || showSwapValidationError || swapRequesting} className={classes.actionButton}>
-                                                    {swapRequesting ? <CircularProgress size={14} className={classes.spinner} /> : 'Swap'}
-                                                </Button>
+                                                    Swap
+                                                </Button>}
                                             </div>
 
-                                            {showSwapSuccess && <SnackbarContent
+                                            {showSwapSuccess ? <SnackbarContent
                                               className={classes.success}
                                               message={<Grid item xs={12}>
                                                 <span>Swap started. <a href={`https://kovan.etherscan.io/tx/${swapResult.message.swapHash}`} target='_blank'>View transaction</a></span>
                                               </Grid>}
-                                            />}
+                                            /> : null}
 
-                                            {showSwapError && <SnackbarContent
+                                            {showSwapError ? <SnackbarContent
                                               className={classes.errorApi}
                                               message={<Grid item xs={12}>
                                                 <span>{swapResult.message}</span>
                                               </Grid>}
-                                            />}
+                                            /> : null}
 
-                                            {showSwapValidationError && <SnackbarContent
+                                            {showSwapValidationError ? <SnackbarContent
                                               className={classes.error}
                                               message={<Grid item xs={12}>
                                                 <span>Insufficient {swapCurrencyFormatted} balance</span>
                                               </Grid>}
-                                            />}
+                                            /> : null}
 
                                         </div>
                                     </Grid>}
@@ -545,33 +549,33 @@ class IssueCheckContainer extends React.Component {
                                             </div>
 
                                             <div className={classes.actionButtonContainer}>
-                                                <Button color='primary'
+                                                {convertRequesting || showConvertSuccess ? <ButlerLoader success={showConvertSuccess} /> : <Button color='primary'
                                                     size='large'
                                                     onClick={this.convert.bind(this)} variant="contained" disabled={!isSignedIn || !canConvert || showConvertError || showConvertValidationError || convertRequesting} className={classes.actionButton}>
-                                                    {convertRequesting ? <CircularProgress size={14} className={classes.spinner} /> : 'Convert'}
-                                                </Button>
+                                                    Convert
+                                                </Button>}
                                             </div>
 
-                                            {showConvertSuccess && <SnackbarContent
+                                            {showConvertSuccess ? <SnackbarContent
                                               className={classes.success}
                                               message={<Grid item xs={12}>
                                                 <span>Conversion started. <a href={`https://kovan.etherscan.io/tx/${convertResult.message.joinHash}`} target='_blank'>View transaction</a></span>
                                               </Grid>}
-                                            />}
+                                            /> : null}
 
-                                            {showConvertError && <SnackbarContent
+                                            {showConvertError ? <SnackbarContent
                                               className={classes.errorApi}
                                               message={<Grid item xs={12}>
                                                 <span>{convertResult.message}</span>
                                               </Grid>}
-                                            />}
+                                            /> : null}
 
-                                            {showConvertValidationError && <SnackbarContent
+                                            {showConvertValidationError ? <SnackbarContent
                                               className={classes.error}
                                               message={<Grid item xs={12}>
                                                 <span>Insufficient {convertCurrencyFormatted} balance</span>
                                               </Grid>}
-                                            />}
+                                            /> : null}
 
                                         </div>
                                     </Grid>}

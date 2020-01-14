@@ -35,12 +35,12 @@ export const chaiSwapFee = async function() {
 }
 
 export const daiPermitAndSwapFee = async function() {
-    const request = await fetch(`${API_URL}/v1/daiSwap/fee`)
+    const request = await fetch(`${API_URL}/v1/daiPermitAndSwap/fee`)
     return request.json()
 }
 
 export const chaiPermitAndSwapFee = async function() {
-    const request = await fetch(`${API_URL}/v1/daiSwap/fee`)
+    const request = await fetch(`${API_URL}/v1/chaiPermitAndSwap/fee`)
     return request.json()
 }
 
@@ -156,9 +156,45 @@ export const daiSwap = async function(data) {
     return request.json()
 }
 
+export const daiPermitAndSwap = async function(data) {
+    // console.log('daiCheque', data)
+    const request = await fetch(`${API_URL}/v1/daiPermitAndSwap`, {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        // mode: 'cors', // no-cors, *cors, same-origin
+        // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        // credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        // redirect: 'follow', // manual, *follow, error
+        // referrer: 'no-referrer', // no-referrer, *client
+        body: JSON.stringify(data) // body data type must match "Content-Type" header
+    })
+    return request.json()
+}
+
 export const chaiSwap = async function(data) {
     // console.log('daiCheque', data)
     const request = await fetch(`${API_URL}/v1/chaiSwap`, {
+        method: 'POST', // *GET, POST, PUT, DELETE, etc.
+        // mode: 'cors', // no-cors, *cors, same-origin
+        // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+        // credentials: 'same-origin', // include, *same-origin, omit
+        headers: {
+          'Content-Type': 'application/json'
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        // redirect: 'follow', // manual, *follow, error
+        // referrer: 'no-referrer', // no-referrer, *client
+        body: JSON.stringify(data) // body data type must match "Content-Type" header
+    })
+    return request.json()
+}
+
+export const chaiPermitAndSwap = async function(data) {
+    // console.log('daiCheque', data)
+    const request = await fetch(`${API_URL}/v1/chaiPermitAndSwap`, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         // mode: 'cors', // no-cors, *cors, same-origin
         // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -187,7 +223,7 @@ export const daiConvert = async function(data) {
 }
 
 export const daiPermitAndConvert = async function(data) {
-    const request = await fetch(`${API_URL}/v1/chaiPermitAndJoin`, {
+    const request = await fetch(`${API_URL}/v1/daiPermitAndJoin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
