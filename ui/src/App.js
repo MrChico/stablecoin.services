@@ -76,6 +76,7 @@ const initialState = {
     'cheque.selectedCurrency': 'dai',
     'cheque.result': null,
     'cheque.requesting': false,
+    'cheque.networkRequesting': false,
     // swap
     'swap.inputAmount': '',
     'swap.outputAmount': '',
@@ -84,12 +85,14 @@ const initialState = {
     'swap.selectedCurrency': 'dai',
     'swap.result': null,
     'swap.requesting': false,
+    'swap.networkRequesting': false,
     // convert
     'convert.amount': '',
     'convert.fee': '',
     'convert.selectedCurrency': 'dai',
     'convert.result': null,
-    'convert.requesting': false
+    'convert.requesting': false,
+    'convert.networkRequesting': false
 }
 
 class App extends React.Component {

@@ -41,6 +41,8 @@ export const newDaiTransfer = async function() {
                 // metamask race condition
                 setTimeout(async () => {
                     const signedCheque = await signDaiCheque.bind(this)()
+
+                    store.set('cheque.networkRequesting', true)
                     // POST /permit_and_transfer
                     const result = await daiPermitAndCheque({
                         permit: signedPermit,
@@ -48,11 +50,13 @@ export const newDaiTransfer = async function() {
                     })
                     store.set('cheque.result', result)
                     store.set('cheque.requesting', false)
+                    store.set('cheque.networkRequesting', false)
                     console.log('daiPermitAndCheque', result)
                 }, 10)
             } catch(e) {
                 console.log(e)
                 store.set('cheque.requesting', false)
+                store.set('cheque.networkRequesting', false)
             }
         } catch(e) {
             console.log(e)
@@ -63,12 +67,15 @@ export const newDaiTransfer = async function() {
             const signedCheque = await signDaiCheque.bind(this)()
             console.log('signedCheque', signedCheque)
             // POST /transfer
+            store.set('cheque.networkRequesting', true)
             const result = await daiCheque({ cheque: signedCheque })
             store.set('cheque.result', result)
             store.set('cheque.requesting', false)
+            store.set('cheque.networkRequesting', false)
         } catch(e) {
             console.log('cheque error', e)
             store.set('cheque.requesting', false)
+            store.set('cheque.networkRequesting', false)
         }
     }
 }
@@ -90,17 +97,20 @@ export const newChaiTransfer = async function() {
                 setTimeout(async () => {
                     const signedCheque = await signChaiCheque.bind(this)()
                     // POST /permit_and_transfer
+                    store.set('cheque.networkRequesting', true)
                     const result = await chaiPermitAndCheque({
                         permit: signedPermit,
                         cheque: signedCheque
                     })
                     store.set('cheque.result', result)
                     store.set('cheque.requesting', false)
+                    store.set('cheque.networkRequesting', false)
                     console.log('chaiPermitAndCheque', result)
                 }, 10)
             } catch(e) {
                 console.log(e)
                 store.set('cheque.requesting', false)
+                store.set('cheque.networkRequesting', false)
             }
         } catch(e) {
             console.log(e)
@@ -111,12 +121,15 @@ export const newChaiTransfer = async function() {
             const signedCheque = await signChaiCheque.bind(this)()
             console.log('signedCheque', signedCheque)
             // POST /transfer
+            store.set('cheque.networkRequesting', true)
             const result = await chaiCheque({ cheque: signedCheque })
             store.set('cheque.result', result)
             store.set('cheque.requesting', false)
+            store.set('cheque.networkRequesting', false)
         } catch(e) {
             console.log('cheque error', e)
             store.set('cheque.requesting', false)
+            store.set('cheque.networkRequesting', false)
         }
     }
 }
@@ -133,16 +146,19 @@ export const newDaiSwap = async function() {
                 // metamask race condition
                 setTimeout(async () => {
                   const signedSwap = await signSwap.bind(this)()
+                  store.set('swap.networkRequesting', true)
                   const result = await daiPermitAndSwap({
                       permit: signedPermit,
                       swap: signedSwap
                   })
                   store.set('swap.result', result)
                   store.set('swap.requesting', false)
+                  store.set('swap.networkRequesting', false)
               }, 10)
             } catch(e) {
                 console.log(e)
                 store.set('swap.requesting', false)
+                store.set('swap.networkRequesting', false)
             }
         } catch(e) {
             console.log(e)
@@ -152,12 +168,15 @@ export const newDaiSwap = async function() {
         try {
             const signedSwap = await signSwap.bind(this)()
             console.log('signedSwap', signedSwap)
+            store.set('swap.networkRequesting', true)
             const result = await daiSwap({ swap: signedSwap })
             store.set('swap.result', result)
             store.set('swap.requesting', false)
+            store.set('swap.networkRequesting', false)
         } catch(e) {
             console.log('swap error', e)
             store.set('swap.requesting', false)
+            store.set('swap.networkRequesting', false)
         }
     }
 }
@@ -174,16 +193,19 @@ export const newChaiSwap = async function() {
                 // metamask race condition
                 setTimeout(async () => {
                   const signedSwap = await signSwap.bind(this)()
+                  store.set('swap.networkRequesting', true)
                   const result = await chaiPermitAndSwap({
                       permit: signedPermit,
                       swap: signedSwap
                   })
                   store.set('swap.result', result)
                   store.set('swap.requesting', false)
+                  store.set('swap.networkRequesting', false)
               }, 10)
             } catch(e) {
                 console.log(e)
                 store.set('swap.requesting', false)
+                store.set('swap.networkRequesting', false)
             }
         } catch(e) {
             console.log(e)
@@ -193,12 +215,15 @@ export const newChaiSwap = async function() {
         try {
             const signedSwap = await signSwap.bind(this)()
             console.log('signedSwap', signedSwap)
+            store.set('swap.networkRequesting', true)
             const result = await chaiSwap({ swap: signedSwap })
             store.set('swap.result', result)
             store.set('swap.requesting', false)
+            store.set('swap.networkRequesting', false)
         } catch(e) {
             console.log('swap error', e)
             store.set('swap.requesting', false)
+            store.set('swap.networkRequesting', false)
         }
     }
 }
@@ -220,16 +245,19 @@ export const newDaiConvert = async function() {
                 setTimeout(async () => {
                     const signedConvert = await signDaiConvert.bind(this)()
                     // POST /permit_and_transfer
+                    store.set('convert.networkRequesting', true)
                     const result = await daiPermitAndConvert({
                         permit: signedPermit,
                         join: signedConvert
                     })
                     store.set('convert.result', result)
                     store.set('convert.requesting', false)
+                    store.set('convert.networkRequesting', false)
                 }, 10)
             } catch(e) {
                 console.log(e)
                 store.set('convert.requesting', false)
+                store.set('convert.networkRequesting', false)
             }
         } catch(e) {
             console.log(e)
@@ -240,12 +268,15 @@ export const newDaiConvert = async function() {
             const signedConvert = await signDaiConvert.bind(this)()
 
             // POST /transfer
+            store.set('convert.networkRequesting', true)
             const result = await daiConvert({ join: signedConvert })
             store.set('convert.result', result)
             store.set('convert.requesting', false)
+            store.set('convert.networkRequesting', false)
         } catch(e) {
             console.log('cheque error', e)
             store.set('convert.requesting', false)
+            store.set('convert.networkRequesting', false)
         }
     }
 }
@@ -267,16 +298,19 @@ export const newChaiConvert = async function() {
                 setTimeout(async () => {
                     const signedConvert = await signChaiConvert.bind(this)()
                     // POST /permit_and_transfer
+                    store.set('convert.networkRequesting', true)
                     const result = await chaiPermitAndConvert({
                         permit: signedPermit,
                         exit: signedConvert
                     })
                     store.set('convert.result', result)
                     store.set('convert.requesting', false)
+                    store.set('convert.networkRequesting', false)
                 }, 10)
             } catch(e) {
                 console.log(e)
                 store.set('convert.requesting', false)
+                store.set('convert.networkRequesting', false)
             }
         } catch(e) {
             console.log(e)
@@ -287,12 +321,15 @@ export const newChaiConvert = async function() {
             const signedConvert = await signChaiConvert.bind(this)()
 
             // POST /transfer
+            store.set('convert.networkRequesting', true)
             const result = await chaiConvert({ exit: signedConvert })
             store.set('convert.result', result)
             store.set('convert.requesting', false)
+            store.set('convert.networkRequesting', false)
         } catch(e) {
             console.log('cheque error', e)
             store.set('convert.requesting', false)
+            store.set('convert.networkRequesting', false)
         }
     }
 }

@@ -308,6 +308,7 @@ class IssueCheckContainer extends React.Component {
         const chequeCurrencyFormatted = chequeCurrency.toUpperCase()
         const chequeResult = store.get('cheque.result')
         const chequeRequesting = store.get('cheque.requesting');
+        const chequeNetworkRequesting = store.get('cheque.networkRequesting');
 
         const swapInputAmount = store.get('swap.inputAmount');
         const swapOutputAmount = store.get('swap.outputAmount');
@@ -316,12 +317,14 @@ class IssueCheckContainer extends React.Component {
         const swapCurrency = store.get('swap.selectedCurrency')
         const swapCurrencyFormatted = swapCurrency.toUpperCase()
         const swapRequesting = store.get('swap.requesting');
+        const swapNetworkRequesting = store.get('swap.networkRequesting');
         const swapResult = store.get('swap.result');
 
         const convertAmount = store.get('convert.amount')
         const convertCurrency = store.get('convert.selectedCurrency')
         const convertCurrencyFormatted = convertCurrency.toUpperCase()
         const convertRequesting = store.get('convert.requesting');
+        const convertNetworkRequesting = store.get('convert.networkRequesting');
         const convertFee = store.get('convert.fee')
         const convertResult = store.get('convert.result')
 
@@ -408,7 +411,7 @@ class IssueCheckContainer extends React.Component {
                                                   />
                                             </div>
                                             <div className={classes.actionButtonContainer}>
-                                                {chequeRequesting || showChequeSuccess ? <ButlerLoader success={showChequeSuccess} /> : <Button color='primary'
+                                                {chequeNetworkRequesting || showChequeSuccess ? <ButlerLoader success={showChequeSuccess} /> : <Button color='primary'
                                                     size='large'
                                                     disabled={!isSignedIn || !canDaiTransfer || showChequeError || showChequeValidationError || chequeRequesting}
                                                     onClick={this.transfer.bind(this)} variant="contained" className={classes.actionButton}>
@@ -489,7 +492,7 @@ class IssueCheckContainer extends React.Component {
                                             </div>
 
                                             <div className={classes.actionButtonContainer}>
-                                                {swapRequesting || showSwapSuccess ? <ButlerLoader success={showSwapSuccess} /> : <Button color='primary'
+                                                {swapNetworkRequesting || showSwapSuccess ? <ButlerLoader success={showSwapSuccess} /> : <Button color='primary'
                                                     size='large'
                                                     onClick={this.swap.bind(this)} variant="contained" disabled={!isSignedIn || !canSwap || showSwapError || showSwapValidationError || swapRequesting} className={classes.actionButton}>
                                                     Swap
@@ -549,7 +552,7 @@ class IssueCheckContainer extends React.Component {
                                             </div>
 
                                             <div className={classes.actionButtonContainer}>
-                                                {convertRequesting || showConvertSuccess ? <ButlerLoader success={showConvertSuccess} /> : <Button color='primary'
+                                                {convertNetworkRequesting || showConvertSuccess ? <ButlerLoader success={showConvertSuccess} /> : <Button color='primary'
                                                     size='large'
                                                     onClick={this.convert.bind(this)} variant="contained" disabled={!isSignedIn || !canConvert || showConvertError || showConvertValidationError || convertRequesting} className={classes.actionButton}>
                                                     Convert
