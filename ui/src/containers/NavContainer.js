@@ -9,6 +9,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
+import Bell from '../assets/bell_resized.png'
+
 const styles = () => ({
     navContainer: {
         paddingTop: theme.spacing(2),
@@ -17,10 +19,14 @@ const styles = () => ({
         paddingRight: theme.spacing(2),
         minHeight: 52
     },
+
     logo: {
         height: 22,
         width: 25,
         marginRight: theme.spacing(1)
+    },
+    headerText: {
+        fontSize: 18
     },
     accountButton: {
       minWidth: 140,
@@ -52,7 +58,8 @@ class NavContainer extends React.Component {
             {<Grid className={classes.navContainer} container alignItems='center'>
               <Grid item xs={6}>
                   <Grid container alignItems='center'>
-                        <Typography variant='h6'>Stablecoin.services{/*<br /><Typography variant='subtitle1'>Transfer or swap DAI without holding&nbsp;ETH</Typography>*/}</Typography>
+                        <img className={classes.logo} src={Bell} />
+                        <Typography className={classes.headerText} variant='body'>Stablecoin.services{/*<br /><Typography variant='subtitle1'>Transfer or swap DAI without holding&nbsp;ETH</Typography>*/}</Typography>
                   </Grid>
               </Grid>
               <Grid item xs={6}>

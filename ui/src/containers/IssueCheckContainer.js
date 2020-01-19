@@ -157,6 +157,9 @@ const styles = () => ({
       marginBottom: theme.spacing(3),
       '& button': {
         width: '50%'
+      },
+      '& .Mui-selected span': {
+        color: '#d6a156'
       }
     },
     error: {
@@ -366,6 +369,7 @@ class IssueCheckContainer extends React.Component {
                                         <Tabs
                                           orientation="horizontal"
                                           variant="fullWidth"
+                                          textColor="secondary"
                                           value={selectedActionTab}
                                           onChange={this.switchActionTab.bind(this)}
                                         >

@@ -10,8 +10,14 @@ export default createMuiTheme({
             dark: '#000',
             contrastText: '#fff',
         },
+        secondary: {
+            light: '#ffd284',
+            main: '#d6a156',
+            dark: '#a27329',
+            contrastText: '#000',
+        }
         // primary: blueGrey,
-        secondary: grey,
+        // secondary: grey,
     },
     overrides: {
         // Style sheet name ⚛️
