@@ -338,7 +338,7 @@ export const createSwapMessageData = function() {
     const message = {
         sender: walletAddress,
         amount: input,
-        min_eth: output * 0.99,
+        min_eth: Math.floor(output * 0.99).toString(),
         fee: fee,
         nonce: nonce,
         expiry: expiry,
