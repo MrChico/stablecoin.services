@@ -426,7 +426,7 @@ class IssueCheckContainer extends React.Component {
                                             {showChequeSuccess ? <SnackbarContent
                                               className={classes.success}
                                               message={<Grid item xs={12}>
-                                                <span>Transfer started. <a href={`https://kovan.etherscan.io/tx/${chequeResult.message.chequeHash}`} target='_blank'>View transaction</a></span>
+                                                <span>Transfer started. <a href={`https://etherscan.io/tx/${chequeResult.message.chequeHash}`} target='_blank'>View transaction</a></span>
                                               </Grid>}
                                             /> : null}
 
@@ -506,7 +506,7 @@ class IssueCheckContainer extends React.Component {
                                             {showSwapSuccess ? <SnackbarContent
                                               className={classes.success}
                                               message={<Grid item xs={12}>
-                                                <span>Swap started. <a href={`https://kovan.etherscan.io/tx/${swapResult.message.swapHash}`} target='_blank'>View transaction</a></span>
+                                                <span>Swap started. <a href={`https://etherscan.io/tx/${swapResult.message.swapHash}`} target='_blank'>View transaction</a></span>
                                               </Grid>}
                                             /> : null}
 
@@ -566,7 +566,7 @@ class IssueCheckContainer extends React.Component {
                                             {showConvertSuccess ? <SnackbarContent
                                               className={classes.success}
                                               message={<Grid item xs={12}>
-                                                <span>Conversion started. <a href={`https://kovan.etherscan.io/tx/${convertResult.message.joinHash || convertResult.message.exitHash}`} target='_blank'>View transaction</a></span>
+                                                <span>Conversion started. <a href={`https://etherscan.io/tx/${convertResult.message.joinHash || convertResult.message.exitHash}`} target='_blank'>View transaction</a></span>
                                               </Grid>}
                                             /> : null}
 

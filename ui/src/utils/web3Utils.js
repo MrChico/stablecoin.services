@@ -30,7 +30,7 @@ const daiAddress = config.DAI;
 const chaiAddress = config.CHAI;
 const dachAddress = config.DACH;
 const relayer = config.RELAYER;
-
+const chain_id = config.CHAIN_ID;
 const POLLING_INTERVAL = 8000;
 const RPC_URLS = {
   1: "https://mainnet.infura.io/v3/84842078b09946638c03157f83405213",
@@ -43,8 +43,8 @@ export const injectedConnector = new InjectedConnector({
 })
 
 export const walletConnectConnector = new WalletConnectConnector({
-  supportedChainIds: [42],
-  rpc: { 42: RPC_URLS[42] },
+  supportedChainIds: [chain_id],
+  rpc: { chain_id: RPC_URLS[chain_id] },
   bridge: "https://bridge.walletconnect.org",
   qrcode: true,
   pollingInterval: POLLING_INTERVAL
@@ -52,7 +52,7 @@ export const walletConnectConnector = new WalletConnectConnector({
 
 export const portisConnector = new PortisConnector({
   dAppId: "211b48db-e8cc-4b68-82ad-bf781727ea9e",
-  networks: [42]
+  networks: [chain_id]
 });
 
 // netork data
@@ -203,7 +203,7 @@ export const createChequeMessageData = function() {
         domain: {
             name: 'Dai Automated Clearing House',
             version: '1',
-            chainId: 42,
+            chainId: chain_id,
             verifyingContract: dachAddress,
         },
         message: message,
@@ -310,7 +310,7 @@ export const createPermitMessageData = function(allowed, currency) {
             name: currency === 'dai' ? 'Dai Stablecoin' : 'Chai',
             // name: 'Dai Stablecoin',
             version: '1',
-            chainId: 42,
+            chainId: chain_id,
             verifyingContract: currency === 'dai' ? daiAddress : chaiAddress,
         },
         message: message
@@ -372,7 +372,7 @@ export const createSwapMessageData = function() {
         domain: {
             name: 'Dai Automated Clearing House',
             version: '1',
-            chainId: 42,
+            chainId: chain_id,
             verifyingContract: dachAddress,
         },
         message: message,
@@ -464,7 +464,7 @@ export const createConvertMessageData = function() {
         domain: {
             name: 'Dai Automated Clearing House',
             version: '1',
-            chainId: 42,
+            chainId: chain_id,
             verifyingContract: dachAddress,
         },
         message: message,
