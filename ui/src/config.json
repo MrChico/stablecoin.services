@@ -5,6 +5,6 @@
   "DAI_UNISWAP": "0x2a1530C4C41db0B0b2bB646CB5Eb1A67b7158667",
   "CHAI_UNISWAP": "0x6C3942B383bc3d0efd3F36eFa1CBE7C8E12C8A2B",
   "RELAYER": "0xE744A962CE2cb8a39DB7d932b2C8f9E7DD323b5d",
-  "API_URL": "http://localhost:8000",
+  "API_URL": "https://api.stablecoin.services",
   "CHAIN_ID": 1
 }
