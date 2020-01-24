@@ -2,66 +2,8 @@ import config from '../config.json';
 const API_URL = config.API_URL;
 
 // FEES
-// transfer
-export const daiChequeFee = async function() {
-    const request = await fetch(`${API_URL}/v1/daiCheque/fee`)
-    return request.json()
-}
-
-export const chaiChequeFee = async function() {
-    const request = await fetch(`${API_URL}/v1/chaiCheque/fee`)
-    return request.json()
-}
-
-export const daiPermitAndChequeFee = async function() {
-    const request = await fetch(`${API_URL}/v1/daiPermitAndCheque/fee`)
-    return request.json()
-}
-
-export const chaiPermitAndChequeFee = async function() {
-    const request = await fetch(`${API_URL}/v1/chaiPermitAndCheque/fee`)
-    return request.json()
-}
-
-// swap
-export const daiSwapFee = async function() {
-    const request = await fetch(`${API_URL}/v1/daiSwap/fee`)
-    return request.json()
-}
-
-export const chaiSwapFee = async function() {
-    const request = await fetch(`${API_URL}/v1/daiSwap/fee`)
-    return request.json()
-}
-
-export const daiPermitAndSwapFee = async function() {
-    const request = await fetch(`${API_URL}/v1/daiPermitAndSwap/fee`)
-    return request.json()
-}
-
-export const chaiPermitAndSwapFee = async function() {
-    const request = await fetch(`${API_URL}/v1/chaiPermitAndSwap/fee`)
-    return request.json()
-}
-
-// convert
-export const daiConvertFee = async function() {
-    const request = await fetch(`${API_URL}/v1/chaiJoin/fee`)
-    return request.json()
-}
-
-export const chaiConvertFee = async function() {
-    const request = await fetch(`${API_URL}/v1/chaiExit/fee`)
-    return request.json()
-}
-
-export const daiPermitAndConvertFee = async function() {
-    const request = await fetch(`${API_URL}/v1/chaiJoinAndPermit/fee`)
-    return request.json()
-}
-
-export const chaiPermitAndConvertFee = async function() {
-    const request = await fetch(`${API_URL}/v1/chaiExitAndPermit/fee`)
+export const gasPrice = async function() {
+    const request = await fetch('https://ethgasstation.info/json/ethgasAPI.json')
     return request.json()
 }
 
@@ -253,8 +195,4 @@ export const chaiPermitAndConvert = async function(data) {
         body: JSON.stringify(data)
     })
     return request.json()
-}
-
-export default {
-    daiChequeFee
 }

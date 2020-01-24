@@ -12,25 +12,14 @@ import chaiABI from '../utils/chaiABI.json';
 import dachABI from '../utils/dachABI.json';
 import config from '../config.json';
 import {
-  daiChequeFee,
-  daiPermitAndChequeFee,
-  chaiChequeFee,
-  chaiPermitAndChequeFee,
-  daiSwapFee,
-  daiPermitAndSwapFee,
-  chaiSwapFee,
-  chaiPermitAndSwapFee,
-  daiConvertFee,
-  daiPermitAndConvertFee,
-  chaiConvertFee,
-  chaiPermitAndConvertFee
+  gasPrice
 } from '../utils/apiUtils';
 
 const daiAddress = config.DAI;
 const chaiAddress = config.CHAI;
 const dachAddress = config.DACH;
 const relayer = config.RELAYER;
-
+const chain_id = config.CHAIN_ID;
 const POLLING_INTERVAL = 8000;
 const RPC_URLS = {
   1: "https://mainnet.infura.io/v3/84842078b09946638c03157f83405213",
@@ -43,8 +32,8 @@ export const injectedConnector = new InjectedConnector({
 })
 
 export const walletConnectConnector = new WalletConnectConnector({
-  supportedChainIds: [42],
-  rpc: { 42: RPC_URLS[42] },
+  supportedChainIds: [chain_id],
+  rpc: { chain_id: RPC_URLS[chain_id] },
   bridge: "https://bridge.walletconnect.org",
   qrcode: true,
   pollingInterval: POLLING_INTERVAL
@@ -52,7 +41,7 @@ export const walletConnectConnector = new WalletConnectConnector({
 
 export const portisConnector = new PortisConnector({
   dAppId: "211b48db-e8cc-4b68-82ad-bf781727ea9e",
-  networks: [42]
+  networks: [chain_id]
 });
 
 // netork data
@@ -121,37 +110,35 @@ export const getFeeData = async function() {
     const chequeCurrency = store.get('cheque.currency')
     const swapCurrency = store.get('swap.currency')
     const convertCurrency = store.get('convert.currency')
+    const web3 = store.get('web3')
+    const walletAddress = store.get('walletAddress')
 
-    const daiChequeFeeData = daiPermitted ? await daiChequeFee() : await daiPermitAndChequeFee()
-    const chaiChequeFeeData = chaiPermitted ? await chaiChequeFee() : await chaiPermitAndChequeFee()
-    const daiSwapFeeData =  daiPermitted ? await daiSwapFee() : await daiPermitAndSwapFee()
-    const chaiSwapFeeData =  chaiPermitted ? await chaiSwapFee() : await chaiPermitAndSwapFee()
-    const daiConvertFeeData =  daiPermitted ? await daiConvertFee() : await daiPermitAndConvertFee()
-    const chaiConvertFeeData =  chaiPermitted ? await chaiConvertFee() : await chaiPermitAndConvertFee()
+    if (!web3 || !walletAddress) return
+    // gas price data from gasstationnetwork
+    const gasPriceData = await gasPrice()
+    const gasPriceInGwei = Math.floor(gasPriceData.fast / 10)
+    // price of eth in dai from ESM (with 18 decimals)
+    const rawEthUSDPrice = await web3.eth.getStorageAt('0x81fe72b5a8d1a857d176c3e7d5bd2679a9b85763', 4);
+    const GweiUSDPrice = parseInt(rawEthUSDPrice.slice(34), 16) / 10 ** 9
+    const fastDaiPrice = GweiUSDPrice * gasPriceInGwei
+    const PERMIT_GAS = 100000;
+    const CHEQUE_GAS = 100000;
+    const SWAP_GAS = 200000;
+    const JOIN_GAS = 300000;
+    const EXIT_GAS = 300000;
 
-    if (chequeCurrency === 'dai') {
-        const fee = daiChequeFeeData.message ? Web3.utils.fromWei(String(daiChequeFeeData.message)) : ''
-        store.set('cheque.fee', fee)
-    } else {
-        const fee = chaiChequeFeeData.message ? Web3.utils.fromWei(String(chaiChequeFeeData.message)) : ''
-        store.set('cheque.fee', fee)
-    }
+    const daiChequeFee = web3.utils.fromWei(String(fastDaiPrice * (!daiPermitted ? CHEQUE_GAS + PERMIT_GAS : CHEQUE_GAS)))
+    const chaiChequeFee = web3.utils.fromWei(String(fastDaiPrice * (!chaiPermitted ? CHEQUE_GAS + PERMIT_GAS : CHEQUE_GAS)))
+  
+    const daiSwapFee = web3.utils.fromWei(String(fastDaiPrice * (!daiPermitted ? SWAP_GAS + PERMIT_GAS : SWAP_GAS)))
+    const chaiSwapFee = web3.utils.fromWei(String(fastDaiPrice * (!chaiPermitted ? SWAP_GAS + PERMIT_GAS : SWAP_GAS)))
+  
+    const daiConvertFee = web3.utils.fromWei(String(fastDaiPrice * (!daiPermitted ? JOIN_GAS + PERMIT_GAS : JOIN_GAS)))
+    const chaiConvertFee = web3.utils.fromWei(String(fastDaiPrice * (!chaiPermitted ? EXIT_GAS + PERMIT_GAS : EXIT_GAS)))
 
-    if (swapCurrency === 'dai') {
-        const fee = daiSwapFeeData.message ? Web3.utils.fromWei(String(daiSwapFeeData.message)) : ''
-        store.set('swap.fee', fee)
-    } else {
-        const fee = chaiSwapFeeData.message ? Web3.utils.fromWei(String(chaiSwapFeeData.message)) : ''
-        store.set('swap.fee', fee)
-    }
-
-    if (convertCurrency === 'dai') {
-        const fee = daiConvertFeeData.message ? Web3.utils.fromWei(String(daiConvertFeeData.message)) : ''
-        store.set('convert.fee', fee)
-    } else {
-        const fee = chaiConvertFeeData.message ? Web3.utils.fromWei(String(chaiConvertFeeData.message)) : ''
-        store.set('convert.fee', fee)
-    }
+    store.set('cheque.fee',  chequeCurrency === 'dai' ? daiChequeFee : chaiChequeFee)
+    store.set('swap.fee',    swapCurrency === 'dai' ? daiSwapFee : chaiSwapFee)
+    store.set('convert.fee', convertCurrency === 'dai' ? daiConvertFee : chaiConvertFee)
 }
 
 // message signing
@@ -203,7 +190,7 @@ export const createChequeMessageData = function() {
         domain: {
             name: 'Dai Automated Clearing House',
             version: '1',
-            chainId: 42,
+            chainId: chain_id,
             verifyingContract: dachAddress,
         },
         message: message,
@@ -310,7 +297,7 @@ export const createPermitMessageData = function(allowed, currency) {
             name: currency === 'dai' ? 'Dai Stablecoin' : 'Chai',
             // name: 'Dai Stablecoin',
             version: '1',
-            chainId: 42,
+            chainId: chain_id,
             verifyingContract: currency === 'dai' ? daiAddress : chaiAddress,
         },
         message: message
@@ -372,7 +359,7 @@ export const createSwapMessageData = function() {
         domain: {
             name: 'Dai Automated Clearing House',
             version: '1',
-            chainId: 42,
+            chainId: chain_id,
             verifyingContract: dachAddress,
         },
         message: message,
@@ -464,7 +451,7 @@ export const createConvertMessageData = function() {
         domain: {
             name: 'Dai Automated Clearing House',
             version: '1',
-            chainId: 42,
+            chainId: chain_id,
             verifyingContract: dachAddress,
         },
         message: message,
