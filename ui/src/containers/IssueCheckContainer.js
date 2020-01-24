@@ -96,12 +96,14 @@ const styles = () => ({
         width: '100%',
         textAlign: 'center'
     },
-    swapDaiBalance: {
-        float: 'right'
+    balance: {
+        float: 'right',
+        textDecoration: 'underline',
+        cursor: 'pointer'
     },
-    transferDaiBalance: {
-        float: 'right'
-    },
+    // transferDaiBalance: {
+    //     float: 'right'
+    // },
     uniswapBreakdown: {
         width: '100%',
         height: 'auto',
@@ -192,6 +194,12 @@ class IssueCheckContainer extends React.Component {
         window.resetDachPermit = () => {
             signDachTransferPermit.bind(this)(false)
         }
+
+        // for input resets
+        this.chequeDestRef = React.createRef()
+        this.chequeAmountRef = React.createRef()
+        this.swapAmountRef = React.createRef()
+        this.convertAmountRef = React.createRef()
     }
 
     async watchDaiData() {
@@ -248,6 +256,7 @@ class IssueCheckContainer extends React.Component {
         store.set('cheque.selectedCurrency', newValue)
         store.set('cheque.result', null)
         getFeeData.bind(this)();
+        this.chequeAmountRef.current.value = ''
         // store.set('cheque.requesting', false)
     }
 
@@ -257,6 +266,7 @@ class IssueCheckContainer extends React.Component {
         store.set('swap.selectedCurrency', newValue)
         store.set('swap.result', null)
         getFeeData.bind(this)();
+        this.swapAmountRef.current.value = ''
         this.swapAmountChanged.bind(this)(store.get('swap.inputAmount'))
     }
 
@@ -266,10 +276,9 @@ class IssueCheckContainer extends React.Component {
         store.set('convert.selectedCurrency', newValue)
         store.set('convert.result', null)
         getFeeData.bind(this)();
+        this.convertAmountRef.current.value = ''
         // store.set('convert.requesting', false)
     }
-
-
 
     async swapAmountChanged(amount) {
         const { store } =  this.props
@@ -293,6 +302,30 @@ class IssueCheckContainer extends React.Component {
         }
 
         // console.log('swap.ethOutput', ethOutput)
+    }
+
+    chequeMax() {
+        const { store } = this.props
+        const selectedCurrency = store.get('cheque.selectedCurrency')
+        const bal = selectedCurrency === 'dai' ? store.get('daiBalance') : store.get('chaiBalance')
+        const fee = store.get('cheque.fee')
+        this.chequeAmountRef.current.value = (bal - fee) > 0 ?  bal - fee : '0'
+    }
+
+    swapMax() {
+        const { store } = this.props
+        const selectedCurrency = store.get('swap.selectedCurrency')
+        const bal = selectedCurrency === 'dai' ? store.get('daiBalance') : store.get('chaiBalance')
+        const fee = store.get('swap.fee')
+        this.swapAmountRef.current.value = (bal - fee) > 0 ?  bal - fee : '0'
+    }
+
+    convertMax() {
+        const { store } = this.props
+        const selectedCurrency = store.get('convert.selectedCurrency')
+        const bal = selectedCurrency === 'dai' ? store.get('daiBalance') : store.get('chaiBalance')
+        const fee = store.get('convert.fee')
+        this.convertAmountRef.current.value = (bal - fee) > 0 ?  bal - fee : '0'
     }
 
     render() {
@@ -386,7 +419,7 @@ class IssueCheckContainer extends React.Component {
                                             </ToggleButtonGroup>
                                             <div>
                                                 <Typography variant='subtitle2'>Send to Address</Typography>
-                                                <TextField placeholder='Enter address' className={classes.input} margin="normal" variant="outlined" onChange={(event) => {
+                                                <TextField inputRef={this.chequeDestRef} placeholder='Enter address' className={classes.input} margin="normal" variant="outlined" onChange={(event) => {
                                                         store.set('cheque.to', event.target.value)
                                                         store.set('cheque.toValid', AddressValidator.validate(event.target.value, 'ETH'))
                                                         store.set('cheque.result', null)
@@ -394,8 +427,8 @@ class IssueCheckContainer extends React.Component {
                                                     }}/>
                                             </div>
                                             <div>
-                                                <Typography variant='subtitle2'>{chequeCurrencyFormatted} Amount <span className={classes.transferDaiBalance}>{isSignedIn ? `Balance: ${chequeCurrency === 'dai' ? daiBalance : chaiBalance} ${chequeCurrencyFormatted}` : '-'}</span></Typography>
-                                                <TextField placeholder='0' className={classes.input} margin="normal" type='number' variant="outlined" onChange={(event) => {
+                                                <Typography variant='subtitle2'>{chequeCurrencyFormatted} Amount <span onClick={this.chequeMax.bind(this)} className={classes.balance}>{isSignedIn ? `Balance: ${chequeCurrency === 'dai' ? daiBalance : chaiBalance} ${chequeCurrencyFormatted}` : ''}</span></Typography>
+                                                <TextField inputRef={this.chequeAmountRef} placeholder='0' className={classes.input} margin="normal" type='number' variant="outlined" onChange={(event) => {
                                                       store.set('cheque.amount', event.target.value)
                                                       store.set('cheque.result', null)
                                                       // store.set('cheque.requesting', false)
@@ -453,8 +486,8 @@ class IssueCheckContainer extends React.Component {
                                                 <ToggleButton value={'chai'}>CHAI <ArrowRightIcon /> ETH</ToggleButton>
                                             </ToggleButtonGroup>
                                             <div>
-                                                <Typography variant='subtitle2'>{swapCurrencyFormatted} Amount <span className={classes.swapDaiBalance}>{isSignedIn ? `Balance: ${swapCurrency === 'dai' ? daiBalance : chaiBalance} ${swapCurrencyFormatted}` : '-'}</span></Typography>
-                                                <TextField placeholder='Enter amount' className={classes.input} margin="normal" variant="outlined" onChange={(event) => {
+                                                <Typography variant='subtitle2'>{swapCurrencyFormatted} Amount <span onClick={this.swapMax.bind(this)} className={classes.balance}>{isSignedIn ? `Balance: ${swapCurrency === 'dai' ? daiBalance : chaiBalance} ${swapCurrencyFormatted}` : ''}</span></Typography>
+                                                <TextField inputRef={this.swapAmountRef} placeholder='Enter amount' className={classes.input} margin="normal" variant="outlined" onChange={(event) => {
                                                         this.swapAmountChanged(event.target.value)
                                                     }} InputProps={{
                                                         endAdornment: <InputAdornment className={classes.endAdornment} position="end">{swapCurrencyFormatted}</InputAdornment>
@@ -534,8 +567,8 @@ class IssueCheckContainer extends React.Component {
                                                 <ToggleButton value={'chai'}>CHAI <ArrowRightIcon /> DAI</ToggleButton>
                                             </ToggleButtonGroup>
                                             <div>
-                                                <Typography variant='subtitle2'>{convertCurrencyFormatted} Amount <span className={classes.transferDaiBalance}>{isSignedIn ? `Balance: ${convertCurrency === 'dai' ? daiBalance : chaiBalance} ${convertCurrencyFormatted}` : '-'}</span></Typography>
-                                                <TextField placeholder='0' className={classes.input} margin="normal" variant="outlined" onChange={(event) => {
+                                                <Typography variant='subtitle2'>{convertCurrencyFormatted} Amount <span onClick={this.convertMax.bind(this)} className={classes.balance}>{isSignedIn ? `Balance: ${convertCurrency === 'dai' ? daiBalance : chaiBalance} ${convertCurrencyFormatted}` : ''}</span></Typography>
+                                                <TextField inputRef={this.convertAmountRef} placeholder='0' className={classes.input} margin="normal" variant="outlined" onChange={(event) => {
                                                         store.set('convert.amount', event.target.value)
                                                         store.set('convert.result', null)
                                                         // store.set('convert.requesting', false)
