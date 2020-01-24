@@ -48,6 +48,7 @@ const styles = () => ({
 const initialState = {
     web3: null,
     web3Context: null,
+    walletConnector: null, // for wallet connect only
     walletAddress: '',
     walletConnecting: false,
     balancesLoading: false,
@@ -110,7 +111,7 @@ class App extends React.Component {
 
         return (
             <Web3ReactProvider getLibrary={getLibrary}>
-                <Web3StoreUpdater web3Context={this.props.web3Context} />
+                {/*<Web3StoreUpdater web3Context={this.props.web3Context} />*/}
                 <ThemeProvider theme={theme}>
                     <SignInContainer />
                     <NavContainer />

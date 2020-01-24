@@ -1,4 +1,8 @@
 import Web3 from "web3";
+import WalletConnectProvider from "@walletconnect/web3-provider";
+import WalletConnect from "@walletconnect/browser";
+import WalletConnectQRCodeModal from "@walletconnect/qrcode-modal";
+import Portis from "@portis/web3";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import { PortisConnector } from "@web3-react/portis-connector";
@@ -32,8 +36,7 @@ export const injectedConnector = new InjectedConnector({
 })
 
 export const walletConnectConnector = new WalletConnectConnector({
-  supportedChainIds: [chain_id],
-  rpc: { chain_id: RPC_URLS[chain_id] },
+  rpc: { 1: RPC_URLS[1] },
   bridge: "https://bridge.walletconnect.org",
   qrcode: true,
   pollingInterval: POLLING_INTERVAL
@@ -44,7 +47,7 @@ export const portisConnector = new PortisConnector({
   networks: [chain_id]
 });
 
-// netork data
+// network data
 export const getDaiData = async function() {
     const { store } = this.props
     const web3 = store.get('web3')
@@ -129,10 +132,10 @@ export const getFeeData = async function() {
 
     const daiChequeFee = web3.utils.fromWei(String(fastDaiPrice * (!daiPermitted ? CHEQUE_GAS + PERMIT_GAS : CHEQUE_GAS)))
     const chaiChequeFee = web3.utils.fromWei(String(fastDaiPrice * (!chaiPermitted ? CHEQUE_GAS + PERMIT_GAS : CHEQUE_GAS)))
-  
+
     const daiSwapFee = web3.utils.fromWei(String(fastDaiPrice * (!daiPermitted ? SWAP_GAS + PERMIT_GAS : SWAP_GAS)))
     const chaiSwapFee = web3.utils.fromWei(String(fastDaiPrice * (!chaiPermitted ? SWAP_GAS + PERMIT_GAS : SWAP_GAS)))
-  
+
     const daiConvertFee = web3.utils.fromWei(String(fastDaiPrice * (!daiPermitted ? JOIN_GAS + PERMIT_GAS : JOIN_GAS)))
     const chaiConvertFee = web3.utils.fromWei(String(fastDaiPrice * (!chaiPermitted ? EXIT_GAS + PERMIT_GAS : EXIT_GAS)))
 
@@ -496,7 +499,8 @@ export const createConvertMessageData = function() {
     }
 }
 
-export const signData = async function(web3, fromAddress, data, walletType) {
+export const signData = async function(web3, fromAddress, data, walletType, store) {
+    console.log(web3, fromAddress)
     if (walletType === 'injected' || walletType === 'portis') {
         return new Promise(function(resolve, reject) {
             web3.currentProvider.sendAsync({
@@ -521,9 +525,30 @@ export const signData = async function(web3, fromAddress, data, walletType) {
                 }
             );
         });
-
     } else if (walletType === 'wallet-connect') {
-
+        // use wallet connector instead of web3 provider
+        const walletConnector = store.get('walletConnector')
+        return new Promise(async function (resolve, reject) {
+            walletConnector
+                .signTypedData([fromAddress, data])
+                .then(result => {
+                    // Returns signature.
+                    console.log(result);
+                    const r = result.slice(0,66)
+                    const s = '0x' + result.slice(66,130)
+                    const v = Number('0x' + result.slice(130,132))
+                    resolve({
+                        v,
+                        r,
+                        s
+                    })
+                })
+                .catch(error => {
+                    // Error returned when rejected
+                    console.error(error);
+                    reject(error)
+                });
+        });
     }
 }
 
@@ -545,7 +570,7 @@ export const signDachTransferPermit = async function(allowed, currency) {
 
     console.log(messageData)
 
-    const sig = await signData(web3, walletAddress, messageData.typedData, walletType)
+    const sig = await signData(web3, walletAddress, messageData.typedData, walletType, store)
     return Object.assign({}, sig, messageData.message)
 }
 
@@ -557,7 +582,7 @@ export const signDaiCheque = async function() {
 
     const messageData = createChequeMessageData.bind(this)()
 
-    const sig = await signData(web3, walletAddress, messageData.typedData, walletType)
+    const sig = await signData(web3, walletAddress, messageData.typedData, walletType, store)
 
     return Object.assign({}, sig, messageData.message)
 }
@@ -570,7 +595,7 @@ export const signChaiCheque = async function() {
 
     const messageData = createChequeMessageData.bind(this)()
 
-    const sig = await signData(web3, walletAddress, messageData.typedData, walletType)
+    const sig = await signData(web3, walletAddress, messageData.typedData, walletType, store)
 
     return Object.assign({}, sig, messageData.message)
 }
@@ -585,7 +610,7 @@ export const signSwap = async function() {
 
     console.log(messageData)
 
-    const sig = await signData(web3, walletAddress, messageData.typedData, walletType)
+    const sig = await signData(web3, walletAddress, messageData.typedData, walletType, store)
     return Object.assign({}, sig, messageData.message)
 }
 
@@ -597,7 +622,7 @@ export const signDaiConvert = async function() {
 
     const messageData = createConvertMessageData.bind(this)()
 
-    const sig = await signData(web3, walletAddress, messageData.typedData, walletType)
+    const sig = await signData(web3, walletAddress, messageData.typedData, walletType, store)
 
     return Object.assign({}, sig, messageData.message)
 }
@@ -610,7 +635,7 @@ export const signChaiConvert = async function() {
 
     const messageData = createConvertMessageData.bind(this)()
 
-    const sig = await signData(web3, walletAddress, messageData.typedData, walletType)
+    const sig = await signData(web3, walletAddress, messageData.typedData, walletType, store)
 
     return Object.assign({}, sig, messageData.message)
 }
@@ -628,30 +653,63 @@ export const initInjected = async function() {
 
 export const initPortis = async function() {
     const { store } = this.props
-    const { activate } = store.get('web3Context')
 
     store.set('walletConnecting', true)
-    await activate(portisConnector)
-    store.set('walletConnecting', false)
-    store.set('walletType', 'portis')
+    const portis = new Portis('211b48db-e8cc-4b68-82ad-bf781727ea9e', 'mainnet');
+    const web3 = new Web3(portis.provider);
 
-    getDaiData.bind(this)()
-    getChaiData.bind(this)()
-    getFeeData.bind(this)()
+    try {
+      const accounts = await web3.eth.getAccounts()
+      store.set('walletConnecting', false)
+      store.set('walletAddress', accounts[0])
+      store.set('web3', web3)
+      store.set('walletType', 'portis')
+
+      getDaiData.bind(this)()
+      getChaiData.bind(this)()
+      getFeeData.bind(this)()
+    } catch(e) {
+        store.set('walletConnecting', false)
+    }
 }
 
 export const initWalletConnect = async function() {
     const { store } = this.props
-    const { activate } = store.get('web3Context')
 
     store.set('walletConnecting', true)
-    await activate(walletConnectConnector)
-    store.set('walletConnecting', false)
-    store.set('walletType', 'wallet-connect')
 
-    getDaiData.bind(this)()
-    getChaiData.bind(this)()
-    getFeeData.bind(this)()
+    //  Create WalletConnect Provider
+    const provider = new WalletConnectProvider({
+      infuraId: "84842078b09946638c03157f83405213" // Required
+    });
+
+    //  Enable session (triggers QR Code modal)
+    try {
+        await provider.enable();
+        // Create a walletConnector
+        const walletConnector = new WalletConnect({
+          bridge: "https://bridge.walletconnect.org" // Required
+        });
+
+        console.log('wallet connect', provider, walletConnector)
+
+        //  Create Web3
+        const web3 = new Web3(provider);
+        console.log('wallet connect web3', web3, web3.eth, web3.eth.signTypedData)
+        const accounts = await web3.eth.getAccounts()
+
+        store.set('walletConnecting', false)
+        store.set('walletAddress', accounts[0])
+        store.set('web3', web3)
+        store.set('walletConnector', walletConnector)
+        store.set('walletType', 'wallet-connect')
+
+        getDaiData.bind(this)()
+        getChaiData.bind(this)()
+        getFeeData.bind(this)()
+    } catch(e) {
+        store.set('walletConnecting', false)
+    }
 }
 
 
