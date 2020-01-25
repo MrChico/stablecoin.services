@@ -28,7 +28,7 @@ export const daiCheque = async function(data) {
 }
 
 export const daiPermitAndCheque = async function(data) {
-    const request = await fetch(`${API_URL}/v1/daiPermitAndCheque`, {
+    const request = await fetch(`${API_URL}/v1/daiChequeWithPermit`, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         // mode: 'cors', // no-cors, *cors, same-origin
         // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -63,7 +63,7 @@ export const chaiCheque = async function(data) {
 }
 
 export const chaiPermitAndCheque = async function(data) {
-    const request = await fetch(`${API_URL}/v1/chaiPermitAndCheque`, {
+    const request = await fetch(`${API_URL}/v1/chaiChequeWithPermit`, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         // mode: 'cors', // no-cors, *cors, same-origin
         // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -100,7 +100,7 @@ export const daiSwap = async function(data) {
 
 export const daiPermitAndSwap = async function(data) {
     // console.log('daiCheque', data)
-    const request = await fetch(`${API_URL}/v1/daiPermitAndSwap`, {
+    const request = await fetch(`${API_URL}/v1/daiSwapWithPermit`, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         // mode: 'cors', // no-cors, *cors, same-origin
         // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -136,7 +136,7 @@ export const chaiSwap = async function(data) {
 
 export const chaiPermitAndSwap = async function(data) {
     // console.log('daiCheque', data)
-    const request = await fetch(`${API_URL}/v1/chaiPermitAndSwap`, {
+    const request = await fetch(`${API_URL}/v1/chaiSwapWithPermit`, {
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         // mode: 'cors', // no-cors, *cors, same-origin
         // cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -165,7 +165,7 @@ export const daiConvert = async function(data) {
 }
 
 export const daiPermitAndConvert = async function(data) {
-    const request = await fetch(`${API_URL}/v1/daiPermitAndJoin`, {
+    const request = await fetch(`${API_URL}/v1/chaiJoinWithPermit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -187,7 +187,7 @@ export const chaiConvert = async function(data) {
 }
 
 export const chaiPermitAndConvert = async function(data) {
-    const request = await fetch(`${API_URL}/v1/chaiPermitAndExit`, {
+    const request = await fetch(`${API_URL}/v1/chaiExitWithPermit`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
