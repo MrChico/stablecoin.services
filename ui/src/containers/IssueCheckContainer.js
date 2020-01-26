@@ -12,7 +12,7 @@ import {withStore} from '@spyna/react-store'
 import {withStyles} from '@material-ui/styles';
 import { amber, blue, green } from '@material-ui/core/colors';
 import theme from '../theme/theme'
-import { signDachTransferPermit, getDaiData, getChaiData, getFeeData } from '../utils/web3Utils'
+import { signDachTransferPermit, getDaiData, getChaiData, getFeeData, clearTxMinedInterval } from '../utils/web3Utils'
 import { getSwapOutput } from '../utils/uniswapUtils'
 import { newDaiTransfer, newDaiSwap, newDaiConvert, newChaiTransfer, newChaiSwap, newChaiConvert } from '../actions/main'
 
@@ -165,16 +165,27 @@ const styles = () => ({
       }
     },
     error: {
+      boxShadow: 'none',
       marginTop: theme.spacing(4),
       // backgroundColor: theme.palette.error.dark
     },
     errorApi: {
+      boxShadow: 'none',
       marginTop: theme.spacing(4),
       backgroundColor: amber[700],
     },
-    success: {
+    pending: {
       marginTop: theme.spacing(4),
       backgroundColor: blue[600],
+      boxShadow: 'none',
+      '& a': {
+        color: '#fff'
+      }
+    },
+    success: {
+      marginTop: theme.spacing(4),
+      backgroundColor: '#d6a156',
+      boxShadow: 'none',
       '& a': {
         color: '#fff'
       }
@@ -255,9 +266,9 @@ class IssueCheckContainer extends React.Component {
         if (!newValue) return
         store.set('cheque.selectedCurrency', newValue)
         store.set('cheque.result', null)
+        store.set('cheque.resultMined', false)
         getFeeData.bind(this)();
         this.chequeAmountRef.current.value = ''
-        // store.set('cheque.requesting', false)
     }
 
     switchSwapTab(event, newValue) {
@@ -265,6 +276,7 @@ class IssueCheckContainer extends React.Component {
         if (!newValue) return
         store.set('swap.selectedCurrency', newValue)
         store.set('swap.result', null)
+        store.set('swap.resultMined', false)
         getFeeData.bind(this)();
         this.swapAmountRef.current.value = ''
         this.swapAmountChanged.bind(this)(store.get('swap.inputAmount'))
@@ -275,9 +287,9 @@ class IssueCheckContainer extends React.Component {
         if (!newValue) return
         store.set('convert.selectedCurrency', newValue)
         store.set('convert.result', null)
+        store.set('convert.resultMined', false)
         getFeeData.bind(this)();
         this.convertAmountRef.current.value = ''
-        // store.set('convert.requesting', false)
     }
 
     async swapAmountChanged(amount) {
@@ -287,6 +299,8 @@ class IssueCheckContainer extends React.Component {
 
         store.set('swap.inputAmount', amount)
         store.set('swap.result', null)
+        store.set('swap.resultMined', false)
+        clearTxMinedInterval('swap', store)
 
         // TO-DO: run logic on the same network as the app
         if (!web3) return
@@ -349,6 +363,7 @@ class IssueCheckContainer extends React.Component {
         const chequeCurrency = store.get('cheque.selectedCurrency')
         const chequeCurrencyFormatted = chequeCurrency.toUpperCase()
         const chequeResult = store.get('cheque.result')
+        const chequeResultMined = store.get('cheque.resultMined')
         const chequeRequesting = store.get('cheque.requesting');
         const chequeNetworkRequesting = store.get('cheque.networkRequesting');
 
@@ -361,6 +376,7 @@ class IssueCheckContainer extends React.Component {
         const swapRequesting = store.get('swap.requesting');
         const swapNetworkRequesting = store.get('swap.networkRequesting');
         const swapResult = store.get('swap.result');
+        const swapResultMined = store.get('swap.resultMined')
 
         const convertAmount = store.get('convert.amount')
         const convertCurrency = store.get('convert.selectedCurrency')
@@ -369,6 +385,7 @@ class IssueCheckContainer extends React.Component {
         const convertNetworkRequesting = store.get('convert.networkRequesting');
         const convertFee = store.get('convert.fee')
         const convertResult = store.get('convert.result')
+        const convertResultMined = store.get('convert.resultMined')
 
         const walletLoading = store.get('walletLoading')
         const balancesLoaded = daiBalance.length && chaiBalance.length
@@ -429,7 +446,8 @@ class IssueCheckContainer extends React.Component {
                                                         store.set('cheque.to', event.target.value)
                                                         store.set('cheque.toValid', AddressValidator.validate(event.target.value, 'ETH'))
                                                         store.set('cheque.result', null)
-                                                        // store.set('cheque.requesting', false)
+                                                        store.set('cheque.resultMined', false)
+                                                        clearTxMinedInterval('cheque', store)
                                                     }}/>
                                             </div>
                                             <div>
@@ -437,7 +455,8 @@ class IssueCheckContainer extends React.Component {
                                                 <TextField inputRef={this.chequeAmountRef} placeholder='0' className={classes.input} margin="normal" type='number' variant="outlined" onChange={(event) => {
                                                       store.set('cheque.amount', event.target.value)
                                                       store.set('cheque.result', null)
-                                                      // store.set('cheque.requesting', false)
+                                                      store.set('cheque.resultMined', false)
+                                                      clearTxMinedInterval('cheque', store)
                                                     }} InputProps={{
                                                         endAdornment: <InputAdornment className={classes.endAdornment} position="end">{chequeCurrencyFormatted}</InputAdornment>
                                                     }} inputProps={{
@@ -454,7 +473,7 @@ class IssueCheckContainer extends React.Component {
                                                   />
                                             </div>
                                             <div className={classes.actionButtonContainer}>
-                                                {chequeNetworkRequesting || showChequeSuccess ? <ButlerLoader success={showChequeSuccess} /> : <Button color='primary'
+                                                {chequeNetworkRequesting || showChequeSuccess ? <ButlerLoader success={showChequeSuccess} showFood={chequeResultMined}/> : <Button color='primary'
                                                     size='large'
                                                     disabled={!isSignedIn || !canDaiTransfer || showChequeError || showChequeValidationError || chequeRequesting}
                                                     onClick={this.transfer.bind(this)} variant="contained" className={classes.actionButton}>
@@ -463,9 +482,9 @@ class IssueCheckContainer extends React.Component {
                                             </div>
 
                                             {showChequeSuccess ? <SnackbarContent
-                                              className={classes.success}
+                                              className={chequeResultMined ? classes.success : classes.pending}
                                               message={<Grid item xs={12}>
-                                                <span>Transfer started. <a href={`https://etherscan.io/tx/${chequeResult.message.chequeHash}`} target='_blank'>View transaction</a></span>
+                                                <span>Transfer {chequeResultMined ? 'complete' : 'started'}. <a href={`https://etherscan.io/tx/${chequeResult.message.chequeHash}`} target='_blank'>View transaction</a></span>
                                               </Grid>}
                                             /> : null}
 
@@ -535,7 +554,7 @@ class IssueCheckContainer extends React.Component {
                                             </div>
 
                                             <div className={classes.actionButtonContainer}>
-                                                {swapNetworkRequesting || showSwapSuccess ? <ButlerLoader success={showSwapSuccess} /> : <Button color='primary'
+                                                {swapNetworkRequesting || showSwapSuccess ? <ButlerLoader success={showSwapSuccess} showFood={swapResultMined}/> : <Button color='primary'
                                                     size='large'
                                                     onClick={this.swap.bind(this)} variant="contained" disabled={!isSignedIn || !canSwap || showSwapError || showSwapValidationError || swapRequesting} className={classes.actionButton}>
                                                     Swap
@@ -543,9 +562,9 @@ class IssueCheckContainer extends React.Component {
                                             </div>
 
                                             {showSwapSuccess ? <SnackbarContent
-                                              className={classes.success}
+                                              className={swapResultMined ? classes.success : classes.pending}
                                               message={<Grid item xs={12}>
-                                                <span>Swap started. <a href={`https://etherscan.io/tx/${swapResult.message.swapHash}`} target='_blank'>View transaction</a></span>
+                                                <span>Swap {swapResultMined ? 'complete' : 'started'}. <a href={`https://etherscan.io/tx/${swapResult.message.swapHash}`} target='_blank'>View transaction</a></span>
                                               </Grid>}
                                             /> : null}
 
@@ -577,6 +596,8 @@ class IssueCheckContainer extends React.Component {
                                                 <TextField inputRef={this.convertAmountRef} placeholder='0' className={classes.input} margin="normal" variant="outlined" onChange={(event) => {
                                                         store.set('convert.amount', event.target.value)
                                                         store.set('convert.result', null)
+                                                        store.set('convert.resultMined', false)
+                                                        clearTxMinedInterval('convert', store)
                                                         // store.set('convert.requesting', false)
                                                     }} InputProps={{
                                                         endAdornment: <InputAdornment className={classes.endAdornment} position="end">{convertCurrencyFormatted}</InputAdornment>
@@ -595,7 +616,7 @@ class IssueCheckContainer extends React.Component {
                                             </div>
 
                                             <div className={classes.actionButtonContainer}>
-                                                {convertNetworkRequesting || showConvertSuccess ? <ButlerLoader success={showConvertSuccess} /> : <Button color='primary'
+                                                {convertNetworkRequesting || showConvertSuccess ? <ButlerLoader success={showConvertSuccess} showFood={convertResultMined}/> : <Button color='primary'
                                                     size='large'
                                                     onClick={this.convert.bind(this)} variant="contained" disabled={!isSignedIn || !canConvert || showConvertError || showConvertValidationError || convertRequesting} className={classes.actionButton}>
                                                     Convert
@@ -603,9 +624,9 @@ class IssueCheckContainer extends React.Component {
                                             </div>
 
                                             {showConvertSuccess ? <SnackbarContent
-                                              className={classes.success}
+                                              className={convertResultMined ? classes.success : classes.pending}
                                               message={<Grid item xs={12}>
-                                                <span>Conversion started. <a href={`https://etherscan.io/tx/${convertResult.message.joinHash || convertResult.message.exitHash}`} target='_blank'>View transaction</a></span>
+                                                <span>Conversion {convertResultMined ? 'complete' : 'started'}. <a href={`https://etherscan.io/tx/${convertResult.message.joinHash || convertResult.message.exitHash}`} target='_blank'>View transaction</a></span>
                                               </Grid>}
                                             /> : null}
 

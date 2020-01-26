@@ -640,6 +640,35 @@ export const signChaiConvert = async function() {
     return Object.assign({}, sig, messageData.message)
 }
 
+// tx mined monitoring
+export const clearTxMinedInterval = async function(actionType, store) {
+    const interval = store.get(`${actionType}.receiptInterval`)
+    if (interval) {
+        clearInterval(interval)
+    }
+}
+
+export const clearTxMinedIntervals = async function(store) {
+    ['cheque', 'swap', 'convert'].map(actionType => {
+        clearTxMinedInterval(actionType, store)
+    })
+}
+
+export const setTxMinedInterval = async function(actionType, hash, store) {
+    const web3 = store.get('web3')
+    const interval = setInterval(async () => {
+        const result = await web3.eth.getTransactionReceipt(hash)
+        if (result) {
+            store.set(`${actionType}.resultMined`, true)
+            // clear when it's mined
+            clearTxMinedInterval(actionType, store)
+        }
+    }, 1000)
+    store.set(`${actionType}.receiptInterval`, interval)
+}
+
+
+
 // wallets
 export const initInjected = async function() {
     const { store } = this.props

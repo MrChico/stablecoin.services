@@ -90,6 +90,8 @@ const initialState = {
     'cheque.expiry': 0,
     'cheque.selectedCurrency': 'dai',
     'cheque.result': null,
+    'cheque.resultMined': false,
+    'cheque.receiptInterval': null,
     'cheque.requesting': false,
     'cheque.networkRequesting': false,
     // swap
@@ -99,6 +101,8 @@ const initialState = {
     'swap.fee': '',
     'swap.selectedCurrency': 'dai',
     'swap.result': null,
+    'swap.resultMined': false,
+    'swap.receiptInterval': null,
     'swap.requesting': false,
     'swap.networkRequesting': false,
     // convert
@@ -106,6 +110,8 @@ const initialState = {
     'convert.fee': '',
     'convert.selectedCurrency': 'dai',
     'convert.result': null,
+    'convert.resultMined': false,
+    'convert.receiptInterval': null,
     'convert.requesting': false,
     'convert.networkRequesting': false
 }

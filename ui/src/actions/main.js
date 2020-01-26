@@ -7,7 +7,8 @@ import {
   signChaiConvert,
   batchSignData,
   createChequeMessageData,
-  createPermitMessageData
+  createPermitMessageData,
+  setTxMinedInterval
 } from '../utils/web3Utils';
 
 import {
@@ -51,6 +52,9 @@ export const newDaiTransfer = async function() {
                     store.set('cheque.result', result)
                     store.set('cheque.requesting', false)
                     store.set('cheque.networkRequesting', false)
+                    if (result.success === 'true' && result.message.chequeHash) {
+                        setTxMinedInterval('cheque', result.message.chequeHash, store)
+                    }
                     console.log('daiPermitAndCheque', result)
                 }, 10)
             } catch(e) {
@@ -72,6 +76,9 @@ export const newDaiTransfer = async function() {
             store.set('cheque.result', result)
             store.set('cheque.requesting', false)
             store.set('cheque.networkRequesting', false)
+            if (result.success === 'true' && result.message.chequeHash) {
+                setTxMinedInterval('cheque', result.message.chequeHash, store)
+            }
         } catch(e) {
             console.log('cheque error', e)
             store.set('cheque.requesting', false)
@@ -105,6 +112,9 @@ export const newChaiTransfer = async function() {
                     store.set('cheque.result', result)
                     store.set('cheque.requesting', false)
                     store.set('cheque.networkRequesting', false)
+                    if (result.success === 'true' && result.message.chequeHash) {
+                        setTxMinedInterval('cheque', result.message.chequeHash, store)
+                    }
                     console.log('chaiPermitAndCheque', result)
                 }, 10)
             } catch(e) {
@@ -126,6 +136,9 @@ export const newChaiTransfer = async function() {
             store.set('cheque.result', result)
             store.set('cheque.requesting', false)
             store.set('cheque.networkRequesting', false)
+            if (result.success === 'true' && result.message.chequeHash) {
+                setTxMinedInterval('cheque', result.message.chequeHash, store)
+            }
         } catch(e) {
             console.log('cheque error', e)
             store.set('cheque.requesting', false)
@@ -173,6 +186,9 @@ export const newDaiSwap = async function() {
             store.set('swap.result', result)
             store.set('swap.requesting', false)
             store.set('swap.networkRequesting', false)
+            if (result.success === 'true' && result.message.swapHash) {
+                setTxMinedInterval('swap', result.message.swapHash, store)
+            }
         } catch(e) {
             console.log('swap error', e)
             store.set('swap.requesting', false)
@@ -201,6 +217,9 @@ export const newChaiSwap = async function() {
                   store.set('swap.result', result)
                   store.set('swap.requesting', false)
                   store.set('swap.networkRequesting', false)
+                  if (result.success === 'true' && result.message.swapHash) {
+                      setTxMinedInterval('swap', result.message.swapHash, store)
+                  }
               }, 10)
             } catch(e) {
                 console.log(e)
@@ -220,6 +239,9 @@ export const newChaiSwap = async function() {
             store.set('swap.result', result)
             store.set('swap.requesting', false)
             store.set('swap.networkRequesting', false)
+            if (result.success === 'true' && result.message.swapHash) {
+                setTxMinedInterval('swap', result.message.swapHash, store)
+            }
         } catch(e) {
             console.log('swap error', e)
             store.set('swap.requesting', false)
@@ -253,6 +275,9 @@ export const newDaiConvert = async function() {
                     store.set('convert.result', result)
                     store.set('convert.requesting', false)
                     store.set('convert.networkRequesting', false)
+                    if (result.success === 'true' && result.message.joinHash) {
+                        setTxMinedInterval('convert', result.message.joinHash, store)
+                    }
                 }, 10)
             } catch(e) {
                 console.log(e)
@@ -273,6 +298,9 @@ export const newDaiConvert = async function() {
             store.set('convert.result', result)
             store.set('convert.requesting', false)
             store.set('convert.networkRequesting', false)
+            if (result.success === 'true' && result.message.joinHash) {
+                setTxMinedInterval('convert', result.message.joinHash, store)
+            }
         } catch(e) {
             console.log('cheque error', e)
             store.set('convert.requesting', false)
@@ -306,6 +334,9 @@ export const newChaiConvert = async function() {
                     store.set('convert.result', result)
                     store.set('convert.requesting', false)
                     store.set('convert.networkRequesting', false)
+                    if (result.success === 'true' && result.message.exitHash) {
+                        setTxMinedInterval('convert', result.message.exitHash, store)
+                    }
                 }, 10)
             } catch(e) {
                 console.log(e)
@@ -326,6 +357,9 @@ export const newChaiConvert = async function() {
             store.set('convert.result', result)
             store.set('convert.requesting', false)
             store.set('convert.networkRequesting', false)
+            if (result.success === 'true' && result.message.exitHash) {
+                setTxMinedInterval('convert', result.message.exitHash, store)
+            }
         } catch(e) {
             console.log('cheque error', e)
             store.set('convert.requesting', false)

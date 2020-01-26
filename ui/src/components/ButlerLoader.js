@@ -69,18 +69,18 @@ class ButlerLoader extends React.Component {
         if (!prevProps.success && this.props.success) {
             // this.setState({ success: true })
 
-            setTimeout(() => {
-                this.setState({
-                    showFood: true
-                })
-            }, 1000)
+            // setTimeout(() => {
+            //     this.setState({
+            //         showFood: true
+            //     })
+            // }, 1000)
         }
     }
 
     render() {
-        const { classes, success } = this.props
+        const { classes, success, showFood } = this.props
         const offset = this.state.offset
-        const showFood = this.state.showFood
+        // const showFood = this.state.showFood
 
         let src = ''
         if (success) {
