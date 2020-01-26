@@ -746,19 +746,24 @@ export const initBrowserWallet = async function() {
         this.log("Please install MetaMask!");
     }
 
-    const web3 = new Web3(web3Provider);
-    const walletType = 'injected'
-    const accounts = await web3.eth.getAccounts()
+    if(web3Provider.networkVersion !== '1') {
+        store.set('showSignIn', true)
+        store.set('signInMessage', 'Please switch wallet to mainnet')
+    } else {
+        const web3 = new Web3(web3Provider);
+        const walletType = 'injected'
+        const accounts = await web3.eth.getAccounts()
 
-    // await window.ethereum.enable();
-    store.set('walletLoading', false)
-    store.set('walletAddress', accounts[0])
-    store.set('web3', web3)
-    store.set('walletType', walletType)
+        // await window.ethereum.enable();
+        store.set('walletLoading', false)
+        store.set('walletAddress', accounts[0])
+        store.set('web3', web3)
+        store.set('walletType', walletType)
 
-    getDaiData.bind(this)()
-    getChaiData.bind(this)()
-    getFeeData.bind(this)()
+        getDaiData.bind(this)()
+        getChaiData.bind(this)()
+        getFeeData.bind(this)()
+    }
 }
 
 export default {

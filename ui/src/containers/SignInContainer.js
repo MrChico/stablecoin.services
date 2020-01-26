@@ -24,22 +24,52 @@ import Fade from '@material-ui/core/Fade';
 import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 
+import Metamask from '../assets/metamask.png'
+import Portis from '../assets/portis.png'
+import WalletConnect from '../assets/walletConnect.svg'
+
 
 const styles = () => ({
     modal: {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
+      outline: 'none'
     },
     modalContent: {
       backgroundColor: '#fff',
       width: 360,
       maxWidth: '100%',
-      padding: theme.spacing(2)
+      padding: theme.spacing(2),
+      borderRadius: 4,
+      outline: 'none'
     },
     signInInput: {
       width: '100%'
     },
+    message: {
+      textAlign: 'center',
+      width: '100%',
+      paddingTop: theme.spacing(2),
+      paddingBottom: theme.spacing(2)
+    },
+    walletList: {
+      width: '100%'
+    },
+    walletItem: {
+      width: '100%',
+      borderRadius: 4,
+      padding: theme.spacing(2),
+      '& img': {
+        width: 36,
+        height: 'auto',
+        marginRight: theme.spacing(2)
+      },
+      '& div': {
+        display: 'flex',
+        alignItems: 'center'
+      }
+    }
 })
 
 class SignInContainer extends React.Component {
@@ -75,6 +105,7 @@ class SignInContainer extends React.Component {
         } = this.props
 
         const showSignIn = store.get('showSignIn')
+        const signInMessage = store.get('signInMessage')
 
         // console.log(this.props, this.state)
 
@@ -94,10 +125,13 @@ class SignInContainer extends React.Component {
         >
           <Fade in={showSignIn}>
             <Grid container className={classes.modalContent}>
-                <MenuList>
-                    <MenuItem><div onClick={this.injected.bind(this)}>Metamask</div></MenuItem>
-                    <MenuItem><div onClick={this.walletConnect.bind(this)}>Wallet Connect</div></MenuItem>
-                    <MenuItem><div onClick={this.portis.bind(this)}>Portis</div></MenuItem>
+                <div className={classes.message}>
+                    {signInMessage ? <Typography variant='body1'>{signInMessage}</Typography> : <Typography variant='body1'>Connect a wallet to continue</Typography>}
+                </div>
+                <MenuList className={classes.walletList}>
+                    <MenuItem className={classes.walletItem} onClick={this.injected.bind(this)}><div><img src={Metamask} /><span>Metamask</span></div></MenuItem>
+                    <MenuItem className={classes.walletItem} onClick={this.walletConnect.bind(this)}><div><img src={WalletConnect} /><span>WalletConnect</span></div></MenuItem>
+                    <MenuItem className={classes.walletItem} onClick={this.portis.bind(this)}><div><img src={Portis} /><span>Portis</span></div></MenuItem>
                 </MenuList>
             </Grid>
           </Fade>

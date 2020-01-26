@@ -2,6 +2,7 @@ import React from 'react';
 import { createStore } from '@spyna/react-store'
 
 import NavContainer from './containers/NavContainer'
+import FooterContainer from './containers/FooterContainer'
 import IssueCheckContainer from './containers/IssueCheckContainer'
 import SignInContainer from './containers/SignInContainer'
 import Web3StoreUpdater from './containers/Web3StoreUpdater'
@@ -42,6 +43,18 @@ const styles = () => ({
       borderRadius: theme.shape.borderRadius,
       padding: 0,
       marginBottom: theme.spacing(3)
+  },
+  appWrapper: {
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column'
+  },
+  contentWrapper: {
+    flex: 1,
+    paddingTop: theme.spacing(3)
+    // display: 'flex',
+    // alignItems: 'center',
+    // justifyContent: 'center'
   }
 })
 
@@ -55,6 +68,7 @@ const initialState = {
     walletType: '',
     showSignIn: false,
     selectedActionTab: 0,
+    signInMessage: '',
     // wallet balances and nonces
     daiBalance: '',
     chaiBalance: '',
@@ -113,16 +127,18 @@ class App extends React.Component {
             <Web3ReactProvider getLibrary={getLibrary}>
                 {/*<Web3StoreUpdater web3Context={this.props.web3Context} />*/}
                 <ThemeProvider theme={theme}>
-                    <SignInContainer />
-                    <NavContainer />
-                    <Container maxWidth="md">
-                        <Grid container>
-                            <Grid item xs={12}><br/></Grid>
-                            <Grid item xs={12} className={classes.contentContainer}>
-                                <IssueCheckContainer />
+                    <div className={classes.appWrapper}>
+                        <SignInContainer />
+                        <NavContainer />
+                        <Container className={classes.contentWrapper} maxWidth="md">
+                            <Grid container>
+                                <Grid item xs={12} className={classes.contentContainer}>
+                                    <IssueCheckContainer />
+                                </Grid>
                             </Grid>
-                        </Grid>
-                    </Container>
+                        </Container>
+                        <FooterContainer />
+                    </div>
                 </ThemeProvider>
             </Web3ReactProvider>
         );
