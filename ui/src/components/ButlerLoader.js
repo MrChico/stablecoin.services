@@ -4,8 +4,8 @@ import classNames from 'classnames'
 import { withStyles } from '@material-ui/styles';
 import ButlerLoading from '../assets/walking_start_resized.gif'
 import ButlerWaiting from '../assets/walking_stop_resized.jpg'
-import ButlerSuccess from '../assets/walking_end_resizedlonger.gif'
-import ButlerLoaded from '../assets/butler_end_resized.png'
+import ButlerSuccess from '../assets/walking_end_nofood.gif'
+import ButlerLoaded from '../assets/food_reveal.gif'
 
 import Input from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
@@ -68,6 +68,7 @@ class ButlerLoader extends React.Component {
     componentDidUpdate(prevProps, prevState){
         if (!prevProps.success && this.props.success) {
             // this.setState({ success: true })
+
             setTimeout(() => {
                 this.setState({
                     showFood: true
