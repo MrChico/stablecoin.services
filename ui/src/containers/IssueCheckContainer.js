@@ -309,7 +309,9 @@ class IssueCheckContainer extends React.Component {
         const selectedCurrency = store.get('cheque.selectedCurrency')
         const bal = selectedCurrency === 'dai' ? store.get('daiBalance') : store.get('chaiBalance')
         const fee = store.get('cheque.fee')
-        this.chequeAmountRef.current.value = (bal - fee) > 0 ?  bal - fee : '0'
+        const max = (bal - fee) > 0 ?  bal - fee : '0'
+        this.chequeAmountRef.current.value = max
+        store.set('cheque.amount', String(max))
     }
 
     swapMax() {
@@ -317,7 +319,9 @@ class IssueCheckContainer extends React.Component {
         const selectedCurrency = store.get('swap.selectedCurrency')
         const bal = selectedCurrency === 'dai' ? store.get('daiBalance') : store.get('chaiBalance')
         const fee = store.get('swap.fee')
-        this.swapAmountRef.current.value = (bal - fee) > 0 ?  bal - fee : '0'
+        const max = (bal - fee) > 0 ?  bal - fee : '0'
+        this.swapAmountRef.current.value = max
+        store.set('swap.amount', String(max))
     }
 
     convertMax() {
@@ -325,7 +329,9 @@ class IssueCheckContainer extends React.Component {
         const selectedCurrency = store.get('convert.selectedCurrency')
         const bal = selectedCurrency === 'dai' ? store.get('daiBalance') : store.get('chaiBalance')
         const fee = store.get('convert.fee')
-        this.convertAmountRef.current.value = (bal - fee) > 0 ?  bal - fee : '0'
+        const max = (bal - fee) > 0 ?  bal - fee : '0'
+        this.convertAmountRef.current.value = max
+        store.set('convert.amount', String(max))
     }
 
     render() {
