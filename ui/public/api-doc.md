@@ -18,7 +18,7 @@ The api provides the following methods:
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
-**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
+**Table of Contents**
 
 - [Types](#types)
   - [Permit](#permit)
@@ -26,18 +26,18 @@ The api provides the following methods:
   - [Swap](#swap)
   - [Join/Exit](#joinexit)
 - [GET methods:](#get-methods)
-  - [v1/daiChequeWithPermit/fee](#v1daichequewithpermitfee)
-  - [v1/daiSwapWithPermit/fee](#v1daiswapwithpermitfee)
-  - [v1/chaiChequeWithPermit/fee](#v1chaichequewithpermitfee)
-  - [v1/chaiSwapWithPermit/fee](#v1chaiswapwithpermitfee)
-  - [v1/chaiJoinWithPermit/fee](#v1chaijoinwithpermitfee)
-  - [v1/chaiExitWithPermit/fee](#v1chaiexitwithpermitfee)
-  - [v1/daiCheque/fee](#v1daichequefee)
-  - [v1/daiSwap/fee](#v1daiswapfee)
-  - [v1/chaiCheque/fee](#v1chaichequefee)
-  - [v1/chaiSwap/fee](#v1chaiswapfee)
-  - [v1/chaiJoin/fee](#v1chaijoinfee)
-  - [v1/chaiExit/fee](#v1chaiexitfee)
+  - [/v1/daiChequeWithPermit/fee](#v1daichequewithpermitfee)
+  - [/v1/daiSwapWithPermit/fee](#v1daiswapwithpermitfee)
+  - [/v1/chaiChequeWithPermit/fee](#v1chaichequewithpermitfee)
+  - [/v1/chaiSwapWithPermit/fee](#v1chaiswapwithpermitfee)
+  - [/v1/chaiJoinWithPermit/fee](#v1chaijoinwithpermitfee)
+  - [/v1/chaiExitWithPermit/fee](#v1chaiexitwithpermitfee)
+  - [/v1/daiCheque/fee](#v1daichequefee)
+  - [/v1/daiSwap/fee](#v1daiswapfee)
+  - [/v1/chaiCheque/fee](#v1chaichequefee)
+  - [/v1/chaiSwap/fee](#v1chaiswapfee)
+  - [/v1/chaiJoin/fee](#v1chaijoinfee)
+  - [/v1/chaiExit/fee](#v1chaiexitfee)
 - [POST methods](#post-methods)
   - [/v1/daiChequeWithPermit](#v1daichequewithpermit)
   - [/v1/daiSwapWithPermit](#v1daiswapwithpermit)
@@ -110,7 +110,7 @@ A `join` or `exit` consists of:
 
 ## GET methods:
 
-### v1/daiChequeWithPermit/fee
+### /v1/daiChequeWithPermit/fee
 
 #### Parameters:
 None.
@@ -118,7 +118,7 @@ None.
 #### Returns 
 The minimal dai fee required for a [`daiChequeWithPermit`](#v1daiChequeWithPermit) to be accepted (with 18 decimal places).
 
-### v1/daiSwapWithPermit/fee
+### /v1/daiSwapWithPermit/fee
 
 #### Parameters:
 None.
@@ -126,7 +126,7 @@ None.
 #### Returns 
 The minimal dai fee required for a [`daiSwapWithPermit`](#v1daiSwapWithPermit) to be accepted (with 18 decimal places).
 
-### v1/chaiChequeWithPermit/fee
+### /v1/chaiChequeWithPermit/fee
 
 #### Parameters:
 None.
@@ -134,7 +134,7 @@ None.
 #### Returns 
 The minimal chai fee required for a [`chaiChequeWithPermit`](#v1chaiChequeWithPermit) to be accepted (with 18 decimal places).
 
-### v1/chaiSwapWithPermit/fee
+### /v1/chaiSwapWithPermit/fee
 
 #### Parameters:
 None.
@@ -142,7 +142,7 @@ None.
 #### Returns 
 The minimal chai fee required for a [`chaiSwapWithPermit`](#v1chaiSwapWithPermit) to be accepted (with 18 decimal places).
 
-### v1/chaiJoinWithPermit/fee
+### /v1/chaiJoinWithPermit/fee
 
 #### Parameters:
 None.
@@ -152,7 +152,7 @@ The minimal dai fee required for a [`chaiJoinWithPermit`](#v1chaiJoinWithPermit)
 
 - Note that the `permit` required for the `chaiJoinWithPermit` operation is that of the *Dai* contract.
 
-### v1/chaiExitWithPermit/fee
+### /v1/chaiExitWithPermit/fee
 
 #### Parameters:
 None.
@@ -162,7 +162,7 @@ The minimal chai fee required for a [`chaiExitWithPermit`](#v1chaiExitWithPermit
 
 - Note that the `permit` required for the `chaiExitWithPermit` operation is that of the *Chai* contract
 
-### v1/daiCheque/fee
+### /v1/daiCheque/fee
 
 #### Parameters:
 None.
@@ -170,7 +170,7 @@ None.
 #### Returns 
 The minimal dai fee required for a [`daiCheque`](#v1daiCheque) to be accepted (with 18 decimal places).
 
-### v1/daiSwap/fee
+### /v1/daiSwap/fee
 
 #### Parameters:
 None.
@@ -178,7 +178,7 @@ None.
 #### Returns 
 The minimal dai fee required for a [`daiSwap`](#v1daiSwap) to be accepted (with 18 decimal places).
 
-### v1/chaiCheque/fee
+### /v1/chaiCheque/fee
 
 #### Parameters:
 None.
@@ -186,7 +186,7 @@ None.
 #### Returns 
 The minimal chai fee required for a [`chaiCheque`](#v1chaiCheque) to be accepted (with 18 decimal places).
 
-### v1/chaiSwap/fee
+### /v1/chaiSwap/fee
 
 #### Parameters:
 None.
@@ -194,7 +194,7 @@ None.
 #### Returns 
 The minimal chai fee required for a [`chaiSwap`](#v1chaiSwap) to be accepted (with 18 decimal places).
 
-### v1/chaiJoin/fee
+### /v1/chaiJoin/fee
 
 #### Parameters:
 None.
@@ -202,7 +202,7 @@ None.
 #### Returns 
 The minimal dai fee required for a [`chaiJoin`](#v1chaiJoin) to be accepted (with 18 decimal places).
 
-### v1/chaiExit/fee
+### /v1/chaiExit/fee
 
 #### Parameters:
 None.
