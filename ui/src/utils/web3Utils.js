@@ -750,16 +750,22 @@ export const initBrowserWallet = async function() {
         window.ethereum.on('accountsChanged', (accounts) => {
             initBrowserWallet.bind(this)()
         })
+        setWeb3.bind(this)(web3Provider)
     }
     // Legacy dApp browsers...
     else if (window.web3) {
         web3Provider = window.web3.currentProvider;
+        setWeb3.bind(this)(web3Provider)
     }
     // If no injected web3 instance is detected, display err
     else {
-        this.log("Please install MetaMask!");
+      store.set('showSignIn', true)
+      store.set('signInMessage', 'Wallet not found')
     }
+}
 
+export const setWeb3 = async function(web3Provider) {
+    const store = this.props.store
     if(web3Provider.networkVersion !== '1') {
         store.set('showSignIn', true)
         store.set('signInMessage', 'Please switch wallet to mainnet')

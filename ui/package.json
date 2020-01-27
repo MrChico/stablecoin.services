@@ -11,7 +11,6 @@
     "@material-ui/styles": "^4.6.0",
     "@portis/web3": "^2.0.0-beta.54",
     "@spyna/react-store": "^1.5.0",
-    "@uniswap/sdk": "^1.0.0-beta.4",
     "@walletconnect/browser": "^1.0.0-beta.46",
     "@walletconnect/qrcode-modal": "^1.0.0-beta.46",
     "@walletconnect/web3-provider": "^1.0.0-beta.46",
