@@ -10,12 +10,12 @@ const styles = () => ({
   butlerContainer: {
     width: '100%',
     position: 'relative',
-    height: 72,
+    height: 150,
     marginTop: theme.spacing(2)
   },
   butlerLoading: {
-    height: 72,
-    width: 72,
+    height: 150,
+    width: 150,
     position: 'absolute',
     top: 0,
     left: 0
@@ -39,16 +39,17 @@ class ButlerLoader extends React.Component {
             const offset = this.state.offset
             const success = this.props.success
 
-            if (!success) {
-                const newOffset = offset + 0.2
+            if (!success && offset < 100) {
+                const newOffset = offset + 0.4
                 this.setState({ offset: newOffset })
             } else if (success && offset > 50) {
                 if (!this.floatBackValue) {
-                  this.floatBackValue = (offset - 50) / 4
+                  this.floatBackValue = (offset - 50) / 6
                 }
                 const newOffset = offset - this.floatBackValue
                 this.setState({ offset: newOffset })
             }
+          console.log(this.state.offset)
         }, 200)
 
         // setTimeout(() => {
