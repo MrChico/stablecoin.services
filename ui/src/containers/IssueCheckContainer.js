@@ -254,8 +254,11 @@ class IssueCheckContainer extends React.Component {
         store.set('cheque.selectedCurrency', newValue)
         store.set('cheque.result', null)
         store.set('cheque.resultMined', false)
+        store.set('cheque.amount', '')
         getFeeData.bind(this)();
-        this.chequeAmountRef.current.value = ''
+        if (this.chequeAmountRef.current) {
+            this.chequeAmountRef.current.value = ''
+        }
     }
 
     switchSwapTab(event, newValue) {
@@ -264,9 +267,12 @@ class IssueCheckContainer extends React.Component {
         store.set('swap.selectedCurrency', newValue)
         store.set('swap.result', null)
         store.set('swap.resultMined', false)
+        store.set('swap.inputAmount', '')
         getFeeData.bind(this)();
-        this.swapAmountRef.current.value = ''
-        this.swapAmountChanged.bind(this)(store.get('swap.inputAmount'))
+        if (this.swapAmountRef.current) {
+            this.swapAmountRef.current.value = ''
+            this.swapAmountChanged.bind(this)(store.get('swap.inputAmount'))
+        }
     }
 
     switchConvertTab(event, newValue) {
@@ -275,8 +281,11 @@ class IssueCheckContainer extends React.Component {
         store.set('convert.selectedCurrency', newValue)
         store.set('convert.result', null)
         store.set('convert.resultMined', false)
+        store.set('convert.amount', '')
         getFeeData.bind(this)();
-        this.convertAmountRef.current.value = ''
+        if (this.convertAmountRef.current) {
+            this.convertAmountRef.current.value = ''
+        }
     }
 
     async swapAmountChanged(amount) {
@@ -616,7 +625,7 @@ class IssueCheckContainer extends React.Component {
                                             <div>
                                                 <Chip
                                                     label={<div className={classes.breakdownWrapper}>
-                                                            <Typography variant='caption'>Convert Fee</Typography>
+                                                            <Typography variant='caption'>Conversion Fee</Typography>
                                                             <Typography className={classes.transferFee} variant='caption'>{convertFee ? `${convertFee} ${convertCurrencyFormatted}` : '-'}</Typography>
                                                     </div>}
                                                     className={classes.transferBreakdown}
