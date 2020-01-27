@@ -77,10 +77,8 @@ const initialState = {
     'dach.daiApproved': false,
     'dach.daiAllowance': '',
     'dach.nonce': '',
-    'dach.daiSwapApproved': false,
     'dach.chaiApproved': false,
     'dach.chaiAllowance': '',
-    'dach.chaiSwapApproved': false,
     // transfer
     'cheque.to': '',
     'cheque.toValid': false,

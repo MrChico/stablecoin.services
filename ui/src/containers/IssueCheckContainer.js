@@ -384,7 +384,7 @@ class IssueCheckContainer extends React.Component {
 
         const showChequeSuccess = chequeResult && chequeResult.success === 'true'
         const showChequeError = chequeResult && chequeResult.success === 'false'
-        const showChequeValidationError = !showChequeSuccess && chequeAmount && insufficientTransferBalance && isSignedIn
+        const showChequeValidationError = !showChequeSuccess && chequeAmount && (insufficientTransferBalance || !chequeToValid) && isSignedIn
 
         const showSwapSuccess = swapResult && swapResult.success === 'true'
         const showSwapError = swapResult && swapResult.success === 'false'
@@ -445,7 +445,8 @@ class IssueCheckContainer extends React.Component {
                                                     }} InputProps={{
                                                         endAdornment: <InputAdornment className={classes.endAdornment} position="end">{chequeCurrencyFormatted}</InputAdornment>
                                                     }} inputProps={{
-                                                        'aria-label' : 'bare'
+                                                        'aria-label' : 'bare',
+                                                        min : 0
                                                     }}/>
                                             </div>
                                             <div>
@@ -480,10 +481,17 @@ class IssueCheckContainer extends React.Component {
                                               </Grid>}
                                             /> : null}
 
+                                            {showChequeError ? <SnackbarContent
+                                              className={classes.errorApi}
+                                              message={<Grid item xs={12}>
+                                                <span>{chequeResult.message}</span>
+                                              </Grid>}
+                                            /> : null}
+
                                             {showChequeValidationError ? <SnackbarContent
                                               className={classes.error}
                                               message={<Grid item xs={12}>
-                                                <span>Insufficient {chequeCurrencyFormatted} balance</span>
+                                                <span>{chequeToValid ? "Insufficient " + chequeCurrencyFormatted + " balance" : "Invalid address"}</span>
                                               </Grid>}
                                             /> : null}
                                         </div>
