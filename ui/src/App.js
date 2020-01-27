@@ -5,7 +5,6 @@ import NavContainer from './containers/NavContainer'
 import FooterContainer from './containers/FooterContainer'
 import IssueCheckContainer from './containers/IssueCheckContainer'
 import SignInContainer from './containers/SignInContainer'
-import Web3StoreUpdater from './containers/Web3StoreUpdater'
 
 import theme from './theme/theme'
 
@@ -131,7 +130,6 @@ class App extends React.Component {
 
         return (
             <Web3ReactProvider getLibrary={getLibrary}>
-                {/*<Web3StoreUpdater web3Context={this.props.web3Context} />*/}
                 <ThemeProvider theme={theme}>
                     <div className={classes.appWrapper}>
                         <SignInContainer />

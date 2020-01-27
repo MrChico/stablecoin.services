@@ -6,8 +6,6 @@ import {
   signDaiConvert,
   signChaiConvert,
   batchSignData,
-  createChequeMessageData,
-  createPermitMessageData,
   setTxMinedInterval
 } from '../utils/web3Utils';
 
@@ -28,10 +26,7 @@ import {
 
 export const newDaiTransfer = async function() {
     const { store } = this.props
-    // const dachApproved = false
     const dachApproved = store.get('dach.daiApproved')
-    const web3 = store.get('web3')
-    const walletAddress = store.get('walletAddress')
 
     store.set('cheque.requesting', true)
 
@@ -89,10 +84,7 @@ export const newDaiTransfer = async function() {
 
 export const newChaiTransfer = async function() {
     const { store } = this.props
-    // const dachApproved = false
     const dachApproved = store.get('dach.chaiApproved')
-    const web3 = store.get('web3')
-    const walletAddress = store.get('walletAddress')
 
     store.set('cheque.requesting', true)
 
@@ -254,8 +246,6 @@ export const newDaiConvert = async function() {
     const { store } = this.props
 
     const dachApproved = store.get('dach.daiApproved')
-    const web3 = store.get('web3')
-    const walletAddress = store.get('walletAddress')
 
     store.set('convert.requesting', true)
 
@@ -313,8 +303,6 @@ export const newChaiConvert = async function() {
     const { store } = this.props
 
     const dachApproved = store.get('dach.chaiApproved')
-    const web3 = store.get('web3')
-    const walletAddress = store.get('walletAddress')
 
     store.set('convert.requesting', true)
 

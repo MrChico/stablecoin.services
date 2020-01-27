@@ -2,21 +2,13 @@ import React from 'react';
 import { withStore } from '@spyna/react-store'
 import { withStyles } from '@material-ui/styles';
 import theme from '../theme/theme'
-import classNames from 'classnames'
-import {
-  useWeb3React
-} from "@web3-react/core";
 import {
   initBrowserWallet,
-  initInjected,
   initPortis,
   initWalletConnect
 } from '../utils/web3Utils'
 
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import Input from '@material-ui/core/Input';
-import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import Modal from '@material-ui/core/Modal';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -83,7 +75,6 @@ class SignInContainer extends React.Component {
         const { store } = this.props
         store.set('showSignIn', false)
         initBrowserWallet.bind(this)()
-        // initInjected.bind(this)()
     }
 
     portis() {
@@ -138,29 +129,5 @@ class SignInContainer extends React.Component {
         </Modal>
     }
 }
-
-// const SignInContainerWithStore =
-
-// function SignInContainerComponent(props) {
-//     const { store } = props
-//     const context = useWeb3React();
-//     // console.log('context', context, props, this)
-//     return <SignInContainerWithStore
-//         connectInjected={() => {
-//             store.set('showSignIn', false)
-//             context.activate(injectedConnector)
-//             // initBrowserWallet.bind({ props })()
-//         }}
-//         connectPortis={() => {
-//             // initPortis.bind({ props })()
-//             store.set('showSignIn', false)
-//             // context.activate(portisConnector)
-//             initPortis.bind({ props })()
-//         }}
-//         connectWalletConnect={() => {
-//             store.set('showSignIn', false)
-//             context.activate(walletConnectConnector)
-//         }}/>
-// }
 
 export default withStore(withStyles(styles)(SignInContainer))

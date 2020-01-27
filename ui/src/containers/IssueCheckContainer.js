@@ -1,22 +1,13 @@
 import React from 'react';
 import AddressValidator from 'wallet-address-validator';
-// import * as Uniswap from '@uniswap/sdk';
-
-import {
-  Web3ReactProvider,
-  useWeb3React,
-  UnsupportedChainIdError
-} from "@web3-react/core";
 
 import {withStore} from '@spyna/react-store'
 import {withStyles} from '@material-ui/styles';
-import { amber, blue, green } from '@material-ui/core/colors';
+import { amber, blue } from '@material-ui/core/colors';
 import theme from '../theme/theme'
 import { signDachTransferPermit, getDaiData, getChaiData, getFeeData, clearTxMinedInterval } from '../utils/web3Utils'
 import { getSwapOutput } from '../utils/uniswapUtils'
 import { newDaiTransfer, newDaiSwap, newDaiConvert, newChaiTransfer, newChaiSwap, newChaiConvert } from '../actions/main'
-
-import ButlerLoading from '../assets/walking_start_resized.gif'
 
 import ButlerLoader from '../components/ButlerLoader'
 
@@ -30,7 +21,6 @@ import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 
 import SnackbarContent from '@material-ui/core/SnackbarContent';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
@@ -38,8 +28,6 @@ import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 import LoopIcon from '@material-ui/icons/Loop';
 import SwapIcon from '@material-ui/icons/SwapHoriz';
 import ArrowRightIcon from '@material-ui/icons/ArrowRightAlt';
-
-import CircularProgress from '@material-ui/core/CircularProgress';
 
 const styles = () => ({
     container: {
@@ -484,7 +472,7 @@ class IssueCheckContainer extends React.Component {
                                             {showChequeSuccess ? <SnackbarContent
                                               className={chequeResultMined ? classes.success : classes.pending}
                                               message={<Grid item xs={12}>
-                                                <span>Transfer {chequeResultMined ? 'complete' : 'started'}. <a href={`https://etherscan.io/tx/${chequeResult.message.chequeHash}`} target='_blank'>View transaction</a></span>
+                                                <span>Transfer {chequeResultMined ? 'complete' : 'started'}. <a href={`https://etherscan.io/tx/${chequeResult.message.chequeHash}`} rel="noopener noreferrer" target='_blank'>View transaction</a></span>
                                               </Grid>}
                                             /> : null}
 
@@ -564,7 +552,7 @@ class IssueCheckContainer extends React.Component {
                                             {showSwapSuccess ? <SnackbarContent
                                               className={swapResultMined ? classes.success : classes.pending}
                                               message={<Grid item xs={12}>
-                                                <span>Swap {swapResultMined ? 'complete' : 'started'}. <a href={`https://etherscan.io/tx/${swapResult.message.swapHash}`} target='_blank'>View transaction</a></span>
+                                                <span>Swap {swapResultMined ? 'complete' : 'started'}. <a href={`https://etherscan.io/tx/${swapResult.message.swapHash}`} rel="noopener noreferrer" target='_blank'>View transaction</a></span>
                                               </Grid>}
                                             /> : null}
 
@@ -626,7 +614,7 @@ class IssueCheckContainer extends React.Component {
                                             {showConvertSuccess ? <SnackbarContent
                                               className={convertResultMined ? classes.success : classes.pending}
                                               message={<Grid item xs={12}>
-                                                <span>Conversion {convertResultMined ? 'complete' : 'started'}. <a href={`https://etherscan.io/tx/${convertResult.message.joinHash || convertResult.message.exitHash}`} target='_blank'>View transaction</a></span>
+                                                <span>Conversion {convertResultMined ? 'complete' : 'started'}. <a href={`https://etherscan.io/tx/${convertResult.message.joinHash || convertResult.message.exitHash}`} rel="noopener noreferrer" target='_blank'>View transaction</a></span>
                                               </Grid>}
                                             /> : null}
 
@@ -654,13 +642,5 @@ class IssueCheckContainer extends React.Component {
         </Grid>
     }
 }
-
-// const IssueCheckContainerComponent = withStyles(styles)(withStore(IssueCheckContainer))
-//
-// function ContainerWrapper() {
-//     const context = useWeb3React();
-//     console.log(context)
-//     return <IssueCheckContainerComponent />
-// }
 
 export default withStyles(styles)(withStore(IssueCheckContainer))

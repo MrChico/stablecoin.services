@@ -2,14 +2,8 @@ import React from 'react';
 import { withStore } from '@spyna/react-store'
 import { withStyles } from '@material-ui/styles';
 import theme from '../theme/theme'
-import { initBrowserWallet, initInjected, injectedConnector, portisConnector, walletConnectConnector } from '../utils/web3Utils'
 
 import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
-
-import Bell from '../assets/bell_resized.png'
 
 import config from '../config'
 
@@ -40,7 +34,6 @@ class FooterContainer extends React.Component {
     render() {
         const {
             classes,
-            store
         } = this.props
 
         return <Grid item xs={12}>
@@ -54,7 +47,7 @@ class FooterContainer extends React.Component {
               </Grid>
               <Grid item xs={12} sm={6}>
                   <Grid container className={classes.rightLinkContainer}>
-                      <span>Interacting with the <a href={'https://etherscan.io/address/' + config.DACH + '#code'} target='_blank'>DACH Contract</a></span>
+                      <span>Interacting with the <a href={'https://etherscan.io/address/' + config.DACH + '#code'} rel="noopener noreferrer" target='_blank'>DACH Contract</a></span>
                   </Grid>
               </Grid>
             </Grid>}

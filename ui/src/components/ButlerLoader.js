@@ -1,14 +1,10 @@
 import React from 'react';
 import theme from '../theme/theme'
-import classNames from 'classnames'
 import { withStyles } from '@material-ui/styles';
 import ButlerLoading from '../assets/walking_start_resized.gif'
 import ButlerWaiting from '../assets/walking_stop_resized.jpg'
 import ButlerSuccess from '../assets/walking_end_nofood.gif'
 import ButlerLoaded from '../assets/food_reveal.gif'
-
-import Input from '@material-ui/core/Input';
-import TextField from '@material-ui/core/TextField';
 
 const styles = () => ({
   butlerContainer: {

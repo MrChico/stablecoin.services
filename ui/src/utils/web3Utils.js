@@ -1,15 +1,10 @@
 import Web3 from "web3";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import WalletConnect from "@walletconnect/browser";
-import WalletConnectQRCodeModal from "@walletconnect/qrcode-modal";
 import Portis from "@portis/web3";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
 import { PortisConnector } from "@web3-react/portis-connector";
-
-import {
-  useWeb3React
-} from "@web3-react/core";
 
 import daiABI from '../utils/daiABI.json';
 import chaiABI from '../utils/chaiABI.json';
@@ -670,16 +665,6 @@ export const setTxMinedInterval = async function(actionType, hash, store) {
 
 
 // wallets
-export const initInjected = async function() {
-    const { store } = this.props
-    const { activate } = store.get('web3Context')
-
-    store.set('walletConnecting', true)
-    activate(injectedConnector)
-    store.set('walletConnecting', false)
-    store.set('walletType', 'injected')
-}
-
 export const initPortis = async function() {
     const { store } = this.props
 
