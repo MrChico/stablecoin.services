@@ -8,6 +8,7 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 
 import Bell from '../assets/bell_resized.png'
+import bellsound from '../assets/bellsound.m4a'
 
 const styles = () => ({
     navContainer: {
@@ -19,12 +20,12 @@ const styles = () => ({
     },
 
     logo: {
-        height: 22,
-        width: 25,
-        marginRight: theme.spacing(1)
+        height: 44,
+        width: 50,
+        marginRight: theme.spacing(2)
     },
     headerText: {
-        fontSize: 18
+      fontSize: 24,
     },
     accountButton: {
       minWidth: 140,
@@ -47,9 +48,12 @@ const styles = () => ({
     }
 })
 
+const audio = new Audio(bellsound)
 class NavContainer extends React.Component {
-    async componentDidMount() {
-        console.log(this)
+    playBellSound() {
+        audio.currentTime=0;
+        this.setState({play : true})
+        audio.play()
     }
 
     render() {
@@ -66,8 +70,8 @@ class NavContainer extends React.Component {
             {<Grid className={classes.navContainer} container alignItems='center'>
               <Grid item xs={12} sm={6}>
                   <Grid container alignItems='center'>
-                        <img className={classes.logo} src={Bell} />
-                        <Typography className={classes.headerText} variant='body'>Stablecoin.services{/*<br /><Typography variant='subtitle1'>Transfer or swap DAI without holding&nbsp;ETH</Typography>*/}</Typography>
+                  <img className={classes.logo} src={Bell} onClick={this.playBellSound.bind(this)}/>
+                        <Typography className={classes.headerText} variant='body'>stablecoin.services</Typography>
                   </Grid>
               </Grid>
               <Grid item xs={12} sm={6}>
