@@ -481,6 +481,13 @@ class IssueCheckContainer extends React.Component {
                                               </Grid>}
                                             /> : null}
 
+                                            {chequeRequesting && !chequeNetworkRequesting ? <SnackbarContent
+                                              className={classes.pending}
+                                              message={<Grid item xs={12}>
+                                                <span>Use your wallet to sign the transaction.</span>
+                                              </Grid>}
+                                            /> : null}
+
                                             {showChequeError ? <SnackbarContent
                                               className={classes.errorApi}
                                               message={<Grid item xs={12}>
@@ -561,6 +568,14 @@ class IssueCheckContainer extends React.Component {
                                               </Grid>}
                                             /> : null}
 
+                                             {swapRequesting && !swapNetworkRequesting ? <SnackbarContent
+                                              className={classes.pending}
+                                              message={<Grid item xs={12}>
+                                                <span>Use your wallet to sign the transaction.</span>
+                                              </Grid>}
+                                            /> : null}
+
+
                                             {showSwapError ? <SnackbarContent
                                               className={classes.errorApi}
                                               message={<Grid item xs={12}>
@@ -620,6 +635,13 @@ class IssueCheckContainer extends React.Component {
                                               className={convertResultMined ? classes.success : classes.pending}
                                               message={<Grid item xs={12}>
                                                 <span>Conversion {convertResultMined ? 'complete' : 'started'}. <a href={`https://etherscan.io/tx/${convertResult.message.joinHash || convertResult.message.exitHash}`} rel="noopener noreferrer" target='_blank'>View transaction</a></span>
+                                              </Grid>}
+                                            /> : null}
+
+                                             {convertRequesting && !convertNetworkRequesting ? <SnackbarContent
+                                              className={classes.pending}
+                                              message={<Grid item xs={12}>
+                                                <span>Use your wallet to sign the transaction.</span>
                                               </Grid>}
                                             /> : null}
 
