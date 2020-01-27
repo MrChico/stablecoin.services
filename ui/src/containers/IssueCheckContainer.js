@@ -7,7 +7,7 @@ import theme from '../theme/theme'
 import { signDachTransferPermit, getDaiData, getChaiData, getFeeData, clearTxMinedInterval } from '../utils/web3Utils'
 import { getSwapOutput } from '../utils/uniswapUtils'
 import { newDaiTransfer, newDaiSwap, newDaiConvert, newChaiTransfer, newChaiSwap, newChaiConvert } from '../actions/main'
-
+import Web3 from "web3";
 import ButlerLoader from '../components/ButlerLoader'
 
 import Grid from '@material-ui/core/Grid';
@@ -347,7 +347,6 @@ class IssueCheckContainer extends React.Component {
     render() {
         const {classes, store} = this.props
 
-        const web3 = store.get('web3')
         const selectedActionTab = store.get('selectedActionTab')
 
         const walletAddress = store.get('walletAddress')
@@ -438,7 +437,7 @@ class IssueCheckContainer extends React.Component {
                                                 <Typography variant='subtitle2'>Send to Address</Typography>
                                                 <TextField inputRef={this.chequeDestRef} placeholder='Enter address' className={classes.input} margin="normal" variant="outlined" onChange={(event) => {
                                                         store.set('cheque.to', event.target.value)
-                                                        store.set('cheque.toValid', web3 ? web3.utils.isAddress(event.target.value) : false)
+                                                        store.set('cheque.toValid', Web3.utils.isAddress(event.target.value))
                                                         store.set('cheque.result', null)
                                                         store.set('cheque.resultMined', false)
                                                         clearTxMinedInterval('cheque', store)

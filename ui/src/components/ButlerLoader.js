@@ -49,7 +49,6 @@ class ButlerLoader extends React.Component {
                 const newOffset = offset - this.floatBackValue
                 this.setState({ offset: newOffset })
             }
-          console.log(this.state.offset)
         }, 200)
 
         // setTimeout(() => {
@@ -88,7 +87,7 @@ class ButlerLoader extends React.Component {
 
         return <div className={classes.butlerContainer}>
             <img style={{
-                left: 'calc(' + offset + '% - 36px',
+                left: 'calc(' + offset + '% - 75px',
                 // transition: success ? 'all 1.5s ease-in-out' : 'all 0.2s ease-in-out'
               }}
               className={classes.butlerLoading}
