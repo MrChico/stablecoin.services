@@ -1,5 +1,4 @@
 import React from 'react';
-import AddressValidator from 'wallet-address-validator';
 
 import {withStore} from '@spyna/react-store'
 import {withStyles} from '@material-ui/styles';
@@ -339,6 +338,7 @@ class IssueCheckContainer extends React.Component {
     render() {
         const {classes, store} = this.props
 
+        const web3 = store.get('web3')
         const selectedActionTab = store.get('selectedActionTab')
 
         const walletAddress = store.get('walletAddress')
@@ -403,9 +403,6 @@ class IssueCheckContainer extends React.Component {
         return <Grid item xs={12}>
             {
                 <Grid className={classes.container} container="container" alignItems='center'>
-                        {/*<Typography variant='h6'>Welcome to Stablecoin.services<br /><Typography variant='subtitle1'>Transfer or swap DAI without holding any ETH</Typography></Typography>*/}
-                        {/*<Typography variant='subtitle1'>The new version of the Dai contract allows for transfers via signatures, allowing you to send Dai without holding any eth.</Typography>*/}
-
                         <Grid className={classes.actionsContainer} container="container" justify='center'>
                             <Grid item xs={12} sm={12} md={7} className={classes.contentContainer}>
                                 <Grid container justify='center'>
@@ -432,7 +429,7 @@ class IssueCheckContainer extends React.Component {
                                                 <Typography variant='subtitle2'>Send to Address</Typography>
                                                 <TextField inputRef={this.chequeDestRef} placeholder='Enter address' className={classes.input} margin="normal" variant="outlined" onChange={(event) => {
                                                         store.set('cheque.to', event.target.value)
-                                                        store.set('cheque.toValid', AddressValidator.validate(event.target.value, 'ETH'))
+                                                        store.set('cheque.toValid', web3 ? web3.utils.isAddress(event.target.value) : false)
                                                         store.set('cheque.result', null)
                                                         store.set('cheque.resultMined', false)
                                                         clearTxMinedInterval('cheque', store)
