@@ -18,9 +18,9 @@ A relaying api is provided at [api.stablecoin.services](https://api.stablecoin.s
 
 To initiate an action, the user signs a message specifying the details of the operation to be performed, and authorizes a relayer to process the transaction on their behalf. As the relayer submits the message to the blockchain, the operation is processed and the fee is delivered to the relayer to reimburse their gas costs.
 
-At the heart of this process sits a smart contract called the Dai Automated Clearing House, or [`dach`](https://etherscan.io/TODO), for short. The first time you use `stablecoin.services` you will be asked to sign a message which permits this contract to operate on your behalf. You should study this contract carefully as it determines the terms of engagement between you and the relaying service. It specifies a set of message types, one for each action offered by `stablecoin.services`, and corresponding functions which executes the operation specified by each message.
+At the heart of this process sits a smart contract called the Dai Automated Clearing House, or [`dach`](https://etherscan.io/address/0x64043a98f097fD6ef0D3ad41588a6B0424723b3a#code), for short. The first time you use `stablecoin.services` you will be asked to sign a message which permits this contract to operate on your behalf. You should study this contract carefully as it determines the terms of engagement between you and the relaying service. It specifies a set of message types, one for each action offered by `stablecoin.services`, and corresponding functions which executes the operation specified by each message.
 
-This is all made possible by the [`permit` function](https://github.com/makerdao/dss/TODO) in the Dai and Chai contracts, which allows for approvals to be done by signed messages, instead of transactions relying on `msg.sender`. We hope that `stablecoin.services` serves as an example of the power and extensibility of the `permit` construction, and encourage future token designers to adopt a similar pattern.
+This is all made possible by the [`permit` function](https://github.com/makerdao/dss/blob/master/src/dai.sol#L117) in the Dai and Chai contracts, which allows for approvals to be done by signed messages, instead of transactions relying on `msg.sender`. We hope that `stablecoin.services` serves as an example of the power and extensibility of the `permit` construction, and encourage future token designers to adopt a similar pattern.
 
 The processing fee suggested by the front end is calculated according to the following formula:
 
@@ -36,7 +36,7 @@ Assuming the contract works as intended, neither the relayer or the `dach` contr
 
 ## Resources
 
-The code for the `dach` contract can be found at [github.com/dapphub/ds-dach](https://github.com/dapphub/chai), or in the [etherscan live deployment](etherscan.io)
+The code for the `dach` contract can be found at [github.com/dapphub/ds-dach](https://github.com/dapphub/ds-dach/), or in the [etherscan live deployment](https://etherscan.io/address/0x64043a98f097fD6ef0D3ad41588a6B0424723b3a#code)
 The code for the `stablecoin.services` front end is hosted at [github.com/MrChico/stablecoin.services](https://github.com/MrChico/Stablecoin.services).
 
 Both distributed under the AGPL license.
