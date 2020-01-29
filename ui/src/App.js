@@ -73,6 +73,7 @@ const initialState = {
     chaiBalance: '',
     daiNonce: '',
     chaiNonce: '',
+    chi: '',
     // dach
     'dach.daiApproved': false,
     'dach.daiAllowance': '',
