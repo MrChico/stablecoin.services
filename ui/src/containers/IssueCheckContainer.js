@@ -318,7 +318,7 @@ class IssueCheckContainer extends React.Component {
         const { store } = this.props
         const selectedCurrency = store.get('cheque.selectedCurrency')
         const bal = selectedCurrency === 'dai' ? store.get('daiBalance') : store.get('chaiBalance')
-        const fee = store.get('cheque.fee')
+        const fee = selectedCurrency === 'dai' ? store.get('cheuqe.daiFee') : store.get('cheque.chaiFee')
         const max = (bal - fee) > 0 ?  bal - fee : '0'
         this.chequeAmountRef.current.value = max
         store.set('cheque.amount', String(max))
@@ -328,7 +328,7 @@ class IssueCheckContainer extends React.Component {
         const { store } = this.props
         const selectedCurrency = store.get('swap.selectedCurrency')
         const bal = selectedCurrency === 'dai' ? store.get('daiBalance') : store.get('chaiBalance')
-        const fee = store.get('swap.fee')
+        const fee = selectedCurrency === 'dai' ? store.get('swap.daiFee') : store.get('swap.chaiFee')
         const max = (bal - fee) > 0 ?  bal - fee : '0'
         this.swapAmountRef.current.value = max
         store.set('swap.amount', String(max))
@@ -338,7 +338,7 @@ class IssueCheckContainer extends React.Component {
         const { store } = this.props
         const selectedCurrency = store.get('convert.selectedCurrency')
         const bal = selectedCurrency === 'dai' ? store.get('daiBalance') : store.get('chaiBalance')
-        const fee = store.get('convert.fee')
+        const fee = selectedCurrency === 'dai' ? store.get('convert.daiFee') : store.get('convert.chaiFee')
         const max = (bal - fee) > 0 ?  bal - fee : '0'
         this.convertAmountRef.current.value = max
         store.set('convert.amount', String(max))
@@ -355,8 +355,9 @@ class IssueCheckContainer extends React.Component {
 
         const chequeToValid = store.get('cheque.toValid');
         const chequeAmount = store.get('cheque.amount')
-        const chequeFee = store.get('cheque.fee')
         const chequeCurrency = store.get('cheque.selectedCurrency')
+        const chequeFee = chequeCurrency === 'dai' ? store.get('cheque.daiFee') : store.get('cheque.chaiFee')
+
         const chequeCurrencyFormatted = chequeCurrency.toUpperCase()
         const chequeResult = store.get('cheque.result')
         const chequeResultMined = store.get('cheque.resultMined')
@@ -366,8 +367,8 @@ class IssueCheckContainer extends React.Component {
         const swapInputAmount = store.get('swap.inputAmount');
         const swapOutputAmount = store.get('swap.outputAmount');
         const swapExchangeRate = store.get('swap.exchangeRate');
-        const swapFee = store.get('swap.fee')
         const swapCurrency = store.get('swap.selectedCurrency')
+        const swapFee = swapCurrency === 'dai' ? store.get('swap.daiFee') : store.get('swap.chaiFee')
         const swapCurrencyFormatted = swapCurrency.toUpperCase()
         const swapRequesting = store.get('swap.requesting');
         const swapNetworkRequesting = store.get('swap.networkRequesting');
@@ -379,7 +380,7 @@ class IssueCheckContainer extends React.Component {
         const convertCurrencyFormatted = convertCurrency.toUpperCase()
         const convertRequesting = store.get('convert.requesting');
         const convertNetworkRequesting = store.get('convert.networkRequesting');
-        const convertFee = store.get('convert.fee')
+        const convertFee = convertCurrency === 'dai' ? store.get('convert.daiFee') : store.get('convert.chaiFee')
         const convertResult = store.get('convert.result')
         const convertResultMined = store.get('convert.resultMined')
 

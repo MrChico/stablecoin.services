@@ -125,10 +125,8 @@ export const getFeeData = async function() {
     // price of eth in dai from ESM (with 18 decimals)
     const rawEthUSDPrice = await web3.eth.getStorageAt('0x81fe72b5a8d1a857d176c3e7d5bd2679a9b85763', 4);
     const GweiUSDPrice = parseInt(rawEthUSDPrice.slice(34), 16) / 10 ** 9
-  const fastDaiPrice = GweiUSDPrice * gasPriceInGwei
-  const fastChaiPrice = Math.floor(fastDaiPrice / (chiRaw / 10 ** 27))
-  console.log('fastDaiPrice', fastDaiPrice)
-  console.log('fastChaiPrice', fastChaiPrice)
+    const fastDaiPrice = GweiUSDPrice * gasPriceInGwei
+    const fastChaiPrice = Math.floor(fastDaiPrice / (chiRaw / 10 ** 27))
     const PERMIT_GAS = 100000;
     const CHEQUE_GAS = 100000;
     const SWAP_GAS = 200000;
@@ -137,16 +135,19 @@ export const getFeeData = async function() {
 
     const daiChequeFee = web3.utils.fromWei(String(fastDaiPrice * (!daiPermitted ? CHEQUE_GAS + PERMIT_GAS : CHEQUE_GAS)))
     const chaiChequeFee = web3.utils.fromWei(String(fastChaiPrice * (!chaiPermitted ? CHEQUE_GAS + PERMIT_GAS : CHEQUE_GAS)))
-
     const daiSwapFee = web3.utils.fromWei(String(fastDaiPrice * (!daiPermitted ? SWAP_GAS + PERMIT_GAS : SWAP_GAS)))
     const chaiSwapFee = web3.utils.fromWei(String(fastChaiPrice * (!chaiPermitted ? SWAP_GAS + PERMIT_GAS : SWAP_GAS)))
 
     const daiConvertFee = web3.utils.fromWei(String(fastDaiPrice * (!daiPermitted ? JOIN_GAS + PERMIT_GAS : JOIN_GAS)))
     const chaiConvertFee = web3.utils.fromWei(String(fastChaiPrice * (!chaiPermitted ? EXIT_GAS + PERMIT_GAS : EXIT_GAS)))
 
-    store.set('cheque.fee',  chequeCurrency === 'dai' ? daiChequeFee : chaiChequeFee)
-    store.set('swap.fee',    swapCurrency === 'dai' ? daiSwapFee : chaiSwapFee)
-    store.set('convert.fee', convertCurrency === 'dai' ? daiConvertFee : chaiConvertFee)
+  store.set('cheque.chaifee', chaiChequeFee)
+  store.set('cheque.daifee', daiChequeFee)
+  store.set('swap.chaifee', chaiSwapFee)
+  store.set('swap.daifee', daiSwapFee)
+
+  store.set('convert.chaifee', chaiConvertFee)
+  store.set('convert.daifee', daiConvertFee)
 }
 
 // message signing
@@ -156,11 +157,10 @@ export const createChequeMessageData = function() {
     const nonce = Number(store.get('dach.nonce'))
     const to = store.get('cheque.to')
     const amount = Web3.utils.toWei(store.get('cheque.amount'))
-    const fee = Web3.utils.toWei(store.get('cheque.fee'))
     const expiry = store.get('cheque.expiry') || 0;
     const walletAddress = store.get('walletAddress')
     const currency = store.get('cheque.selectedCurrency')
-
+    const fee = currency === 'dai' ? Web3.utils.toWei(store.get('cheque.daiFee')) : Web3.utils.toWei(store.get('cheque.chaiFee'))
     const message = {
         sender: walletAddress,
         receiver: to,
@@ -325,11 +325,10 @@ export const createSwapMessageData = function() {
     const nonce = Number(store.get('dach.nonce'))
     const input = Web3.utils.toWei(store.get('swap.inputAmount'))
     const output = Web3.utils.toWei(store.get('swap.outputAmount'))
-    const fee = Web3.utils.toWei(store.get('swap.fee'))
     const expiry = store.get('swap.expiry') || 0;
     const walletAddress = store.get('walletAddress')
     const currency = store.get('swap.selectedCurrency')
-
+    const fee = currency === 'dai' ? Web3.utils.toWei(store.get('swap.daiFee')) : Web3.utils.toWei(store.get('swap.chaiFee'))
     const message = {
         sender: walletAddress,
         amount: input,
@@ -417,10 +416,10 @@ export const createConvertMessageData = function() {
     const web3 = store.get('web3')
     const nonce = Number(store.get('dach.nonce'))
     const amount = Web3.utils.toWei(store.get('convert.amount'))
-    const fee = Web3.utils.toWei(store.get('convert.fee'))
     const expiry = store.get('convert.expiry') || 0;
     const walletAddress = store.get('walletAddress')
     const currency = store.get('convert.selectedCurrency')
+    const fee = currency === 'dai' ? Web3.utils.toWei(store.get('convert.daiFee')) : Web3.utils.toWei(store.get('convert.chaiFee'))
 
     const message = {
         sender: walletAddress,
