@@ -114,25 +114,32 @@ export const getFeeData = async function() {
     const chiRaw = await pot.methods.chi().call();
     store.set('chi', chiRaw)
 
+    // get time
+  const timestamp = (await web3.eth.getBlock()).timestamp
+  console.log('time', timestamp)
+    store.set('time', timestamp)
     // gas price data from gasstationnetwork
     const gasPriceData = await gasPrice()
+
     const gasPriceInGwei = Math.floor(gasPriceData.fast / 10)
     // price of eth in dai from ESM (with 18 decimals)
     const rawEthUSDPrice = await web3.eth.getStorageAt('0x81fe72b5a8d1a857d176c3e7d5bd2679a9b85763', 4);
+
     const GweiUSDPrice = parseInt(rawEthUSDPrice.slice(34), 16) / 10 ** 9
     const fastDaiPrice = GweiUSDPrice * gasPriceInGwei
     const fastChaiPrice = Math.floor(fastDaiPrice / (chiRaw / 10 ** 27))
-    const PERMIT_GAS = 75000;
-    const CHEQUE_GAS = 82000;
-    const SWAP_GAS = 100000;
-    const CONVERT_GAS = 250000;
+    // 10% premium to account for failing tx and gas price fluctuations
+    const PERMIT_GAS = Math.floor(1.1 * 75000);
+    const CHEQUE_GAS = Math.floor(1.1 * 82000);
+    const SWAP_GAS = Math.floor(1.1 * 100000);
+    const CONVERT_GAS = Math.floor(1.1 * 250000);
 
-    const daiChequeFee = Math.floor(1.1 * web3.utils.fromWei(String(fastDaiPrice * (!daiPermitted ? CHEQUE_GAS + PERMIT_GAS : CHEQUE_GAS))))
-    const chaiChequeFee = Math.floor(1.1 * web3.utils.fromWei(String(fastChaiPrice * (!chaiPermitted ? CHEQUE_GAS + PERMIT_GAS : CHEQUE_GAS))))
-    const daiSwapFee = Math.floor(1.1 * web3.utils.fromWei(String(fastDaiPrice * (!daiPermitted ? SWAP_GAS + PERMIT_GAS : SWAP_GAS))))
-    const chaiSwapFee = Math.floor(1.1 * web3.utils.fromWei(String(fastChaiPrice * (!chaiPermitted ? SWAP_GAS + PERMIT_GAS : SWAP_GAS))))
-    const daiConvertFee = Math.floor(1.1 * web3.utils.fromWei(String(fastDaiPrice * (!daiPermitted ? CONVERT_GAS + PERMIT_GAS : CONVERT_GAS))))
-    const chaiConvertFee = Math.floor(1.1 * web3.utils.fromWei(String(fastChaiPrice * (!chaiPermitted ? CONVERT_GAS + PERMIT_GAS : CONVERT_GAS))))
+    const daiChequeFee = web3.utils.fromWei(String(fastDaiPrice * (!daiPermitted ? CHEQUE_GAS + PERMIT_GAS : CHEQUE_GAS)))
+    const chaiChequeFee = web3.utils.fromWei(String(fastChaiPrice * (!chaiPermitted ? CHEQUE_GAS + PERMIT_GAS : CHEQUE_GAS)))
+    const daiSwapFee = web3.utils.fromWei(String(fastDaiPrice * (!daiPermitted ? SWAP_GAS + PERMIT_GAS : SWAP_GAS)))
+    const chaiSwapFee = web3.utils.fromWei(String(fastChaiPrice * (!chaiPermitted ? SWAP_GAS + PERMIT_GAS : SWAP_GAS)))
+    const daiConvertFee = web3.utils.fromWei(String(fastDaiPrice * (!daiPermitted ? CONVERT_GAS + PERMIT_GAS : CONVERT_GAS)))
+    const chaiConvertFee = web3.utils.fromWei(String(fastChaiPrice * (!chaiPermitted ? CONVERT_GAS + PERMIT_GAS : CONVERT_GAS)))
 
     store.set('cheque.chaiFee', chaiChequeFee)
     store.set('cheque.daiFee', daiChequeFee)
@@ -151,7 +158,7 @@ export const createChequeMessageData = function() {
     const nonce = Number(store.get('dach.nonce'))
     const to = store.get('cheque.to')
     const amount = Web3.utils.toWei(store.get('cheque.amount'))
-    const expiry = store.get('cheque.expiry') || 0;
+    const expiry = store.get('time') + 120;
     const walletAddress = store.get('walletAddress')
     const currency = store.get('cheque.selectedCurrency')
     const fee = currency === 'dai' ? Web3.utils.toWei(store.get('cheque.daiFee')) : Web3.utils.toWei(store.get('cheque.chaiFee'))
@@ -241,6 +248,7 @@ export const createPermitMessageData = function(allowed, currency) {
     const { store } = this.props
     const web3 = store.get('web3')
     const walletAddress = store.get('walletAddress')
+    const expiry = store.get('time') + 120
     const nonce = Number(currency === 'dai' ? store.get('daiNonce') : store.get('chaiNonce'))
 
     // console.log('createPermitMessageData', allowed, currency)
@@ -249,7 +257,7 @@ export const createPermitMessageData = function(allowed, currency) {
         holder: walletAddress,
         spender: dachAddress,
         nonce: nonce,
-        expiry: 0,
+        expiry: expiry,
         allowed: allowed
     }
 
@@ -319,7 +327,7 @@ export const createSwapMessageData = function() {
     const nonce = Number(store.get('dach.nonce'))
     const input = Web3.utils.toWei(store.get('swap.inputAmount'))
     const output = Web3.utils.toWei(store.get('swap.outputAmount'))
-    const expiry = store.get('swap.expiry') || 0;
+    const expiry = store.get('time') + 120;
     const walletAddress = store.get('walletAddress')
     const currency = store.get('swap.selectedCurrency')
     const fee = currency === 'dai' ? Web3.utils.toWei(store.get('swap.daiFee')) : Web3.utils.toWei(store.get('swap.chaiFee'))
@@ -410,7 +418,7 @@ export const createConvertMessageData = function() {
     const web3 = store.get('web3')
     const nonce = Number(store.get('dach.nonce'))
     const amount = Web3.utils.toWei(store.get('convert.amount'))
-    const expiry = store.get('convert.expiry') || 0;
+    const expiry = store.get('time') + 120;
     const walletAddress = store.get('walletAddress')
     const currency = store.get('convert.selectedCurrency')
     const fee = currency === 'dai' ? Web3.utils.toWei(store.get('convert.daiFee')) : Web3.utils.toWei(store.get('convert.chaiFee'))
