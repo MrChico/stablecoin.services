@@ -1,5 +1,5 @@
 # About stablecoin.services
-Today, we are introducing `stablecoin.services`, a selection of common Dai and Chai operations offered gas-free, at your convenience.
+Today, we are introducing `stablecoin.services`, which allows for common Dai and Chai operations to be performed gas-free, at your convenience.
 This promotes Dai and Chai to first class tokens in the Ethereum network, allowing users to transact in these currencies without ever holding any Ether.
 
 At launch, the following operations are supported:
