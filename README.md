@@ -12,7 +12,7 @@ Head over to [stablecoin.services](https://stablecoin.services) to give it a spi
 
 ![image of butler](https://i.imgur.com/kWoV1k7.png)
 
-A relaying api is provided at [api.stablecoin.services](https://api.stablecoin.services), which can be integrated into other dapps interested in offering gas-free conveniences to their users.
+A relaying api is provided at [api.stablecoin.services](https://github.com/MrChico/stablecoin.services/blob/master/api-doc.md), which can be integrated into other dapps interested in offering gas-free conveniences to their users.
 
 ## How does it work?
 
