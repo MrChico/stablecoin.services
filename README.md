@@ -30,7 +30,7 @@ where `fast_gas_price` is provided by Gas Station Network.
 
 ## What are the risks?
 
-The `dach` contract has not yet undergone and audit. It is a fairly small and straightforward contract written and reviewed by experienced smart contract developers, but as with all smart contracts, you should make your own risk assessment before engaging.
+The `dach` contract has not yet undergone an audit. It is a fairly small and straightforward contract written and reviewed by experienced smart contract developers, but as with all smart contracts, you should make your own risk assessment before engaging.
 
 Assuming the contract works as intended, neither the relayer or the `dach` contract holds custody over any user assets. They are simply granted the permission to execute the actions as specified by the signed messages by the user, and the worst they can do is to withhold from processing an operation, only to submit it when the user gives up. To mitigate against this, messages are equipped with an expiration date after which they can no longer be processed. The time to live for messages signed using `stablecoin.services` is 2 minutes. Messages are also equipped with a nonce for replay protection and to enable overwriting of stale messages.
 

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <!-- <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" /> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+<style>
+body {
+  padding:0;
+  max-width:900px;
+  padding:0 20px;
+  margin:5% auto 0 auto;
+  font-family: monospace;
+}
+h1, h2, h3, body {
+  font-size:12pt;
+}
+h2, h3, body {
+  font-weight:normal;
+  font-style:regular;
+  line-height:regular;
+}
+h1, h2, h3 {
+  margin-top:2em;
+  text-align:center;
+}
+.logo { text-align:center; }
+footer {
+  font-style:italic;
+  text-align:center;
+}
+</style>
+
+<h1 id="about-stablecoin-services">About stablecoin.services</h1>
+<p>Today, we are introducing <code>stablecoin.services</code>, a selection of common Dai and Chai operations offered gas-free, at your convenience.
+This promotes Dai and Chai to first class tokens in the Ethereum network, allowing users to transact in these currencies without ever holding any Ether.</p>
+<p>At launch, the following operations are supported:</p>
+<ul>
+<li>Dai and Chai transfers,</li>
+<li>Dai -&gt; Eth and Chai -&gt; Eth uniswap trades,</li>
+<li>Dai &lt;-&gt; Chai conversions.</li>
+</ul>
+<p>Head over to <a href="https://stablecoin.services">stablecoin.services</a> to give it a spin. Bernard will be there to assist you.</p>
+<p class="logo"><img src="https://i.imgur.com/kWoV1k7.png" alt="" /><br /></p>
+<p>A relaying api is provided at <a href="https://api.stablecoin.services">api.stablecoin.services</a>, which can be integrated into other dapps interested in offering gas-free conveniences to their users.</p>
+<h2 id="how-does-it-work-">How does it work?</h2>
+<p>To initiate an action, the user signs a message specifying the details of the operation to be performed, and authorizes a relayer to process the transaction on their behalf. As the relayer submits the message to the blockchain, the operation is processed and the fee is delivered to the relayer to reimburse their gas costs.</p>
+<p>At the heart of this process sits a smart contract called the Dai Automated Clearing House, or <a href="https://etherscan.io/address/0x64043a98f097fD6ef0D3ad41588a6B0424723b3a#code"><code>dach</code></a>, for short. The first time you use <code>stablecoin.services</code> you will be asked to sign a message which permits this contract to operate on your behalf. You should study this contract carefully as it determines the terms of engagement between you and the relaying service. It specifies a set of message types, one for each action offered by <code>stablecoin.services</code>, and corresponding functions which executes the operation specified by each message.</p>
+<p>This is all made possible by the <a href="https://github.com/makerdao/dss/blob/master/src/dai.sol#L117"><code>permit</code> function</a> in the Dai and Chai contracts, which allows for approvals to be done by signed messages, instead of transactions relying on <code>msg.sender</code>. We hope that <code>stablecoin.services</code> serves as an example of the power and extensibility of the <code>permit</code> construction, and encourage future token designers to adopt a similar pattern.</p>
+<p>The processing fee suggested by the front end is calculated according to the following formula:</p>
+<p><code>operation_fee = 1.1 * gas_per_operation * fast_gas_price * eth_price_in_dai (or chai)</code>,</p>
+<p>where <code>fast_gas_price</code> is provided by Gas Station Network.</p>
+<h2 id="what-are-the-risks-">What are the risks?</h2>
+<p>The <code>dach</code> contract has not yet undergone an audit. It is a fairly small and straightforward contract written and reviewed by experienced smart contract developers, but as with all smart contracts, you should make your own risk assessment before engaging.</p>
+<p>Assuming the contract works as intended, neither the relayer or the <code>dach</code> contract holds custody over any user assets. They are simply granted the permission to execute the actions as specified by the signed messages by the user, and the worst they can do is to withhold from processing an operation, only to submit it when the user gives up. To mitigate against this, messages are equipped with an expiration date after which they can no longer be processed. The time to live for messages signed using <code>stablecoin.services</code> is 2 minutes. Messages are also equipped with a nonce for replay protection and to enable overwriting of stale messages.</p>
+<h2 id="resources">Resources</h2>
+<p>The code for the <code>dach</code> contract can be found at <a href="https://github.com/dapphub/ds-dach/">github.com/dapphub/ds-dach</a>, or in the <a href="https://etherscan.io/address/0x64043a98f097fD6ef0D3ad41588a6B0424723b3a#code">etherscan live deployment</a>
+The code for the <code>stablecoin.services</code> front end is hosted at <a href="https://github.com/MrChico/Stablecoin.services">github.com/MrChico/stablecoin.services</a>.</p>
+<p>Both distributed under the AGPL license.</p>
+<p>Documentation of the relaying api is provided at <a href="https://api.stablecoin.services"><code>api.stablecoin.services</code></a></p>
+<p><em>Martin Lundfall, Andrew Cassetti, Lev Livnev</em></p>

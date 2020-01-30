@@ -40,7 +40,7 @@ class FooterContainer extends React.Component {
             {<Grid className={classes.navContainer} container alignItems='center'>
               <Grid item xs={12} sm={6}>
                   <Grid container alignItems='center'>
-                      <div className={classes.link}><a href={'/about'} rel="noopener noreferrer" target='_blank'>About</a></div>
+                      <div className={classes.link}><a href={'/about.html'} rel="noopener noreferrer" target='_blank'>About</a></div>
                       <div className={classes.link}><a href={'https://github.com/MrChico/stablecoin.services/blob/master/api-doc.md'} rel="noopener noreferrer" target='_blank'>API</a></div>
                       <div className={classes.link}><a href={'https://github.com/MrChico/stablecoin.services'} rel="noopener noreferrer" target='_blank'>Source</a></div>
                   </Grid>
