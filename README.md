@@ -8,9 +8,9 @@ At launch, the following operations are supported:
  - Dai -> Eth and Chai -> Eth uniswap trades,
  - Dai <-> Chai conversions.
 
-Head over to [stablecoin.services](https://stablecoin.services) to give it a spin. Bernard will be there to assist you.
+Head over to [stablecoin.services](https://stablecoin.services) to give it a spin. Alfred will be there to assist you.
 
-[butler.png]
+[butler.png](https://i.imgur.com/kWoV1k7.png)
 
 A relaying api is provided at [api.stablecoin.services](https://api.stablecoin.services), which can be integrated into other dapps interested in offering gas-free conveniences to their users.
 
