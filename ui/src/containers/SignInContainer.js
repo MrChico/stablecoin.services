@@ -68,7 +68,7 @@ class SignInContainer extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log(this)
+        // console.log(this)
     }
 
     injected(){

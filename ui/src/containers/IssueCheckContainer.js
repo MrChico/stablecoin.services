@@ -208,7 +208,7 @@ class IssueCheckContainer extends React.Component {
             getDaiData.bind(this)();
             getChaiData.bind(this)();
             getFeeData.bind(this)();
-            console.log(this.props.store.getState())
+            // console.log(this.props.store.getState())
         }, 20 * 1000);
     }
 

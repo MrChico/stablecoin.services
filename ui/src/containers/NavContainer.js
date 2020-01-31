@@ -24,8 +24,19 @@ const styles = () => ({
         width: 50,
         marginRight: theme.spacing(2)
     },
+    logoText: {
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column'
+    },
     headerText: {
       fontSize: 24,
+      width: '100%'
+    },
+    headerSubtitle: {
+      fontSize: 16,
+      marginTop: theme.spacing(0.5),
+      marginBottom: theme.spacing(0)
     },
     accountButton: {
       minWidth: 140,
@@ -68,13 +79,16 @@ class NavContainer extends React.Component {
 
         return <Grid item xs={12}>
             {<Grid className={classes.navContainer} container alignItems='center'>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={8}>
                   <Grid container alignItems='center'>
-                  <img className={classes.logo} src={Bell} onClick={this.playBellSound.bind(this)}/>
-                        <Typography className={classes.headerText} variant='body'>stablecoin.services</Typography>
+                      <img className={classes.logo} src={Bell} onClick={this.playBellSound.bind(this)}/>
+                      <div className={classes.logoText}>
+                          <Typography className={classes.headerText} variant='body'>stablecoin.services</Typography>
+                          <Typography className={classes.headerSubtitle} variant='p'>A gas-free offering of common Dai and Chai&nbsp;operations</Typography>
+                      </div>
                   </Grid>
               </Grid>
-              <Grid item xs={12} sm={6}>
+              <Grid item xs={12} sm={4}>
                   <Grid container className={classes.buttonContainer}>
                   {walletConnecting ? <Button color='primary' size='large' disabled className={classes.accountButton} variant='contained'>Connecting...</Button> : <Button color='primary' size='large' onClick={() => {
                         store.set('signInMessage', '')

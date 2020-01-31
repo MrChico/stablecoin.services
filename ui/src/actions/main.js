@@ -50,21 +50,21 @@ export const newDaiTransfer = async function() {
                     if (result.success === 'true' && result.message.chequeHash) {
                         setTxMinedInterval('cheque', result.message.chequeHash, store)
                     }
-                    console.log('daiPermitAndCheque', result)
+                    // console.log('daiPermitAndCheque', result)
                 }, 10)
             } catch(e) {
-                console.log(e)
+                // console.log(e)
                 store.set('cheque.requesting', false)
                 store.set('cheque.networkRequesting', false)
             }
         } catch(e) {
-            console.log(e)
+            // console.log(e)
             store.set('cheque.requesting', false)
         }
     } else {
         try {
             const signedCheque = await signDaiCheque.bind(this)()
-            console.log('signedCheque', signedCheque)
+            // console.log('signedCheque', signedCheque)
             // POST /transfer
             store.set('cheque.networkRequesting', true)
             const result = await daiCheque({ cheque: signedCheque })
@@ -75,7 +75,7 @@ export const newDaiTransfer = async function() {
                 setTxMinedInterval('cheque', result.message.chequeHash, store)
             }
         } catch(e) {
-            console.log('cheque error', e)
+            // console.log('cheque error', e)
             store.set('cheque.requesting', false)
             store.set('cheque.networkRequesting', false)
         }
@@ -107,21 +107,21 @@ export const newChaiTransfer = async function() {
                     if (result.success === 'true' && result.message.chequeHash) {
                         setTxMinedInterval('cheque', result.message.chequeHash, store)
                     }
-                    console.log('chaiPermitAndCheque', result)
+                    // console.log('chaiPermitAndCheque', result)
                 }, 10)
             } catch(e) {
-                console.log(e)
+                // console.log(e)
                 store.set('cheque.requesting', false)
                 store.set('cheque.networkRequesting', false)
             }
         } catch(e) {
-            console.log(e)
+            // console.log(e)
             store.set('cheque.requesting', false)
         }
     } else {
         try {
             const signedCheque = await signChaiCheque.bind(this)()
-            console.log('signedCheque', signedCheque)
+            // console.log('signedCheque', signedCheque)
             // POST /transfer
             store.set('cheque.networkRequesting', true)
             const result = await chaiCheque({ cheque: signedCheque })
@@ -132,7 +132,7 @@ export const newChaiTransfer = async function() {
                 setTxMinedInterval('cheque', result.message.chequeHash, store)
             }
         } catch(e) {
-            console.log('cheque error', e)
+            // console.log('cheque error', e)
             store.set('cheque.requesting', false)
             store.set('cheque.networkRequesting', false)
         }
@@ -161,18 +161,18 @@ export const newDaiSwap = async function() {
                   store.set('swap.networkRequesting', false)
               }, 10)
             } catch(e) {
-                console.log(e)
+                // console.log(e)
                 store.set('swap.requesting', false)
                 store.set('swap.networkRequesting', false)
             }
         } catch(e) {
-            console.log(e)
+            // console.log(e)
             store.set('swap.requesting', false)
         }
     } else {
         try {
             const signedSwap = await signSwap.bind(this)()
-            console.log('signedSwap', signedSwap)
+            // console.log('signedSwap', signedSwap)
             store.set('swap.networkRequesting', true)
             const result = await daiSwap({ swap: signedSwap })
             store.set('swap.result', result)
@@ -182,7 +182,7 @@ export const newDaiSwap = async function() {
                 setTxMinedInterval('swap', result.message.swapHash, store)
             }
         } catch(e) {
-            console.log('swap error', e)
+            // console.log('swap error', e)
             store.set('swap.requesting', false)
             store.set('swap.networkRequesting', false)
         }
@@ -214,18 +214,18 @@ export const newChaiSwap = async function() {
                   }
               }, 10)
             } catch(e) {
-                console.log(e)
+                // console.log(e)
                 store.set('swap.requesting', false)
                 store.set('swap.networkRequesting', false)
             }
         } catch(e) {
-            console.log(e)
+            // console.log(e)
             store.set('swap.requesting', false)
         }
     } else {
         try {
             const signedSwap = await signSwap.bind(this)()
-            console.log('signedSwap', signedSwap)
+            // console.log('signedSwap', signedSwap)
             store.set('swap.networkRequesting', true)
             const result = await chaiSwap({ swap: signedSwap })
             store.set('swap.result', result)
@@ -235,7 +235,7 @@ export const newChaiSwap = async function() {
                 setTxMinedInterval('swap', result.message.swapHash, store)
             }
         } catch(e) {
-            console.log('swap error', e)
+            // console.log('swap error', e)
             store.set('swap.requesting', false)
             store.set('swap.networkRequesting', false)
         }
@@ -270,12 +270,12 @@ export const newDaiConvert = async function() {
                     }
                 }, 10)
             } catch(e) {
-                console.log(e)
+                // console.log(e)
                 store.set('convert.requesting', false)
                 store.set('convert.networkRequesting', false)
             }
         } catch(e) {
-            console.log(e)
+            // console.log(e)
             store.set('convert.requesting', false)
         }
     } else {
@@ -292,7 +292,7 @@ export const newDaiConvert = async function() {
                 setTxMinedInterval('convert', result.message.joinHash, store)
             }
         } catch(e) {
-            console.log('cheque error', e)
+            // console.log('cheque error', e)
             store.set('convert.requesting', false)
             store.set('convert.networkRequesting', false)
         }
@@ -327,12 +327,12 @@ export const newChaiConvert = async function() {
                     }
                 }, 10)
             } catch(e) {
-                console.log(e)
+                // console.log(e)
                 store.set('convert.requesting', false)
                 store.set('convert.networkRequesting', false)
             }
         } catch(e) {
-            console.log(e)
+            // console.log(e)
             store.set('convert.requesting', false)
         }
     } else {
@@ -349,7 +349,7 @@ export const newChaiConvert = async function() {
                 setTxMinedInterval('convert', result.message.exitHash, store)
             }
         } catch(e) {
-            console.log('cheque error', e)
+            // console.log('cheque error', e)
             store.set('convert.requesting', false)
             store.set('convert.networkRequesting', false)
         }

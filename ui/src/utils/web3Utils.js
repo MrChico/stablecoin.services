@@ -116,7 +116,7 @@ export const getFeeData = async function() {
 
     // get time
   const timestamp = (await web3.eth.getBlock()).timestamp
-  console.log('time', timestamp)
+  // console.log('time', timestamp)
     store.set('time', timestamp)
     // gas price data from gasstationnetwork
     const gasPriceData = await gasPrice()
@@ -172,7 +172,7 @@ export const createChequeMessageData = function() {
         relayer: relayer
     }
 
-    console.log('message', message)
+    // console.log('message', message)
 
     const type = currency === 'dai' ? 'DaiCheque' : 'ChaiCheque'
     let messageData = {
@@ -234,7 +234,7 @@ export const createChequeMessageData = function() {
         },
     ]
 
-    console.log('createChequeMessageData', messageData)
+    // console.log('createChequeMessageData', messageData)
 
     const typedData = JSON.stringify(messageData);
 
@@ -313,7 +313,7 @@ export const createPermitMessageData = function(allowed, currency) {
         message: message
     });
 
-    console.log('createPermitMessageData', JSON.parse(typedData))
+    // console.log('createPermitMessageData', JSON.parse(typedData))
 
     return {
         typedData,
@@ -341,7 +341,7 @@ export const createSwapMessageData = function() {
         relayer: relayer
     }
 
-    console.log('message', message)
+    // console.log('message', message)
 
     const type = currency === 'dai' ? 'DaiSwap' : 'ChaiSwap'
     let messageData = {
@@ -403,7 +403,7 @@ export const createSwapMessageData = function() {
         },
     ]
 
-    console.log('createSwapMessageData', messageData)
+    // console.log('createSwapMessageData', messageData)
 
     const typedData = JSON.stringify(messageData);
 
@@ -433,7 +433,7 @@ export const createConvertMessageData = function() {
         relayer: relayer
     }
 
-    console.log('message', message)
+    // console.log('message', message)
 
     const type = currency === 'dai' ? 'ChaiJoin' : 'ChaiExit'
     let messageData = {
@@ -495,7 +495,7 @@ export const createConvertMessageData = function() {
         },
     ]
 
-    console.log('createConvertMessageData', messageData)
+    // console.log('createConvertMessageData', messageData)
 
     const typedData = JSON.stringify(messageData);
 
@@ -506,7 +506,7 @@ export const createConvertMessageData = function() {
 }
 
 export const signData = async function(web3, fromAddress, data, walletType, store) {
-    console.log(web3, fromAddress)
+    // console.log(web3, fromAddress)
     if (walletType === 'injected' || walletType === 'portis') {
         return new Promise(function(resolve, reject) {
             web3.currentProvider.sendAsync({
@@ -574,7 +574,7 @@ export const signDachTransferPermit = async function(allowed, currency) {
 
     const messageData = createPermitMessageData.bind(this)(allowed, currency)
 
-    console.log(messageData)
+    // console.log(messageData)
 
     const sig = await signData(web3, walletAddress, messageData.typedData, walletType, store)
     return Object.assign({}, sig, messageData.message)
@@ -614,7 +614,7 @@ export const signSwap = async function() {
 
     const messageData = createSwapMessageData.bind(this)()
 
-    console.log(messageData)
+    // console.log(messageData)
 
     const sig = await signData(web3, walletAddress, messageData.typedData, walletType, store)
     return Object.assign({}, sig, messageData.message)
@@ -716,11 +716,11 @@ export const initWalletConnect = async function() {
           bridge: "https://bridge.walletconnect.org" // Required
         });
 
-        console.log('wallet connect', provider, walletConnector)
+        // console.log('wallet connect', provider, walletConnector)
 
         //  Create Web3
         const web3 = new Web3(provider);
-        console.log('wallet connect web3', web3, web3.eth, web3.eth.signTypedData)
+        // console.log('wallet connect web3', web3, web3.eth, web3.eth.signTypedData)
         const accounts = await web3.eth.getAccounts()
 
         store.set('walletConnecting', false)

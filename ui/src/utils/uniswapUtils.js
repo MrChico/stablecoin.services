@@ -35,7 +35,7 @@ export const getTokenData = (id) => {
 }
 
 export const getSwapOutput = async (web3, inputAmount, inputId, outputId) => {
-  console.log('getSwapOutput', inputAmount, inputId, outputId)
+  // console.log('getSwapOutput', inputAmount, inputId, outputId)
 
   let inputReserve = ''
   let outputReserve = ''
@@ -60,7 +60,7 @@ export const getSwapOutput = async (web3, inputAmount, inputId, outputId) => {
     outputReserve =  fromWei(await web3.eth.getBalance(exchangeAddress))
   // }
 
-  console.log('getSwapOutput', inputReserve, outputReserve)
+  // console.log('getSwapOutput', inputReserve, outputReserve)
 
   const numerator = inputAmount * outputReserve * 997
   const denominator = inputReserve * 1000 + inputAmount * 997
