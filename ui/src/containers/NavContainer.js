@@ -35,7 +35,7 @@ const styles = () => ({
     },
     headerSubtitle: {
       fontSize: 16,
-      marginTop: theme.spacing(0.5),
+      marginTop: theme.spacing(0.75),
       marginBottom: theme.spacing(0)
     },
     accountButton: {
