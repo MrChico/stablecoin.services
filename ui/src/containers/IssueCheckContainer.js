@@ -318,7 +318,7 @@ class IssueCheckContainer extends React.Component {
         const { store } = this.props
         const selectedCurrency = store.get('cheque.selectedCurrency')
         const bal = selectedCurrency === 'dai' ? store.get('daiBalance') : store.get('chaiBalance')
-        const fee = selectedCurrency === 'dai' ? store.get('cheuqe.daiFee') : store.get('cheque.chaiFee')
+        const fee = selectedCurrency === 'dai' ? store.get('cheque.daiFee') : store.get('cheque.chaiFee')
         const max = (bal - fee) > 0 ?  bal - fee : '0'
         this.chequeAmountRef.current.value = max
         store.set('cheque.amount', String(max))
@@ -331,7 +331,7 @@ class IssueCheckContainer extends React.Component {
         const fee = selectedCurrency === 'dai' ? store.get('swap.daiFee') : store.get('swap.chaiFee')
         const max = (bal - fee) > 0 ?  bal - fee : '0'
         this.swapAmountRef.current.value = max
-        store.set('swap.amount', String(max))
+        this.swapAmountChanged.bind(this)(String(max))
     }
 
     convertMax() {

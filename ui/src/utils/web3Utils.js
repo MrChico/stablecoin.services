@@ -115,9 +115,9 @@ export const getFeeData = async function() {
     store.set('chi', chiRaw)
 
     // get time
-  const timestamp = (await web3.eth.getBlock()).timestamp
+    const block = await web3.eth.getBlock()
   // console.log('time', timestamp)
-    store.set('time', timestamp)
+    store.set('time', block ? block.timestamp : 0)
     // gas price data from gasstationnetwork
     const gasPriceData = await gasPrice()
 
