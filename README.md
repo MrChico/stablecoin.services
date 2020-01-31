@@ -37,9 +37,12 @@ Assuming the contract works as intended, neither the relayer or the `dach` contr
 ## Resources
 
 The code for the `dach` contract can be found at [github.com/dapphub/ds-dach](https://github.com/dapphub/ds-dach/), or in the [etherscan live deployment](https://etherscan.io/address/0x64043a98f097fD6ef0D3ad41588a6B0424723b3a#code)
+
 The code for the `stablecoin.services` front end is hosted at [github.com/MrChico/stablecoin.services](https://github.com/MrChico/Stablecoin.services).
 
 Both distributed under the AGPL license.
+
+Pixel Art by Abbey Titcomb
 
 Documentation of the relaying api is provided at [`api.stablecoin.services`](https://api.stablecoin.services)
 
