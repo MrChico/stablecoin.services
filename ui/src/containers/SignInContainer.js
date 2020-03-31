@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/styles';
 import theme from '../theme/theme'
 import {
   initBrowserWallet,
-  initPortis,
+//  initPortis,
   initWalletConnect
 } from '../utils/web3Utils'
 
@@ -17,7 +17,7 @@ import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import Metamask from '../assets/metamask.png'
-import Portis from '../assets/portis.png'
+//import Portis from '../assets/portis.png'
 import WalletConnect from '../assets/walletConnect.svg'
 
 
@@ -77,11 +77,11 @@ class SignInContainer extends React.Component {
         initBrowserWallet.bind(this)()
     }
 
-    portis() {
-        const { store } = this.props
-        store.set('showSignIn', false)
-        initPortis.bind(this)()
-    }
+    // portis() {
+    //     const { store } = this.props
+    //     store.set('showSignIn', false)
+    //     initPortis.bind(this)()
+    // }
 
     walletConnect() {
         const { store } = this.props
@@ -122,7 +122,6 @@ class SignInContainer extends React.Component {
                 <MenuList className={classes.walletList}>
                     <MenuItem className={classes.walletItem} onClick={this.injected.bind(this)}><div><img src={Metamask} /><span>Metamask</span></div></MenuItem>
                     <MenuItem className={classes.walletItem} onClick={this.walletConnect.bind(this)}><div><img src={WalletConnect} /><span>WalletConnect</span></div></MenuItem>
-                    <MenuItem className={classes.walletItem} onClick={this.portis.bind(this)}><div><img src={Portis} /><span>Portis</span></div></MenuItem>
                 </MenuList>
             </Grid>
           </Fade>

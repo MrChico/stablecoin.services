@@ -1,10 +1,10 @@
 import Web3 from "web3";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import WalletConnect from "@walletconnect/browser";
-import Portis from "@portis/web3";
+//import Portis from "@portis/web3";
 import { InjectedConnector } from "@web3-react/injected-connector";
 import { WalletConnectConnector } from "@web3-react/walletconnect-connector";
-import { PortisConnector } from "@web3-react/portis-connector";
+//import { PortisConnector } from "@web3-react/portis-connector";
 
 import daiABI from '../utils/daiABI.json';
 import chaiABI from '../utils/chaiABI.json';
@@ -39,10 +39,10 @@ export const walletConnectConnector = new WalletConnectConnector({
   pollingInterval: POLLING_INTERVAL
 })
 
-export const portisConnector = new PortisConnector({
-  dAppId: "211b48db-e8cc-4b68-82ad-bf781727ea9e",
-  networks: [chain_id]
-});
+// export const portisConnector = new PortisConnector({
+//   dAppId: "211b48db-e8cc-4b68-82ad-bf781727ea9e",
+//   networks: [chain_id]
+// });
 
 // network data
 export const getDaiData = async function() {
@@ -506,8 +506,7 @@ export const createConvertMessageData = function() {
 }
 
 export const signData = async function(web3, fromAddress, data, walletType, store) {
-    // console.log(web3, fromAddress)
-    if (walletType === 'injected' || walletType === 'portis') {
+     if (walletType === 'injected') {
         return new Promise(function(resolve, reject) {
             web3.currentProvider.sendAsync({
                     id: 1,
@@ -675,28 +674,28 @@ export const setTxMinedInterval = async function(actionType, hash, store) {
 
 
 
-// wallets
-export const initPortis = async function() {
-    const { store } = this.props
+// // wallets
+// export const initPortis = async function() {
+//     const { store } = this.props
 
-    store.set('walletConnecting', true)
-    const portis = new Portis('211b48db-e8cc-4b68-82ad-bf781727ea9e', 'mainnet');
-    const web3 = new Web3(portis.provider);
+//     store.set('walletConnecting', true)
+//     const portis = new Portis('211b48db-e8cc-4b68-82ad-bf781727ea9e', 'mainnet');
+//     const web3 = new Web3(portis.provider);
 
-    try {
-      const accounts = await web3.eth.getAccounts()
-      store.set('walletConnecting', false)
-      store.set('walletAddress', accounts[0])
-      store.set('web3', web3)
-      store.set('walletType', 'portis')
+//     try {
+//       const accounts = await web3.eth.getAccounts()
+//       store.set('walletConnecting', false)
+//       store.set('walletAddress', accounts[0])
+//       store.set('web3', web3)
+//       store.set('walletType', 'portis')
 
-      getDaiData.bind(this)()
-      getChaiData.bind(this)()
-      getFeeData.bind(this)()
-    } catch(e) {
-        store.set('walletConnecting', false)
-    }
-}
+//       getDaiData.bind(this)()
+//       getChaiData.bind(this)()
+//       getFeeData.bind(this)()
+//     } catch(e) {
+//         store.set('walletConnecting', false)
+//     }
+// }
 
 export const initWalletConnect = async function() {
     const { store } = this.props
