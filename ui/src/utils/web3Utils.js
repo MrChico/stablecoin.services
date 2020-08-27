@@ -158,7 +158,7 @@ export const createChequeMessageData = function() {
     const nonce = Number(store.get('dach.nonce'))
     const to = store.get('cheque.to')
     const amount = Web3.utils.toWei(store.get('cheque.amount'))
-    const expiry = store.get('time') + 120;
+    const expiry = store.get('time') + 600;
     const walletAddress = store.get('walletAddress')
     const currency = store.get('cheque.selectedCurrency')
     const fee = currency === 'dai' ? Web3.utils.toWei(store.get('cheque.daiFee')) : Web3.utils.toWei(store.get('cheque.chaiFee'))
@@ -248,7 +248,7 @@ export const createPermitMessageData = function(allowed, currency) {
     const { store } = this.props
     const web3 = store.get('web3')
     const walletAddress = store.get('walletAddress')
-    const expiry = store.get('time') + 120
+    const expiry = store.get('time') + 600
     const nonce = Number(currency === 'dai' ? store.get('daiNonce') : store.get('chaiNonce'))
 
     // console.log('createPermitMessageData', allowed, currency)
@@ -327,7 +327,7 @@ export const createSwapMessageData = function() {
     const nonce = Number(store.get('dach.nonce'))
     const input = Web3.utils.toWei(store.get('swap.inputAmount'))
     const output = Web3.utils.toWei(store.get('swap.outputAmount'))
-    const expiry = store.get('time') + 120;
+    const expiry = store.get('time') + 600;
     const walletAddress = store.get('walletAddress')
     const currency = store.get('swap.selectedCurrency')
     const fee = currency === 'dai' ? Web3.utils.toWei(store.get('swap.daiFee')) : Web3.utils.toWei(store.get('swap.chaiFee'))
@@ -418,7 +418,7 @@ export const createConvertMessageData = function() {
     const web3 = store.get('web3')
     const nonce = Number(store.get('dach.nonce'))
     const amount = Web3.utils.toWei(store.get('convert.amount'))
-    const expiry = store.get('time') + 120;
+    const expiry = store.get('time') + 600;
     const walletAddress = store.get('walletAddress')
     const currency = store.get('convert.selectedCurrency')
     const fee = currency === 'dai' ? Web3.utils.toWei(store.get('convert.daiFee')) : Web3.utils.toWei(store.get('convert.chaiFee'))
